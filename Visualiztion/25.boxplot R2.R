@@ -4,7 +4,7 @@ require(ggplot2)
 require(ggpubr)
 require(dplyr)
 
-dat <- readxl::read_excel("25.38347143-Source Data Extended Fig7.xlsx", sheet = "ED_6b")
+dat <- readxl::read_excel("25.38347143-Source Data Extended Fig6.xlsx", sheet = "ED_6b")
 
 dat %>% 
   mutate(x = factor(`Intrinsic subtype`, 
