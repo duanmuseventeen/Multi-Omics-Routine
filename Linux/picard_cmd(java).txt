@@ -1,0 +1,19 @@
+# Reference
+# Download java of matched version from https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html
+# https://blog.csdn.net/Obscurede/article/details/131854725
+
+# sudo yum install java-11-openjdk
+
+rpm -i xx.rpm
+
+sudo update-alternatives --config java # set the default version of java to use
+
+java -version # check the version of java
+
+java -jar picard.jar
+
+java -jar picard.jar CollectInsertSizeMetrics \
+        -I sorted.mkdup.bam \   # bam file
+        -O insert_size_metrics.txt \   # output txt file
+        -H insert_size_histogram.pdf \  # output histogram in Pdf format
+        -M 0.5
