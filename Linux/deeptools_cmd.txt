@@ -1,0 +1,75 @@
+# https://www.jianshu.com/p/2b386dd437d3
+
+bamCoverage --bam a.bam -o a.SeqDepthNorm.bw \
+    --binSize 10
+    --normalizeUsing RPGC
+    --effectiveGenomeSize 2150570000
+    --ignoreForNormalization chrX
+    --extendReads
+    --outFileFormat bedgraph
+
+bamCompare -b1 treatment.bam -b2 control.bam -o log2ratio.bw
+
+computeMatrix reference-point \ # choose the mode
+       --referencePoint TSS \ # alternatives: TSS, TES, center
+       -b 3000 -a 10000 \ # define the region you are interested in
+       -R testFiles/genes.bed \
+       -S testFiles/log2ratio_H3K4Me3_chr19.bw  \
+       --skipZeros \
+       -o matrix1_H3K4me3_l2r_TSS.gz \ # to be used with plotHeatmap and plotProfile
+       --outFileSortedRegions regions1_H3K4me3_l2r_genes.bed
+
+plotCorrelation \
+-in scores_per_transcript.npz \
+--corMethod pearson --skipZeros \
+--plotTitle "Pearson Correlation of Average Scores Per Transcript" \
+--whatToPlot scatterplot \
+-o scatterplot_PearsonCorr_bigwigScores.png   \
+--outFileCorMatrix PearsonCorr_bigwigScores.tab
+
+plotCorrelation \
+    -in readCounts.npz \
+    --corMethod spearman --skipZeros \
+    --plotTitle "Spearman Correlation of Read Counts" \
+    --whatToPlot heatmap --colorMap RdYlBu --plotNumbers \
+    -o heatmap_SpearmanCorr_readCounts.png   \
+    --outFileCorMatrix SpearmanCorr_readCounts.tab
+
+plotPCA -in readCounts.npz \
+-o PCA_readCounts.png \
+-T "PCA of read counts"
+
+plotFingerprint \
+ -b testFiles/*bam \
+--labels H3K27me3 H3K4me1 H3K4me3 H3K9me3 input \
+--minMappingQuality 30 --skipZeros \
+--region 19 --numberOfSamples 50000 \
+-T "Fingerprints of different samples"  \
+--plotFile fingerprints.png \
+--outRawCounts fingerprints.tab
+
+computeMatrix scale-regions -S H3K27Me3-input.bigWig \
+                                 H3K4Me1-Input.bigWig  \
+                                 H3K4Me3-Input.bigWig \
+                              -R genes19.bed genesX.bed \
+                              --beforeRegionStartLength 3000 \
+                              --regionBodyLength 5000 \
+                              --afterRegionStartLength 3000
+                              --skipZeros -o matrix.mat.gz
+
+plotHeatmap -m matrix_two_groups.gz \
+     -out ExampleHeatmap2.png \
+     --colorMap RdBu \
+     --whatToShow 'heatmap and colorbar' \
+     --zMin -3 --zMax 3 \
+     --kmeans 4  #聚类参数
+
+plotProfile -m matrix.mat.gz \
+              -out ExampleProfile1.png \
+              --numPlotsPerRow 2 \
+              --plotTitle "Test data profile"
+
+plotEnrichment -b Input.bam H3K4Me1.bam H3K4Me3.bam \
+--BED up.bed down.bed \
+--regionLabels "up regulated" "down regulated" \
+-o enrichment.png
