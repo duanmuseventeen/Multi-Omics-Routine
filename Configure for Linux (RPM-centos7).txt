@@ -1,0 +1,42 @@
+install anaconda
+
+conda config --add channels conda-forge
+conda config --add channels bioconda
+
+conda create -n R4.4
+conda create -n scRNAseq
+conda create -n python2.7
+
+# scRNAseq
+conda activate scRNAseq
+conda install -y -c bioconda fastqc
+pip3 install multiqc
+conda install -y -c bioconda python=3.7.0 sra-tools
+conda install -y -c bioconda hisat2 samtools
+conda install -y -c bioconda sambamba bedtools deeptools
+conda install -y -c bioconda htseq
+conda install -y -c bioconda gatk4 bwa
+conda install -y -c bioconda star
+pip install macs3
+pip install --user RGT
+
+# python2.7
+conda activate python2.7
+conda install -y -c bioconda bowtie2
+
+# R4.4
+conda activate R4.4
+# Download R4.4.2 from CRAN
+bash ./configure --enable-R-shlib --prefix=/home/yourname/R-4.4.2
+make&&make install
+conda install conda-forge::r-rcpp
+
+java -version
+# Reference
+# Download java of matched version from https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html
+# https://blog.csdn.net/Obscurede/article/details/131854725
+
+rpm -i xx.rpm
+sudo update-alternatives --config java # set the default version of java to use
+java -version # check the version of java
+java -jar picard.jar
