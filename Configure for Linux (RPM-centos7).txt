@@ -18,6 +18,8 @@ conda install -y -c bioconda sambamba bedtools deeptools
 conda install -y -c bioconda htseq
 conda install -y -c bioconda gatk4 bwa
 conda install -y -c bioconda star
+conda install -y -c bioconda cutadapt
+conda install -y -c bioconda trim-galore
 pip install macs3
 pip install --user RGT
 
@@ -46,3 +48,7 @@ rpm -i xx.rpm
 sudo update-alternatives --config java # set the default version of java to use
 java -version # check the version of java
 java -jar picard.jar
+
+wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+unzip Trimmomatic-0.39.zip
+java -jar Trimmomatic-0.39/trimmomatic-0.39.jar -h
