@@ -1,4 +1,5 @@
-install anaconda
+# install anaconda
+sh Anaconda3-2024.10-1-Linux-x86_64.sh
 
 conda config --add channels conda-forge
 conda config --add channels bioconda
@@ -27,9 +28,14 @@ conda install -y -c bioconda bowtie2
 # R4.4
 conda activate R4.4
 # Download R4.4.2 from CRAN
+tar -zxvf R4.4.2.tar.gz
 bash ./configure --enable-R-shlib --prefix=/home/yourname/R-4.4.2
 make&&make install
 conda install conda-forge::r-rcpp
+conda install r-devtools
+
+# https://github.com/broadinstitute/inferCNV/wiki/Installing-infercnv
+inferCNV包安装需要JAGS，安装JAGS需要依赖于LAPACK。
 
 java -version
 # Reference
