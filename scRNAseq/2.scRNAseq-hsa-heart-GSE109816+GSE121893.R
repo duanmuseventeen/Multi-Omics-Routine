@@ -9,6 +9,7 @@ require(SeuratObject)
 # https://lishensuo.github.io/posts/bioinfo/028%E5%8D%95%E7%BB%86%E8%83%9E%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7--%E5%9F%BA%E4%BA%8E%E6%96%87%E7%8C%AE%E7%9A%84%E7%BB%86%E8%83%9E%E7%B1%BB%E5%9E%8B%E6%B3%A8%E9%87%8Amarker/
 # http://117.50.127.228/CellMarker/
 # http://www.360doc.com/content/12/0121/07/76149697_996050517.shtml
+# https://cloud.tencent.com/developer/article/2401058
 
 # * GSE109816 and GSE121893 [Normal & Heart Failure] ---------------------------
 # https://www.nature.com/articles/s41556-019-0446-7#Sec9
@@ -227,3 +228,12 @@ DimPlot(sce.all, reduction = "tsne",
 FeaturePlot(sce.all.annot, reduction = "tsne", features = c("CD163"))
 
 VlnPlot(sce.all.annot, features = c("CD163"), slot = "counts", log = TRUE, ncol = 1)
+
+# Note:
+# 会影响分群和UMAP可视化的参数：
+# 从这次的结果看，增加高变基因数目会把T细胞和B细胞分开。而PCA维数的增加没有使T细胞和B细胞分开，但是把T细胞分成了两个部分。
+# 之前在这篇推文初探单细胞分析 — 标准化与降维聚类分群的理解提到过：高变基因个数越多，PCs的数目越多，保留的数据信息也就越多，更有可能引入噪音，运行速度也越慢。但是也不能太少，否则会丢失很多数据信息。
+# 所以有可能是增加的高变基因使得T细胞和B细胞之间有更多的差异，可以分开。而PCA维数的增加把T细胞分成了两个部分，可能是由于有噪音引入。
+
+# 不会影响分群，只会影响UMAP可视化的参数：
+# UMAP参数中的n_neighbors，min_dist和dims这三个参数，是不会影响细胞的本质属性的，只是影响UMAP可视化的图。可以看到减小的min_dist和增加的dims会把T细胞和B细胞分开。n_neighbors的影响不大。
