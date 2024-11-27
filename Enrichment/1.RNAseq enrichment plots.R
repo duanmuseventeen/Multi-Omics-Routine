@@ -20,7 +20,7 @@ mytheme <- theme_bw() +
         axis.title.y = element_text(vjust = 4),
         legend.position = "right")
 
-# ERA enrichment----------------------------------------------------------------
+# ORA enrichment----------------------------------------------------------------
 # In general, geneList are names of DEGs 
 ERA_KEGG <- enrichKEGG(
   gene = geneList,
