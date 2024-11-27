@@ -150,7 +150,7 @@ if(GSE49541){
       dplyr::select(colnames(exprs(GSE49541[[1]]))) %>% colMeans(na.rm = T)})
   colnames(expr_GSE49541_final) <- tmp$SYMBOL
   save(GSE49541, meta_GSE49541, GPL570_anno, expr_GSE49541, expr_GSE49541_final,
-       file = "C:/D/Labmates/孙小萌/2024-11-25 GSE197112/GSE49541/GSE49541_GPL570_A.Rdata")
+       file = "GSE49541/GSE49541_GPL570_A.Rdata")
   
   # DEA by limma----------------------------------------------------------------
   # Because the Experiment type	of GSE49541 is 'Expression profiling by array',
