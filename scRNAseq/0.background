@@ -6,3 +6,6 @@ A2. Please convert the counts data into dgMatrix before create SeuratObject
 raw.data <- as.matrix(raw.data)
 raw.data <- Matrix(raw.data, sparse = TRUE)
 sce.all <- CreateSeuratObject(counts = raw.data, data = raw.data)
+
+Q3. Warning: Default search for "data" layer in "RNA" assay yielded no results; utilizing "counts" layer instead.
+A3. This is because NormalizeData is not run.
