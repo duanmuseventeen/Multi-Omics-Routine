@@ -18,7 +18,7 @@ VlnPlot(object = RefMerge, features = Targetgene, slot = "counts", log = TRUE, g
 
 # Subset
 RefMerge <- RegroupIdents(RefMerge, metadata = "Names")
-CM <- subset(RefMerge, subset = Names == "CM")
+CM <- subset(RefMerge, subset = Names == "Cardiomyocytes")
 
 Targetgene <- CM@assays$RNA$counts[rownames(CM@assays$RNA$counts) == Targetgene]
 group <- CM@meta.data$condition
