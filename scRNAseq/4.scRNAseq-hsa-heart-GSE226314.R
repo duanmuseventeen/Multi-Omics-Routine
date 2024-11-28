@@ -87,3 +87,22 @@ wilcox.test(Donor@assays$RNA$counts[rownames(Donor@assays$RNA$counts) == Targetg
 # 
 # Continuum analysis with ejection fraction
 # To connect transcriptional changes with patient ejection fraction within the LVAD cohort, we performed a simple linear regression of ejection fraction versus (1) pseudobulk expression of genes of interest in specific cell types, such as CD163 and RUNX1, and (2) cell-type-specific pseudobulk gene set score of recovery upregulated and downregulated genes. Pseudobulk aggregation was done at the sample level as defined above. Regressions were performed in Prism 9 (GraphPad Software); R2 was computed for goodness of fit; and P value indicates whether the slope is non-zero (F-test).
+
+dat2pseudo <- data.frame(
+  ID = CM@meta.data$orig.ident,
+  disease = CM@meta.data$disease,
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+) %>% 
+  filter(!duplicated(ID)) %>% 
+  mutate(Targetgene = NA)
+
+for (i in unique(CM@meta.data$orig.ident)) {
+  tmp <- subset(x = sce.all, subset = orig.ident == i) 
+  dat2pseudo$Targetgene[dat2pseudo$ID == i] <- 
+    tmp@assays$RNA$counts[rownames(tmp@assays$RNA$counts) == Targetgene] %>% mean
+  print(i)
+}
+
+dat2pseudo %>% group_by(disease) %>% mutate(mean = mean(Targetgene)) %>% distinct(mean)
+wilcox.test(Targetgene ~ disease, data = dat2pseudo)
