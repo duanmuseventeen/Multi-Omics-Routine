@@ -50,3 +50,23 @@ wilcox.test(Normal.Target, HF.Target)
 # Differential Analysis for all genes
 CM <- RegroupIdents(CM, metadata = "dataset")
 FindMarkers(CM, group.by = "dataset", ident.1 = 'hca', ident.2 = 'aort_sten', logfc.threshold = 0, min.pct = 0)
+
+# Pseudobulk Differential Analysis
+dat2pseudo <- data.frame(
+  ID = CM@meta.data$orig.ident,
+  disease = CM@meta.data$dataset,
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+) %>% 
+  filter(!duplicated(ID)) %>% 
+  mutate(Targetgene = NA)
+
+for (i in unique(CM@meta.data$orig.ident)) {
+  tmp <- subset(x = sce.all, subset = orig.ident == i) 
+  dat2pseudo$Targetgene[dat2pseudo$ID == i] <- 
+    tmp@assays$RNA$counts[rownames(tmp@assays$RNA$counts) == Targetgene] %>% mean
+  print(i)
+}
+
+dat2pseudo %>% group_by(disease) %>% mutate(mean = mean(Targetgene)) %>% distinct(mean)
+wilcox.test(Targetgene ~ disease, data = dat2pseudo)
