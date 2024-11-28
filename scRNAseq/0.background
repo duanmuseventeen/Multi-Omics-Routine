@@ -1,2 +1,8 @@
 Q1. Can I integrate single-cell and single-nuclei datasets?
 A1. Yes. Please refer to 35959412.
+
+Q2. ERROR: 'VST.default' is not implemented yet
+A2. Please convert the counts data into dgMatrix before create SeuratObject
+raw.data <- as.matrix(raw.data)
+raw.data <- Matrix(raw.data, sparse = TRUE)
+sce.all <- CreateSeuratObject(counts = raw.data, data = raw.data)
