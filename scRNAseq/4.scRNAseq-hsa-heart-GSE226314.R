@@ -100,7 +100,7 @@ dat2pseudo <- data.frame(
 for (i in unique(CM@meta.data$orig.ident)) {
   tmp <- subset(x = sce.all, subset = orig.ident == i) 
   dat2pseudo$Targetgene[dat2pseudo$ID == i] <- 
-    tmp@assays$RNA$counts[rownames(tmp@assays$RNA$counts) == Targetgene] %>% mean
+    tmp@assays$RNA$counts[rownames(tmp@assays$RNA$counts) == Targetgene] %>% sum
   print(i)
 }
 
