@@ -20,9 +20,29 @@ VlnPlot(object = RefMerge, features = Targetgene, slot = "counts", log = TRUE, g
 RefMerge <- RegroupIdents(RefMerge, metadata = "Names")
 CM <- subset(RefMerge, subset = Names == "Cardiomyocytes")
 
+# Differential Analysis
 Targetgene <- CM@assays$RNA$counts[rownames(CM@assays$RNA$counts) == Targetgene]
 group <- CM@meta.data$condition
 
 mean(Targetgene[group == "Donor"])
 mean(Targetgene[group != "Donor"])
 wilcox.test(Targetgene ~ group)
+
+dat2pseudo <- data.frame(
+    ID = CM@meta.data$orig.ident,
+    disease = CM@meta.data$condition,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  ) %>% 
+    filter(!duplicated(ID)) %>% 
+    mutate(Targetgene = NA)
+  
+  for (i in unique(CM@meta.data$orig.ident)) {
+    tmp <- subset(x = CM, subset = orig.ident == i) 
+    dat2pseudo$Targetgene[dat2pseudo$ID == i] <- 
+      tmp@assays$RNA$counts[rownames(tmp@assays$RNA$counts) == Targetgene] %>% sum
+    print(i)
+    }
+  
+  dat2pseudo %>% group_by(disease) %>% mutate(mean = mean(Targetgene)) %>% distinct(mean)
+  wilcox.test(Targetgene ~ disease, data = dat2pseudo)
