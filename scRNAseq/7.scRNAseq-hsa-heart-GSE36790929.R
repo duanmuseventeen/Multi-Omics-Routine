@@ -137,7 +137,7 @@ if(FALSE){
           # group.by = "orig.ident", 
           label = TRUE, pt.size = 0.5) + NoLegend()
 }
-# Integration bt harmony--------------------------------------------------------
+# Integration by harmony--------------------------------------------------------
 # Integration first, then FindNeighbors and FindClusters
 # UMAP is used more commonly
 sce.all.harmony <- RunHarmony(h.ICM.l.v, 
