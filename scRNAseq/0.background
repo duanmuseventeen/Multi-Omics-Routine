@@ -9,3 +9,7 @@ sce.all <- CreateSeuratObject(counts = raw.data, data = raw.data)
 
 Q3. Warning: Default search for "data" layer in "RNA" assay yielded no results; utilizing "counts" layer instead.
 A3. This is because NormalizeData is not run.
+
+Q4. Can CITE-seq determine the level of protein in the cells?
+A4. No. CITE-seq only detects protein on the surface of cells.
+
