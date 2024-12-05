@@ -221,39 +221,6 @@ dev.off()
 if(TRUE){
   # Principal-component (PC) analysis was performed   on the 2,000 most variable genes, and the first 20 PCs were used for t-SNE and UMAP for data embedding into two dimensions.
   
-  # Filter doublets & Investigate batch effect by Shannon Index
-  if(FALSE){
-    sce.sce <- as.SingleCellExperiment(sce)
-    sce.sce <- scDblFinder(sce.sce, dbr.sd=1)
-    
-    sce.sce <- entropy(sce.sce, group = "orig.ident", k = 20)
-    
-    sce.sce <- as.Seurat(sce.sce)
-    sce.sce <- subset(sce.sce, scDblFinder.class == "singlet")
-  }
-  
-  if(TRUE){
-    sce.sce <- sce
-    sce.sce[["RNA"]] <- JoinLayers(sce.sce[["RNA"]])
-    sce.sce[["ADT"]] <- JoinLayers(sce.sce[["ADT"]])
-    
-    sce.sce <- as.SingleCellExperiment(sce.sce)
-    sce.sce <- scDblFinder(sce.sce, dbr.sd=1)
-    
-    sce.sce <- entropy(sce.sce, group = "orig.ident", k = 20)
-    
-    sce.sce <- as.Seurat(sce.sce)
-    sce.sce <- subset(sce.sce, scDblFinder.class == "singlet")
-  }
-  
-  n = sce[["RNA"]]@assays$RNA@layers$`counts.Gene Expression`@Dim[1]
-  rownames(sce[[i]]@assays$RNA@layers$`counts.Gene Expression`)<-Features(sce[[i]]@assays$RNA)[1:n]
-  colnames(sce[[i]]@assays$RNA@layers$`counts.Gene Expression`)<-Cells(sce[[i]]@assays$RNA)
-  seurat_rna <- CreateSeuratObject(counts = sce[[i]]@assays$RNA@layers[["counts.Gene Expression"]])
-  sce <- as.SingleCellExperiment(seurat_rna)
-  sce <- scDblFinder(sce, dbr.sd = 1)
-  sce <- as.Seurat(sce,data = NULL,assay = NULL,project = "SingleCellExperiment")
-  
   # Cluster---------------------------------------------------------------------
   pdf("clustree without integrating data.pdf")
   sce <- FindNeighbors(sce, reduction = "pca", dims = 1:20)
