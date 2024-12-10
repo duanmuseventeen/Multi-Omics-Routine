@@ -20,6 +20,8 @@ conda install -y -c bioconda gatk4 bwa
 conda install -y -c bioconda star
 conda install -y -c bioconda cutadapt
 conda install -y -c bioconda trim-galore
+pip install scanpy
+conda install -y -c conda-forge leidenalg
 pip install macs3
 pip install --user RGT
 pip install harmony-pytorch
