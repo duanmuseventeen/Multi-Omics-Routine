@@ -22,6 +22,8 @@ conda install -y -c bioconda cutadapt
 conda install -y -c bioconda trim-galore
 pip install macs3
 pip install --user RGT
+pip install harmony-pytorch
+pip install cellbender
 
 # python2.7
 conda activate python2.7
