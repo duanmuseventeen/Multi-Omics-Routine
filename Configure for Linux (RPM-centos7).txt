@@ -24,6 +24,7 @@ pip install macs3
 pip install --user RGT
 pip install harmony-pytorch
 pip install cellbender
+pip3 install -U ndd
 
 # python2.7
 conda activate python2.7
