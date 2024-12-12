@@ -17,3 +17,8 @@ Q5. I get the following warning, when run merge func: Some cell names are duplic
 A5. Use add.cell.ids parameter to avoid this problem.
 For detail: https://satijalab.github.io/seurat-object/reference/merge.Seurat.html
 When merging Seurat objects, the merge procedure will merge the Assay level counts and potentially the data slots (depending on the merge.data parameter). It will also merge the cell-level meta data that was stored with each object and preserve the cell identities that were active in the objects pre-merge. The merge will optionally merge reductions depending on the values passed to merge.dr if they have the same name across objects. Here the embeddings slots will be merged and if there are differing numbers of dimensions across objects, only the first N shared dimensions will be merged. The feature loadings slots will be filled by the values present in the first object.The merge will not preserve graphs, logged commands, or feature-level metadata that were present in the original objects. If add.cell.ids isn't specified and any cell names are duplicated, cell names will be appended with _X, where X is the numeric index of the object in c(x, y)
+
+Q6. When run Read10X(...),
+Error in cbind.Matrix(x, y, deparse.level = 0L) :
+  number of rows of matrices must match
+A6. This error is induced by different number of features among sc files.
