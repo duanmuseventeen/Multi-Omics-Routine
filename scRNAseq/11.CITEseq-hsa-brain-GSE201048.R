@@ -85,7 +85,7 @@ for i in $(seq 1 11);
   sed -i -e "/32755/d" -i -e "/32756/d" Sample${i}/matrix.mtx
   gzip Sample${i}/matrix.mtx
   done
-# Load ata----------------------------------------------------------------------
+# Load data----------------------------------------------------------------------
 # # sample5 sample6 have 16 ADTs, whereas others have 18 ADTs
 # rownames(sample1[[2]])
 # [1] "CD3_TotalSeqB"    "CD4_TotalSeqB"    "CD8a_TotalSeqB"   "CD14_TotalSeqB"
@@ -217,7 +217,7 @@ pdf("QC-PCA.pdf")
 DimHeatmap(sce, dims = 1:6, cells = 500, balanced = TRUE)
 ElbowPlot(sce, reduction = "pca", ndims = 50)
 dev.off()
-# Not Ingegrate Data-----------------------------------------
+# Not Integrate Data-----------------------------------------
 if(TRUE){
   # Principal-component (PC) analysis was performed   on the 2,000 most variable genes, and the first 20 PCs were used for t-SNE and UMAP for data embedding into two dimensions.
   
