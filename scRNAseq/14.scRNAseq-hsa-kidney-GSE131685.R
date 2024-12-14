@@ -3,7 +3,7 @@
 
 # GSE131685
 
-# normal adjacetn tissue
+# normal adjacet tissue
 
 # Fresh human kidney samples (Supplementary Table S1) were collected at the First 
 # Affiliated Hospital of Guangxi Medical University and Affiliated Tumour Hospital of 
