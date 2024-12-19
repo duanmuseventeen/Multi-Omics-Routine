@@ -21,6 +21,7 @@ conda install -y -c bioconda star
 conda install -y -c bioconda cutadapt
 conda install -y -c bioconda trim-galore
 conda install -y -c trimmomatic
+conda install -y -c hcc aspera-cli
 pip install scanpy
 conda install -y -c conda-forge leidenalg
 pip install macs3
