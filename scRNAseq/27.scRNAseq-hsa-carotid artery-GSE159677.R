@@ -302,15 +302,11 @@ p4 <- DimPlot(scobj.h.sc, reduction = "UMAP",
               label = TRUE, pt.size = 0.5) 
 p_out <- p1 + p2 + p3 + p4 + plot_layout(nrow = 2, ncol = 2)
 
-p5 <- RidgePlot(object = scobj.h.sc, group.by = "cell_type", features = "NEU1")
-p6 <- VlnPlot(object = scobj.h.sc, group.by = "cell_type", features = "NEU1")
-
-p7 <- RidgePlot(object = scobj.h.sc, group.by = "cell_type", features = "COL1A1")
-p8 <- VlnPlot(object = scobj.h.sc, group.by = "cell_type", features = "COL1A1")
+p5 <- RidgePlot(object = scobj.h.sc, group.by = "cell_type", features = "***")
+p6 <- VlnPlot(object = scobj.h.sc, group.by = "cell_type", features = "***")
 
 save(scobj.h.sc, file = "GSE159677-scobj.h.sc.annot.Rdata")
 ggsave(p_out, filename = "GSE1159677.pdf", width=10, height=10, units="in")
-ggsave(p5, filename = "GSE115469-Ridge-NEU1.pdf", width=5, height=5, units="in")
-ggsave(p6, filename = "GSE115469-Vln-NEU1.pdf", width=5, height=5, units="in")
-ggsave(p7, filename = "GSE115469-Ridge-COL1A1.pdf", width=5, height=5, units="in")
-ggsave(p8, filename = "GSE115469-Vln-COL1A1.pdf", width=5, height=5, units="in")
+ggsave(p5, filename = "GSE115469-Ridge-***.pdf", width=5, height=5, units="in")
+ggsave(p6, filename = "GSE115469-Vln-***.pdf", width=5, height=5, units="in")
+
