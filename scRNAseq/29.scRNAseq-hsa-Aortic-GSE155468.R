@@ -22,6 +22,11 @@ Aortic valve regurgitation	No	No	Yes	Yes	Yes	Yes	No	Yes	No	No	No
 BAV	No	Yes	Yes	No	No	No	NA	No	NA	NA	No
 Re-operation	No	No	Yes *	No	No	No	Yes **	No	No	No	No
 
+# Reference---------------------------------------------------------------------
+# https://cloud.tencent.com/developer/article/2317475
+# https://www.jianshu.com/p/784a04c49873
+# https://blog.csdn.net/weixin_40695088/article/details/136358659
+# https://www.gsea-msigdb.org/gsea/msigdb/human/geneset/GOBP_GLYCOSYLATION.html
 
 rm(list = ls());gc()
 # Load pkgs---------------------------------------------------------------------
@@ -158,9 +163,6 @@ if(TRUE){
   scobj.h.sc <- subset(scobj.ds.harmony, scDblFinder.class == "singlet")
 }
 # AUCELL------------------------------------------------------------------------
-# https://www.jianshu.com/p/784a04c49873
-# https://blog.csdn.net/weixin_40695088/article/details/136358659
-# https://www.gsea-msigdb.org/gsea/msigdb/human/geneset/GOBP_GLYCOSYLATION.html
 require(GSEABase)
 
 #### INFLAMATION--------------------------------------------------------------
