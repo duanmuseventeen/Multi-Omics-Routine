@@ -1,10 +1,11 @@
 # optimization of scRNAseq graphics
 # use data from GSE115469
 
-# load pkgs---------------------------------------------------------------------
+# R-----------------------------------------------------------------------------
+## load pkgs---------------------------------------------------------------------
 library(tidydr) # Y叔
 library(ggplot2)
-# 1 axis------------------------------------------------------------------------
+## 1 axis------------------------------------------------------------------------
 # https://zhuanlan.zhihu.com/p/669051636
 DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = TRUE, pt.size = 1.2) + 
   theme_dr(xlength = 0.2, 
@@ -14,7 +15,7 @@ DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = TRUE, pt
         axis.title = element_text(face = 2,hjust = 0.03)) +
   NoLegend()
 
-# 2 highlight cluster-----------------------------------------------------------
+## 2 highlight cluster-----------------------------------------------------------
 # method 1:
 # https://blog.csdn.net/qq_42090739/article/details/123470793
 # please do that in AI or PowerPoint
@@ -49,7 +50,7 @@ ggplot(dat.plot, aes(x = umap_1, y = umap_2, fill = cell_type, color = cell_type
     panel.grid = element_blank(),
     axis.line = element_line(arrow = arrow(type = "closed")),
     axis.title = element_text(face = 2,hjust = 0.03))
-# 3 label-----------------------------------------------------------------------
+## 3 label-----------------------------------------------------------------------
 require(ggrepel)
 
 dat.plot <- scobj.h.sc@reductions$UMAP@cell.embeddings %>% 
@@ -82,3 +83,13 @@ DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = FALSE, p
 
 
 
+
+## 4 Contours-------------------------------------------------------------------
+# Refer to 39346916, in my opinion, contours match t-sne better
+DimPlot(scobj.h.sc, reduction = "TSNE", group.by = "cell_type", pt.size = 1.5)+
+  stat_density_2d(aes(x = tSNE_1, y = tSNE_2), linemitre = 10, col = "black")
+## *example----------------------------------------------------------------------
+# https://cloud.tencent.com/developer/article/2317517
+# python------------------------------------------------------------------------
+# https://blog.csdn.net/wcy1995427/article/details/140009111
+# https://www.cnblogs.com/starlitnightly/p/18262565
