@@ -167,19 +167,31 @@ require(GSEABase)
 AIR <- getGmt("https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_ACTIVATION_OF_IMMUNE_RESPONSE&fileType=gmt")
 
 # select counts as input
-cell_rankings <- AUCell_buildRankings(scobj.h.sc@assays$SCT$counts)
+cell_rankings <- AUCell_buildRankings(
+  scobj.h.sc@assays$SCT$counts,
+  plotStats = TRUE,
+  verbose = TRUE)
 # Quantiles for the number of genes detected by cell: 
 #   (Non-detected genes are shuffled at the end of the ranking. Keep it in mind when choosing the threshold for calculating the AUC).
 # min   1%   5%  10%  50% 100% 
 # 208  780  876  959 1618 4540 
 
-cell_AUC <- AUCell_calcAUC(geneSets = AIR, rankings = cell_rankings)
+cell_AUC <- AUCell_calcAUC(geneSets = AIR, rankings = cell_rankings, aucMaxRank = 5)
+
+# geneSets: List of gene-sets (or signatures) to test in the cells. The gene-sets should be provided as GeneSet, GeneSetCollection or character list (see examples).
+# aucMaxRank: In a simplified way, the AUC value represents the fraction of genes, within the top X genes in the ranking, that are included in the signature. The parameter 'aucMaxRank' allows to modify the number of genes (maximum ranking) that is used to perform this computation. By default, it is set to 5% of the total number of genes in the rankings. Common values may range from 1 to 20%.
+
 # Genes in the gene sets NOT available in the dataset: 
 #   GOBP_ACTIVATION_OF_IMMUNE_RESPONSE: 	63 (11% of 583)
 
+AUCell_plotHist(cell_AUC["GOBP_ACTIVATION_OF_IMMUNE_RESPONSE",], nBreaks = 40)
+
 cell_assignment <- AUCell_exploreThresholds(cell_AUC, plotHist = TRUE, assign=TRUE)
 
-cell_assignment$GOBP_ACTIVATION_OF_IMMUNE_RESPONSE$aucThr$selected
+# newAssignments <- AUCell_assignCells(cell_AUC, getThresholdSelected(cell_assignment))
+# getAssignments(newAssignments)
+
+# getThresholdSelected is equal to cell_assignment$GOBP_ACTIVATION_OF_IMMUNE_RESPONSE$aucThr$selected
 
 scobj.h.sc@meta.data$id <- rownames(scobj.h.sc@meta.data)
 scobj.h.sc@meta.data <- scobj.h.sc@meta.data %>% 
