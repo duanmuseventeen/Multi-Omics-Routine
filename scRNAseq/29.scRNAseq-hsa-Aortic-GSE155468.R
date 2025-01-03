@@ -166,6 +166,11 @@ require(GSEABase)
 #### INFLAMATION--------------------------------------------------------------
 AIR <- getGmt("https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_ACTIVATION_OF_IMMUNE_RESPONSE&fileType=gmt")
 
+# AIR@.Data[[1]]@geneIds %>% length
+# data.table::fread("GOBP_ACTIVATION_OF_IMMUNE_RESPONSE.v2024.1.Hs.gmt") %>% 
+#   colnames %>% 
+#   length
+
 # select counts as input
 cell_rankings <- AUCell_buildRankings(
   scobj.h.sc@assays$SCT$counts,
@@ -176,7 +181,15 @@ cell_rankings <- AUCell_buildRankings(
 # min   1%   5%  10%  50% 100% 
 # 208  780  876  959 1618 4540 
 
+# 1
 cell_AUC <- AUCell_calcAUC(geneSets = AIR, rankings = cell_rankings, aucMaxRank = 5)
+# 2
+genelist <- data.table::fread("GOBP_ACTIVATION_OF_IMMUNE_RESPONSE.v2024.1.Hs.gmt") %>% 
+  colnames
+cell_AUC <- AUCell_calcAUC(
+  geneSets = genelist[-c(1:2)], 
+  rankings = cell_rankings, 
+  aucMaxRank = ceiling(0.05 * nrow(cell_rankings)))
 
 # geneSets: List of gene-sets (or signatures) to test in the cells. The gene-sets should be provided as GeneSet, GeneSetCollection or character list (see examples).
 # aucMaxRank: In a simplified way, the AUC value represents the fraction of genes, within the top X genes in the ranking, that are included in the signature. The parameter 'aucMaxRank' allows to modify the number of genes (maximum ranking) that is used to perform this computation. By default, it is set to 5% of the total number of genes in the rankings. Common values may range from 1 to 20%.
