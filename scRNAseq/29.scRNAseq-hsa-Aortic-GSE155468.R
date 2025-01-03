@@ -238,6 +238,24 @@ scobj.h.sc@meta.data <- scobj.h.sc@meta.data %>%
     TRUE ~ FALSE))
 
 DimPlot(scobj.h.sc, group.by = "GO_GLYCOSYLATION", label = TRUE)
+# AddModuleScore----------------------------------------------------------------
+require(msigdbr)
+
+AIR <- getGmt("https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_ACTIVATION_OF_IMMUNE_RESPONSE&fileType=gmt")
+AIR@.Data[[1]]@geneIds
+
+# if anyone gene in gmt are not involved in scobj, the function cannot be run
+AIR.filtered <- AIR@.Data[[1]]@geneIds[AIR@.Data[[1]]@geneIds %in% rownames(scobj.h.sc)]
+
+scobj.h.sc <- AddModuleScore(
+  scobj.h.sc,
+  features = list(AIR.filtered), # the format of input geneset is vital
+  ctrl = 100,
+  name = "SEURAT_GOBP_ACTIVATION_OF_IMMUNE_RESPONSE")
+
+scobj.h.sc@meta.data$SEURAT_GOBP_ACTIVATION_OF_IMMUNE_RESPONSE1
+
+FeaturePlot(scobj.h.sc, features = "SEURAT_GOBP_ACTIVATION_OF_IMMUNE_RESPONSE1")
 # Annotation--------------------------------------------------------------------
 scobj.h.sc <- RegroupIdents(scobj.h.sc, metadata = "SCT_snn_res.0.3")
 
