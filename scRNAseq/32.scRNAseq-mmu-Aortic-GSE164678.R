@@ -142,12 +142,17 @@ if(TRUE){
   # killer cells (Cd3g, Gzma), and B cells (Cd79a, Ms4a1)4, 5, 16 (Figure 1B and 
   # Supplemental Figure II).
   
-  SMCs <- c('Myh11', 'Acta2') # 0 4
-  fibroblasts <- c('Col1a1', 'Fn1', 'Lama2', 'Tshz2') # ?0 1 ?4 ?5
-  EC <- c('Cdh5', 'Vwf', 'Pecam1') # 8 10
-  macrophages <- c('Cd163','Lyz2') # 2 3 6 9
-  neutrophils <- c('S100a8', 'S100a9') # 7
-  DC <- c('Klrd1', 'Flt3') # 11
+  SMCs <- c('Myh11', 'Acta2','Tagln','Aqp1') # 0 4
+  fibroblasts <- c(
+    'Dcn', 'Sfrp4', 'Lum', 'Col1a1',
+    'Col1a1', 'Pclaf') # ?0 1 ?4 ?5
+  EC <- c('Cdh5', 'Cldn5', 'Vwf', 'Pecam1') # 8 10
+  macrophages <- c(
+    'Pf4','Lyz2', 'Mrc1',
+    'Lyz2', 'Il1b', 'Mrc1',
+    'Stmn1') # 2 3 6 9
+  neutrophils <- c('S100a8', 'S100a9','Cxcr4','Cxcl2','Il1b','Mmp9','Cd14') # 7
+  DC <- c('Klrd1', 'Flt3', 'H2-Ab1') # 11
   T_and_NK <- c('Cd3g', 'Gzma') # 11
   B_cell <- c('Cd79a', 'Ms4a1', 'Cd19') # ?6
   cell_cycle <- c("Mki67", "Ccna2", "Ccnb1", "Pcna", "Top2a", "Mcm6")
@@ -157,7 +162,7 @@ VlnPlot(scobj.h.sc, features = fibroblasts, group.by = "SCT_snn_res.0.6", layer 
 
 scobj.h.sc@meta.data$cell_type <- "Unknown"
 scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(0, 4)] <- "SMC"
-scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(1)] <- "FB"
+scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(1, 5)] <- "FB"
 scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(2, 3, 6, 9)] <- "macrophages"
 scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(9)] <- "cell_cycle"
 scobj.h.sc@meta.data$cell_type[scobj.h.sc@meta.data$SCT_snn_res.0.6 %in% c(7)] <- "neutrophils"
