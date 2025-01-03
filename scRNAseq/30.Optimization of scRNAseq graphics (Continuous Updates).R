@@ -50,6 +50,14 @@ ggplot(dat.plot, aes(x = umap_1, y = umap_2, fill = cell_type, color = cell_type
     panel.grid = element_blank(),
     axis.line = element_line(arrow = arrow(type = "closed")),
     axis.title = element_text(face = 2,hjust = 0.03))
+# method 3----------------------------------------------------------------------
+DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = TRUE, 
+        pt.size = 1.2, 
+        cols.highlight = "pink",
+        cells.highlight = rownames(scobj.h.sc@meta.data)[scobj.h.sc@meta.data$cell_type == "Hepatocyte"]) + 
+  theme(panel.grid = element_blank(),
+        axis.title = element_text(face = 2,hjust = 0.03)) +
+  NoLegend()
 ## 3 label-----------------------------------------------------------------------
 require(ggrepel)
 
