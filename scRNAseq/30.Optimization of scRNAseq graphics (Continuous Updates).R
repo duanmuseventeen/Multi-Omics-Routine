@@ -76,18 +76,16 @@ DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = FALSE, p
         axis.title = element_text(face = 2,hjust = 0.03)) +
   NoLegend() 
 
-
-
-
-
-
-
-
-
 ## 4 Contours-------------------------------------------------------------------
 # Refer to 39346916, in my opinion, contours match t-sne better
 DimPlot(scobj.h.sc, reduction = "TSNE", group.by = "cell_type", pt.size = 1.5)+
   stat_density_2d(aes(x = tSNE_1, y = tSNE_2), linemitre = 10, col = "black")
+## 5 Density--------------------------------------------------------------------
+# BiocManager::install("Nebulosa")
+require(Nebulosa)
+
+plot_density(scobj.h.sc, "ACTB")
+plot_density(scobj.h.sc, c("ACTB","GAPDH"), joint = TRUE)
 ## *example----------------------------------------------------------------------
 # https://cloud.tencent.com/developer/article/2317517
 # python------------------------------------------------------------------------
