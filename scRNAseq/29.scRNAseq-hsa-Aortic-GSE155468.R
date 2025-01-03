@@ -92,6 +92,8 @@ scobj <- subset(
     percent.rp < 40 &
     percent.hb < 1)  
 
+VlnPlot(scobj, features = c("nFeature_RNA", "nCount_RNA","percent.mt","percent.rp","percent.hb"), ncol = 5)
+
 table(scobj@meta.data$orig.ident)
 # GSM4704931_Con4 GSM4704932_Con6 GSM4704933_Con9 GSM4704934_TAA1 GSM4704935_TAA2 
 # 2931            1006            3666            4988            3191 
@@ -107,8 +109,6 @@ table(scobj.ds@meta.data$orig.ident)
 # 2600            2600            2600            2600            2600 
 # GSM4704937_TAA4 GSM4704938_TAA5 GSM4704939_TAA6 GSM4704940_TAA7 GSM4704941_TAA8 
 # 2600            2600            2600            2600            2600 
-
-VlnPlot(scobj, features = c("nFeature_RNA", "nCount_RNA","percent.mt","percent.rp","percent.hb"), ncol = 5)
 
 scobj.ds <- scobj.ds %>% 
   SCTransform %>% # vst.flavor = 'v2', verbose = FALSE
