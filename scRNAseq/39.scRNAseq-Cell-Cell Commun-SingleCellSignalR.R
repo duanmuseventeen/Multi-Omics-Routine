@@ -20,6 +20,9 @@ The cellular networks can be exported in text files and graphML objects to be fu
 explored with Cytoscape (www.cytoscape.org), yEd (www.yworks.com), or 
 similar software tools.
 
+LRdb
+markers_default
+
 # Reference---------------------------------------------------------------------
 # https://github.com/saeyslab/nichenetr
 # https://github.com/saeyslab/nichenetr/blob/master/vignettes/seurat_wrapper.md
