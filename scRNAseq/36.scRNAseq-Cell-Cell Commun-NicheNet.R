@@ -1,32 +1,32 @@
 # NicheNet
-# use data from GSE115469
+# use data from GSE121893
 
-Learning to use nichenetr
-The following vignettes contain the explanation on how to perform a basic NicheNet analysis on a Seurat object. This includes prioritizing ligands and predicting target genes of prioritized ligands. We recommend starting with the step-by-step analysis, but we also demonstrate the use of a single wrapper function. This demo analysis takes only a few minutes to run.
-
-Perform NicheNet analysis starting from a Seurat object: step-by-step analysis:vignette("seurat_steps", package="nichenetr")
-Perform NicheNet analysis starting from a Seurat object:vignette("seurat_wrapper", package="nichenetr")
-Case study on HNSCC tumor which demonstrates the flexibility of NicheNet. Here, the gene set of interest was determined by the original authors, and the expression data is a matrix rather than a Seurat object.
-
-NicheNet’s ligand activity analysis on a gene set of interest: vignette("ligand_activity_geneset", package="nichenetr")
-The following vignettes contain explanation on how to do some follow-up analyses after performing the most basic analysis:
-  
-  Prioritization of ligands based on expression values: vignette("seurat_steps_prioritization", package="nichenetr")
-Inferring ligand-to-target signaling paths: vignette("ligand_target_signaling_path", package="nichenetr")
-Assess how well top-ranked ligands can predict a gene set of interest: vignette("target_prediction_evaluation_geneset", package="nichenetr")
-Single-cell NicheNet’s ligand activity analysis: vignette("ligand_activity_single_cell", package="nichenetr")
-If you want to make a circos plot visualization of the NicheNet output to show active ligand-target links between interacting cells, you can check following vignettes:
-  
-  Seurat Wrapper + circos visualization:vignette("seurat_wrapper_circos", package="nichenetr").
-HNSCC case study + double circos visualization:vignette("circos", package="nichenetr").
-People interested in building their own models or benchmarking their own models against NicheNet can read one of the following vignettes:
-  
-  Model construction: vignette("model_construction", package="nichenetr")
-Using LIANA ligand-receptor databases to construct the ligand-target model: vignette("model_construction_with_liana", package="nichenetr")
-Model evaluation: target gene and ligand activity prediction: vignette("model_evaluation", package="nichenetr")
-Parameter optimization via NSGAII-R: vignette("parameter_optimization", package="nichenetr")
-FAQ
-Check the FAQ page at FAQ NicheNet: vignette("faq", package="nichenetr")
+# Learning to use nichenetr
+# The following vignettes contain the explanation on how to perform a basic NicheNet analysis on a Seurat object. This includes prioritizing ligands and predicting target genes of prioritized ligands. We recommend starting with the step-by-step analysis, but we also demonstrate the use of a single wrapper function. This demo analysis takes only a few minutes to run.
+# 
+# Perform NicheNet analysis starting from a Seurat object: step-by-step analysis:vignette("seurat_steps", package="nichenetr")
+# Perform NicheNet analysis starting from a Seurat object:vignette("seurat_wrapper", package="nichenetr")
+# Case study on HNSCC tumor which demonstrates the flexibility of NicheNet. Here, the gene set of interest was determined by the original authors, and the expression data is a matrix rather than a Seurat object.
+# 
+# NicheNet’s ligand activity analysis on a gene set of interest: vignette("ligand_activity_geneset", package="nichenetr")
+# The following vignettes contain explanation on how to do some follow-up analyses after performing the most basic analysis:
+#   
+#   Prioritization of ligands based on expression values: vignette("seurat_steps_prioritization", package="nichenetr")
+# Inferring ligand-to-target signaling paths: vignette("ligand_target_signaling_path", package="nichenetr")
+# Assess how well top-ranked ligands can predict a gene set of interest: vignette("target_prediction_evaluation_geneset", package="nichenetr")
+# Single-cell NicheNet’s ligand activity analysis: vignette("ligand_activity_single_cell", package="nichenetr")
+# If you want to make a circos plot visualization of the NicheNet output to show active ligand-target links between interacting cells, you can check following vignettes:
+#   
+#   Seurat Wrapper + circos visualization:vignette("seurat_wrapper_circos", package="nichenetr").
+# HNSCC case study + double circos visualization:vignette("circos", package="nichenetr").
+# People interested in building their own models or benchmarking their own models against NicheNet can read one of the following vignettes:
+#   
+#   Model construction: vignette("model_construction", package="nichenetr")
+# Using LIANA ligand-receptor databases to construct the ligand-target model: vignette("model_construction_with_liana", package="nichenetr")
+# Model evaluation: target gene and ligand activity prediction: vignette("model_evaluation", package="nichenetr")
+# Parameter optimization via NSGAII-R: vignette("parameter_optimization", package="nichenetr")
+# FAQ
+# Check the FAQ page at FAQ NicheNet: vignette("faq", package="nichenetr")
 
 # Reference---------------------------------------------------------------------
 # https://github.com/saeyslab/nichenetr
@@ -35,6 +35,11 @@ Check the FAQ page at FAQ NicheNet: vignette("faq", package="nichenetr")
 # http://www.cellchat.org/
 # https://github.com/jinworks/CellChat/
 # https://www.jianshu.com/p/30c6e8a24415
+# 常用的细胞通讯软件：
+# CellphoneDB：是公开的人工校正的，储存受体、配体以及两种相互作用的数据库。此外，还考虑了结构组成，能够描述异构复合物。（配体-受体+多聚体）
+# iTALK：通过平均表达量方式，筛选高表达的胚体和受体，根据结果作圈图。（配体-受体）
+# CellChat：CellChat将细胞的基因表达数据作为输入，并结合配体受体及其辅助因子的相互作用来模拟细胞间通讯。（配体-受体+多聚体+辅因子）
+# NicheNet // NicheNet多样本分析 // 目标基因的配体和靶基因活性预测：通过将相互作用细胞的表达数据与信号和基因调控网络的先验知识相结合来预测相互作用细胞之间的配体-靶标联系的方法。( 配体-受体+信号通路）
 # https://www.jianshu.com/p/03f9c2f3ee4f
 # https://www.jianshu.com/p/38a9376f5286
 # https://github.com/Teichlab/cellphonedb
@@ -63,10 +68,158 @@ library(celltalker)
 # devtools::install_github("mkarikom/RSoptSC")
 library(RSoptSC)
 # Load data---------------------------------------------------------------------
-load("GSE115469-scobj.h.sc.annot.Rdata")
+load("GSE121893-sce.all.harmony.annot.Rdata")
 # NicheNetR=====================================================================
+lr_network <- readRDS("lr_network_human_21122021.rds")
+ligand_target_matrix <- readRDS("ligand_target_matrix_nsga2r_final.rds")
+weighted_networks <- readRDS("weighted_networks_nsga2r_final.rds")
 
+lr_network <- lr_network %>% distinct(from, to)
 
+sce.all.harmony <- RegroupIdents(sce.all.harmony, "cell_type")
+
+# nichenet_output_agnostic <- nichenet_seuratobj_aggregate(
+#   seurat_obj = scobj.h.sc, 
+#   sender = "undefined",
+#   receiver = "CM", 
+#   condition_colname = "disease",
+#   condition_oi = "HF",
+#   condition_reference = "N",
+#   expression_pct = 0.05,
+#   ligand_target_matrix = ligand_target_matrix,
+#   lr_network = lr_network,
+#   weighted_networks = weighted_networks
+# )
+
+nichenet_output <- nichenet_seuratobj_aggregate(
+  seurat_obj = sce.all.harmony, 
+  sender = "all", #The sender argument should be 'all' or 'undefined' or an identity class of your seurat object
+  receiver = "CM", 
+  condition_colname = "disease",
+  condition_oi = "HF",
+  condition_reference = "N",
+  expression_pct = 0.05,
+  ligand_target_matrix = ligand_target_matrix,
+  lr_network = lr_network,
+  weighted_networks = weighted_networks
+)
+## [1] "Read in and process NicheNet's networks"
+## [1] "Define expressed ligands and receptors in receiver and sender cells"
+## [1] "Perform DE analysis in receiver cell"
+## [1] "Perform NicheNet ligand activity analysis"
+## [1] "Infer active target genes of the prioritized ligands"
+## [1] "Infer receptors of the prioritized ligands"
+## [1] "Perform DE analysis in sender cells"
+
+names(nichenet_output)
+[1] "ligand_activities"                      "top_ligands"                           
+[3] "top_targets"                            "top_receptors"                         
+[5] "ligand_target_matrix"                   "ligand_target_heatmap"                 
+[7] "ligand_target_df"                       "ligand_expression_dotplot"             
+[9] "ligand_differential_expression_heatmap" "ligand_activity_target_heatmap"        
+[11] "ligand_receptor_matrix"                 "ligand_receptor_heatmap"               
+[13] "ligand_receptor_df"                     "geneset_oi"                            
+[15] "background_expressed_genes" 
+
+nichenet_output$ligand_activities
+# A tibble: 366 × 6
+test_ligand auroc  aupr aupr_corrected  pearson  rank
+<chr>       <dbl> <dbl>          <dbl>    <dbl> <dbl>
+  1 ADM         0.490 0.138         0.0254  0.0433      1
+2 TGFB1       0.505 0.136         0.0238  0.0697      2
+3 MPDZ        0.500 0.136         0.0234 -0.00626     3
+4 FGF2        0.483 0.136         0.0233  0.0699      4
+5 BMP7        0.487 0.135         0.0222  0.0455      5
+6 EDIL3       0.497 0.134         0.0219 -0.00806     6
+7 JAM2        0.496 0.134         0.0219 -0.00415     7
+8 IFITM1      0.494 0.134         0.0213  0.0101      8
+9 LAMA4       0.498 0.133         0.0205 -0.00843     9
+10 NEO1        0.495 0.132         0.0196 -0.0128     10
+# ℹ 356 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+nichenet_output$ligand_expression_dotplot
+
+nichenet_output$ligand_differential_expression_heatmap
+
+nichenet_output$ligand_target_heatmap
+
+nichenet_output$ligand_target_matrix %>% .[1:10,1:6]
+CCL21 COX7B2        HPR IGKC     ADAM19     BHLHE40
+COL6A6     0      0 0.00000000    0 0.00000000 0.000000000
+LUM        0      0 0.00000000    0 0.00000000 0.000000000
+S100A8     0      0 0.00000000    0 0.00000000 0.015795959
+EFNA1      0      0 0.00000000    0 0.00000000 0.000000000
+EFNB2      0      0 0.00000000    0 0.00000000 0.000000000
+ANG        0      0 0.00000000    0 0.00000000 0.008956817
+COL1A1     0      0 0.00000000    0 0.00000000 0.012595571
+PDGFB      0      0 0.00000000    0 0.00000000 0.137507822
+VWF        0      0 0.00000000    0 0.00000000 0.009063559
+TNF        0      0 0.05688372    0 0.05485948 0.085512636
+
+nichenet_output$ligand_target_df # weight column = regulatory potential
+# A tibble: 661 × 3
+ligand target  weight
+<chr>  <chr>    <dbl>
+  1 ADM    CCL21   0.0726
+2 ADM    COX7B2  0.0723
+3 ADM    HPR     0.0709
+4 ADM    IGKC    0.0755
+5 TGFB1  ADAM19  0.220 
+6 TGFB1  BHLHE40 0.234 
+7 TGFB1  CDH2    0.206 
+8 TGFB1  CDKN1A  0.166 
+9 TGFB1  CXCL8   0.177 
+10 TGFB1  DUSP6   0.197 
+# ℹ 651 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+DotPlot(sce.all.harmony %>% subset(idents = "CM"),
+        features = nichenet_output$top_targets %>%
+          rev(), split.by = "disease") + coord_flip()
+
+nichenet_output$ligand_activity_target_heatmap
+
+nichenet_output$ligand_receptor_heatmap
+
+nichenet_output$ligand_receptor_matrix %>% .[1:10,1:6]
+COL6A6 LUM    COL1A1 JAM2 LAMA4 VWF
+ITGA1  0.5150611   0 0.5150611    0     0   0
+ITGA11 0.3525859   0 0.5328991    0     0   0
+CD36   0.0000000   0 0.6321407    0     0   0
+DDR2   0.0000000   0 0.4540796    0     0   0
+CD93   0.0000000   0 0.5051375    0     0   0
+DDR1   0.0000000   0 0.4025583    0     0   0
+BMPR2  0.0000000   0 0.0000000    0     0   0
+BMPR1A 0.0000000   0 0.0000000    0     0   0
+ACVR1  0.0000000   0 0.0000000    0     0   0
+ACVR2B 0.0000000   0 0.0000000    0     0   0
+nichenet_output$ligand_receptor_df # weight column accords to number of data sources that document this interaction
+# A tibble: 97 × 3
+ligand  receptor weight
+<chr>   <chr>     <dbl>
+  1 ADM     RAMP1     0.763
+2 ADM     RAMP3     0.901
+3 ANG     EGFR      0.280
+4 ANG     PLXNB2    0.379
+5 ANGPTL4 CDH5      0.350
+6 ANGPTL4 ITGA5     0.107
+7 ANGPTL4 ITGAV     0.109
+8 ANGPTL4 ITGB1     0.486
+9 ANGPTL4 LPL       1.27 
+10 ANGPTL4 SDC2      0.495
+# ℹ 87 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+DotPlot(sce.all.harmony %>% subset(idents = "CM"),
+        features = nichenet_output$top_receptors %>% rev(), split.by = "disease") +
+  coord_flip()
+
+# If you are interested in checking which geneset (and background set of genes) was used during the ligand activity analysis:
+nichenet_output$geneset_oi
+
+nichenet_output$background_expressed_genes %>% length()
+[1] 8548
 # Tutorial======================================================================
 Perform NicheNet analysis starting from a Seurat object
 Robin Browaeys 2023-10-02
@@ -129,16 +282,15 @@ ligand will bind to a receptor, and it is used for visualization.
 
 organism <- "mouse"
 
-if(organism == "human"){
-  lr_network <- readRDS(url("https://zenodo.org/record/7074291/files/lr_network_human_21122021.rds"))
-  ligand_target_matrix <- readRDS(url("https://zenodo.org/record/7074291/files/ligand_target_matrix_nsga2r_final.rds"))
-  weighted_networks <- readRDS(url("https://zenodo.org/record/7074291/files/weighted_networks_nsga2r_final.rds"))
-} else if(organism == "mouse"){
-  lr_network <- readRDS(url("https://zenodo.org/record/7074291/files/lr_network_mouse_21122021.rds"))
-  ligand_target_matrix <- readRDS(url("https://zenodo.org/record/7074291/files/ligand_target_matrix_nsga2r_final_mouse.rds"))
-  weighted_networks <- readRDS(url("https://zenodo.org/record/7074291/files/weighted_networks_nsga2r_final_mouse.rds"))
-  
-}
+# if(organism == "human"){
+#   lr_network <- readRDS(url("https://zenodo.org/record/7074291/files/lr_network_human_21122021.rds"))
+#   ligand_target_matrix <- readRDS(url("https://zenodo.org/record/7074291/files/ligand_target_matrix_nsga2r_final.rds"))
+#   weighted_networks <- readRDS(url("https://zenodo.org/record/7074291/files/weighted_networks_nsga2r_final.rds"))
+# } else if(organism == "mouse"){
+#   lr_network <- readRDS(url("https://zenodo.org/record/7074291/files/lr_network_mouse_21122021.rds"))
+#   ligand_target_matrix <- readRDS(url("https://zenodo.org/record/7074291/files/ligand_target_matrix_nsga2r_final_mouse.rds"))
+#   weighted_networks <- readRDS(url("https://zenodo.org/record/7074291/files/weighted_networks_nsga2r_final_mouse.rds"))
+# }
 
 lr_network <- readRDS("lr_network_mouse_21122021.rds")
 ligand_target_matrix <- readRDS("ligand_target_matrix_nsga2r_final_mouse.rds")
