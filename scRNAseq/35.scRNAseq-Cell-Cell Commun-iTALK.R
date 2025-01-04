@@ -1,6 +1,11 @@
 # iTALK
 # use data from GSE115469
 
+iTALK is an R toolkit for characterizing and illustrating intercellular communication, 
+developed and maintained by Linghua Wang lab at the University of Texas MD Anderson Cancer Center. 
+iTALK can be used to visualize the complexity, diversity and dynamics of cell-cell communication 
+in a wide range of biological processes. For more information, please refer to our manuscript.
+
 # Reference---------------------------------------------------------------------
 # https://github.com/Coolgenome/iTALK
 # https://github.com/Coolgenome/iTALK/blob/master/example/example_code.r
