@@ -69,6 +69,15 @@ CellChatDB.human	Ligand-receptor interactions in CellChat database for human
 CellChatDB.mouse	Ligand-receptor interactions in CellChat database for mouse
 CellChatDB.zebrafish	Ligand-receptor interactions in CellChat database for Zebrafish
 
+# Our database CellChatDB is a manually curated database of literature-supported 
+# ligand-receptor interactions in both human and mouse. CellChatDB in mouse contains 
+# 2,021 validated molecular interactions, including 60% of secrete autocrine/paracrine 
+# signaling interactions, 21% of extracellular matrix (ECM)-receptor interactions 
+# and 19% of cell-cell contact interactions. CellChatDB in human contains 1,939 
+# validated molecular interactions, including 61.8% of paracrine/autocrine signaling 
+# interactions, 21.7% of extracellular matrix (ECM)-receptor interactions and 16.5% 
+# of cell-cell contact interactions.
+
 CellChatDB <- CellChatDB.human
 
 str(CellChatDB)
