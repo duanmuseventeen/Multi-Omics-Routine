@@ -65,14 +65,7 @@ library(RSoptSC)
 # Load data---------------------------------------------------------------------
 load("GSE115469-scobj.h.sc.annot.Rdata")
 # NicheNetR=====================================================================
-一般的预测细胞交互的软件往往只考虑sender细胞的配体和receiver细胞的受体表达，但细胞交互过程除了配体-受体相互作用以外，还包含了receiver细胞接受信号后相关通路的激活。
-NicheNet输入基因表达数据，并将其与通过整合信号通路而构建的模型相结合。不止是预测配体与受体的相互作用，还整合了细胞内信号传导。因此，NicheNet可以预测1)来自一或多种细胞中的配体（sender）影响了与之相互作用的细胞中哪些基因的表达和2)哪些靶基因受每种配体影响以及可能涉及哪些信号传导介质。
 
-首先从公共数据库中收集配体-受体配对信息、信号通路、基因调控网络等信息，整合成配体主导的权重配体-靶基因调控模型。然后将可能受到细胞通讯影响的差异基因集输入先验模型，可以计算与这些基因相关的配体的相关性系数。最后挑选根据相关性系数排行靠前的配体，依据先验数据推测与之匹配的受体、靶基因及下游信号网络等信息。
-
-ligand_target_matrix = readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"))
-lr_network = readRDS(url("https://zenodo.org/record/3260758/files/lr_network.rds"))
-weighted_networks = readRDS(url("https://zenodo.org/record/3260758/files/weighted_networks.rds"))
 
 # Tutorial======================================================================
 Perform NicheNet analysis starting from a Seurat object
