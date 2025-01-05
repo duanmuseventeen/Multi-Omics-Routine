@@ -102,7 +102,7 @@ table(scobj@meta.data$orig.ident)
 # GSM4704941_TAA8 
 # 2669 
 
-scobj.ds <- subset(scobj.ds, subset = orig.ident != "GSM4704932_Con6", downsample = 2600)
+scobj.ds <- subset(scobj, subset = orig.ident != "GSM4704932_Con6", downsample = 2600)
 
 table(scobj.ds@meta.data$orig.ident)
 # GSM4704931_Con4 GSM4704933_Con9 GSM4704934_TAA1 GSM4704935_TAA2 GSM4704936_TAA3 
