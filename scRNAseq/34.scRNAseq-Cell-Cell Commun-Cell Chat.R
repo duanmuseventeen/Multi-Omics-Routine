@@ -7,6 +7,7 @@
 # https://htmlpreview.github.io/?https://github.com/sqjin/CellChat/blob/master/tutorial/CellChat-vignette.html
 
 # http://www.cellchat.org/
+# https://mp.weixin.qq.com/s/hd0ZvHl6-5kPaPWaeA5N0Q
 # https://github.com/jinworks/CellChat/
 # https://www.jianshu.com/p/30c6e8a24415
 # https://www.jianshu.com/p/03f9c2f3ee4f
