@@ -1,5 +1,5 @@
 library(limma)
-library(string)
+library(stringr)
 library(GEOquery)
 library(clusterProfiler)
 library(enrichplot)
