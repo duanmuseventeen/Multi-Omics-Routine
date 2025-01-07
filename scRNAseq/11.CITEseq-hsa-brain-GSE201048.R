@@ -413,8 +413,8 @@ sce.harmony <- RunHarmony(
     group.by.vars = "orig.ident",
     reduction.use = "apca",
     reduction.save = "harmony.apca") 
-sce[["RNA"]] <- JoinLayers(sce[["RNA"]])
-sce[["ADT"]] <- JoinLayers(sce[["ADT"]])
+sce.harmony[["RNA"]] <- JoinLayers(sce.harmony[["RNA"]])
+sce.harmony[["ADT"]] <- JoinLayers(sce.harmony[["ADT"]])
 # Cluster & Visualization-------------------------------------------------------
 sce.harmony <- sce.harmony %>% 
   FindMultiModalNeighbors(
@@ -444,60 +444,16 @@ sce.harmony <- RunTSNE(
 
 pdf("clusters.pdf")
 DimPlot(sce.harmony, group.by = "orig.ident", reduction = "wnn.umap", label = T)
-DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.umap", label = T)
-# DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.tsne", label = T)
+DimPlot(sce.harmony, group.by = "wsnn_res.0.05", reduction = "wnn.umap", label = T)
+# DimPlot(sce.harmony, group.by = "wsnn_res.0.05", reduction = "wnn.tsne", label = T)
 dev.off()
-# Annotation--------------------------------------------------------------------
-sce <- RegroupIdents(sce, metadata = "wsnn_res.0.6")
-sce.copy <- sce
 
-# Cell clustering into subsets using graph-based Louvain clustering
-# algorithms resulted in 26 clusters. Based on CD45 expression
-# levels, 13 clusters (0–7, 9–12 and 14) were identified as microglia
-# (CD45lo) and six clusters (8, 15–17, 19 and 21) were identified as
-# infiltrating immune cells (CD45hi). All other clusters were CD45−
-# and were identified using marker gene expression levels. Clusters
-# 13, 20 and 22 expressed genes (CLDN5, MYH11, ABCC9, VWF and
-# ACTA2) specific to cells of the neurovascular unit (NVU)15, while
-# cluster 18 expressed genes (MAG and MOG) specific to oligodendrocytes
-# (Supplementary Fig. 1). Among the immune cell subsets,
-# cluster 19 had B cell marker proteins (CD19 and CD20) and cluster
-# 17 had macrophage marker proteins (CD45hi, CD14 and CD11b).
-# Clusters 8, 15 and 16 were identified as T cell clusters (CD45hiCD3+)
-# (Fig. 1a). Infiltrating immune cells were observed in all 11 tissues
-# from the olfactory, frontal or temporal lobes, irrespective of
-# their location in the brain (Fig. 1c).
+table(sce.harmony@meta.data$wsnn_res.0.05)
+# 0     1    10    11    12    13    14    15    16    17    18    19     2    20 
+# 21201 13910   714   442     4     3     3     2     2     2     2     2  7111     2 
+# 21    22    23    24    25    26    27    28    29     3     4     5     6     7 
+# 2     2     2     2     2   205     2     2     2  6796  3948  3340  3254  2897 
+# 8     9 
+# 1487  1408 
 
-Lymphoid <- c("CD45")
-microglial <- c("CX3CR1", "P2RY12", "TREM2")
-neurovascular <- c("CLDN5", "MYH11", "ABCC9", "VWF", "ACTA2")
-oligodendrocytes <- c("MAG", "MOG")
-B <- c("CD19", "CD20")
-M <- ("CD45hi", "CD14", "CD11b")
-Tcell <- c("CD45", "CD3")
-
-if(TRUE){
-  # pdf("Vln.pdf")
-  VlnPlot(sce, group.by = "wsnn_res.0.6", features = ACM, layer = "counts", log = TRUE)
-  VlnPlot(sce, group.by = "wsnn_res.0.6", features = VCM, layer = "counts", log = TRUE)
-  VlnPlot(sce, group.by = "wsnn_res.0.6", features = EC, layer = "counts", log = TRUE)
-  VlnPlot(sce, group.by = "wsnn_res.0.6", features = FB, layer = "counts", log = TRUE)
-  # dev.off()
-}
-
-sce@meta.data$cell_type <- "Unknown" #
-sce@meta.data$cell_type[sce@meta.data$wsnn_res.0.6 == 0] <- ""
-
-p1 <- DimPlot(sce, reduction = "umap",
-              group.by = "wsnn_res.0.6",
-              label = TRUE, pt.size = 0.5)
-p2 <- DimPlot(sce, reduction = "umap",
-              group.by = "cell_type",
-              label = TRUE, pt.size = 0.5)
-p3 <- DimPlot(sce, reduction = "umap",
-              group.by = "orig.ident",
-              label = TRUE, pt.size = 0.5)
-p1 + p2 + p3
-# ggsave(..., width = 18, height = 6)
-
-
+save(sce.harmony, file = "GSE201048_without_cell_type.Rdata")
