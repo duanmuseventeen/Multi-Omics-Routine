@@ -37,17 +37,48 @@ library(scDblFinder)
 library(CellMixS)
 # Observe-------------------------------------------------------------------------
 scobj <- readRDS("GSE201048_brain_imm_all_cells_25_cluster.rds")
+
 scobj@assays$RNA$counts %>% dim
-[1] 22950 85000
+# [1] 22950 85000
+scobj@assays$RNA$data %>% dim
+# [1] 22950 85000
+scobj@assays$RNA$scale.data %>% dim
+# [1]    50 85000
+
 scobj@assays$ADT$counts %>% dim
-[1]    16 85000
+# [1]    16 85000
+scobj@assays$ADT$data %>% dim
+# [1]    16 85000
+scobj@assays$ADT$scale.data %>% dim
+# [1]    16 85000
+
 head(scobj@assays$ADT$counts[,1:6],16)
+
+table(scobj@meta.data$sampleName)
+# P5.B  P5.A  P3.A    P2  P1.B  P1.A    P4  P3.B  P6.A  P6.B  P6.C 
+# 7074 10281  7783  6842  4464  6429  4596 11153  9099  8496  8783
 
 DimPlot(scobj, reduction = "tsne",
         group.by = "seurat_clusters",
         label = TRUE, pt.size = 0.5)
 FeaturePlot(sce.all.annot, features = c("FAF2"))
 VlnPlot(object = sce.all.annot, features = 'FAF2', slot = "counts", log = TRUE, group.by = "cell_type")
+
+if(TRUE){
+  scobj@commands
+  
+  # NormalizeData(pbmc)
+  # FindVariableFeatures(pbmc, nfeatures = 2000)
+  # ScaleData(pbmc)
+  # RunPCA(pbmc, verbose = FALSE)
+  # FindNeighbors(pbmc, dims = 1:20)
+  # FindClusters(pbmc, resolution = 0.8)
+  # RunUMAP(pbmc, dims = 1:20)
+  # RunTSNE(pbmc, dims = 1:20, method = "FIt-SNE")
+  # 
+  # NormalizeData(pbmc_protein, assay = "ADT", normalization.method = "CLR")
+  # ScaleData(pbmc_protein, assay = "ADT")
+}
 
 # Linux-------------------------------------------------------------------------
 for i in $(seq 1 11);
@@ -166,38 +197,51 @@ if(FALSE){
 
 table(sce@meta.data$orig.ident)
 # Add meta.data-----------------------------------------------------------------
-# QC---------------------------------------------------------
+# QC----------------------------------------------------------------------------
 sce[["percent.mt"]] <- PercentageFeatureSet(sce, assay = "RNA", pattern = "^MT-")
 sce[["percent.rp"]] <- PercentageFeatureSet(sce, assay = "RNA", pattern = "^RP[SL]")
+sce[["percent.hb"]] <- PercentageFeatureSet(sce, pattern = "^HB[^(P)]")
 
-pdf("P2-QC.pdf")
-VlnPlot(sce, features = c("nFeature_RNA"), ncol = 1)
-VlnPlot(sce, features = c("nCount_RNA"), ncol = 1)
-VlnPlot(sce, features = c("percent.mt"), ncol = 1)
-VlnPlot(sce, features = c("percent.rp"), ncol = 1)
-FeatureScatter(sce, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-data.frame(
-  nFeature = sce@meta.data$nFeature_RNA
-) %>% 
-  ggplot(aes(x = nFeature)) +
-  geom_density() + 
-  scale_x_continuous(breaks = c(200,500,1000,3000,4000,5000))
-dev.off()
+# pdf("P2-QC.pdf")
+# VlnPlot(sce, features = c("nFeature_RNA"), ncol = 1)
+# VlnPlot(sce, features = c("nCount_RNA"), ncol = 1)
+# VlnPlot(sce, features = c("percent.mt"), ncol = 1)
+# VlnPlot(sce, features = c("percent.rp"), ncol = 1)
+# VlnPlot(sce, features = c("percent.hb"), ncol = 1)
+# FeatureScatter(sce, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+# data.frame(
+#   nFeature = sce@meta.data$nFeature_RNA
+# ) %>% 
+#   ggplot(aes(x = nFeature)) +
+#   geom_density() + 
+#   scale_x_continuous(breaks = c(200,500,1000,3000,4000,5000))
+# dev.off()
 
 # Cells with between 300 and 5,000 genes and mitochondrial percent reads less than 20 were kept for analysis.
 sce <- subset(
   sce, 
-  subset = nFeature_RNA > 300 & 
-    nFeature_RNA < 5000 & 
-    # nCount_RNA < 5000 &
-    percent.mt < 20)  
+  subset = nFeature_RNA > 500 & 
+    nFeature_RNA < 4500 & 
+    nCount_RNA < 15000 &
+    percent.mt < 10 &
+    percent.hb < 1)  
 
-pdf("P2-QC-2.pdf")
-VlnPlot(sce, features = c("nFeature_RNA"), ncol = 1)
-VlnPlot(sce, features = c("nCount_RNA"), ncol = 1)
-VlnPlot(sce, features = c("percent.mt"), ncol = 1)
-VlnPlot(sce, features = c("percent.rp"), ncol = 1)
-dev.off()
+# pdf("P2-QC-2.pdf")
+# VlnPlot(sce, features = c("nFeature_RNA"), ncol = 1)
+# VlnPlot(sce, features = c("nCount_RNA"), ncol = 1)
+# VlnPlot(sce, features = c("percent.mt"), ncol = 1)
+# VlnPlot(sce, features = c("percent.rp"), ncol = 1)
+# VlnPlot(sce, features = c("percent.hb"), ncol = 1)
+# FeatureScatter(sce, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+# dev.off()
+
+table(sce@meta.data$orig.ident)
+# Sample1 Sample10 Sample11  Sample2  Sample3  Sample4  Sample5  Sample6
+# 5693     7229     7813     3616     5856     6292     9509     3056
+# Sample7  Sample8  Sample9
+# 9117     6008     8172
+
+# We first perform pre-processing and dimensional reduction on both assays independently. We use standard normalization, but you can also use SCTransform or any alternative method.
 
 DefaultAssay(sce) <- 'RNA'
 sce <- sce %>% 
@@ -207,42 +251,106 @@ sce <- sce %>%
   RunPCA(npcs = 50)
 
 DefaultAssay(sce) <- 'ADT'
-sce <- sce %>% 
-  NormalizeData(normalization.method = 'CLR', margin = 2) %>% 
-  ScaleData() %>% 
-  RunPCA(features = rownames(sce), reduction.name = 'apca')
+sce <- sce %>%
+  NormalizeData(normalization.method = 'CLR', margin = 2) %>%
+  ScaleData() %>%
+  RunPCA(features = rownames(sce), npcs = 50, reduction.name = 'apca')
+# 9 apca
 
+pdf("PCA-samples.pdf")
+DimPlot(sce.harmony, group.by = "orig.ident", reduction = "pca", label = T)
+dev.off()
+# Integration-------------------------------------------------------------------
 DefaultAssay(sce) <- 'RNA'
 
-#Examine and visualize PCA results a few different ways
-pdf("QC-PCA.pdf")
-DimHeatmap(sce, dims = 1:6, cells = 500, balanced = TRUE)
-ElbowPlot(sce, reduction = "pca", ndims = 50)
+sce[["RNA"]] <- JoinLayers(sce[["RNA"]])
+sce[["ADT"]] <- JoinLayers(sce[["ADT"]])
+
+sce.harmony <- RunHarmony(
+  sce,
+  group.by.vars = "orig.ident",
+  reduction.use = "pca",
+  reduction.save = "harmony.pca") %>% 
+  RunHarmony(
+  group.by.vars = "orig.ident",
+  reduction.use = "apca",
+  reduction.save = "harmony.apca")
+# Identify multimodal neighbors.------------------------------------------------
+# These will be stored in the neighbors slot, 
+# and can be accessed using sce[['weighted.nn']]
+# The WNN graph can be accessed at sce[["wknn"]], 
+# and the SNN graph used for clustering at sce[["wsnn"]]
+# Cell-specific modality weights can be accessed at sce$RNA.weight
+sce.harmony <- FindMultiModalNeighbors(
+  sce.harmony, 
+  reduction.list = list("harmony.pca", "harmony.apca"), 
+  dims.list = list(1:30, 1:9), 
+  modality.weight.name = c("RNA.weight", "ADT.weight")) %>% 
+# Cluster & Visualization-------------------------------------------------------
+  FindClusters(
+    graph.name = "wsnn", 
+    algorithm = 3,
+    resolution = seq(0.01,0.1,0.01), 
+    verbose = FALSE)
+
+pdf("clustree.pdf", width = 10, height = 12)
+clustree(sce.harmony, prefix = "wsnn_res.")
 dev.off()
-# Not Integrate Data------------------------------------------------------------
+
+# RunUMAP(
+#   sce.harmony, 
+#   dims = 1:30,
+#   nn.name = "weighted.nn",
+#   reduction = "harmony.pca",
+#   reduction.name = "wnn.umap", 
+#   reduction.key = "wnnUMAP_")
+# Error in RunUMAP.Seurat(sce.harmony, dims = 1:30, nn.name = "weighted.nn",  :
+#                           Only one parameter among 'dims', 'nn.name', 'graph', or 'features' should be used at a time to run UMAP
+#                         
+sce.harmony <- RunUMAP(
+  sce.harmony, 
+  nn.name = "weighted.nn",
+  reduction.name = "wnn.umap", 
+  reduction.key = "wnnUMAP_")
+sce.harmony <- RunTSNE(
+  sce.harmony, 
+  nn.name = "weighted.nn", 
+  reduction.name = "wnn.tsne", 
+  reduction.key = "wnnTSNE_")
+
+pdf("clusters.pdf")
+DimPlot(sce.harmony, group.by = "orig.ident", reduction = "wnn.umap", label = T)
+DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.umap", label = T)
+# DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.tsne", label = T)
+dev.off()
+# Cell cycle--------------------------------------------------------------------
+exp.mat <- read.table(file = "nestorawa_forcellcycle_expressionMatrix.txt",
+                      header = TRUE, as.is = TRUE, row.names = 1)
+s.genes <- cc.genes$s.genes
+g2m.genes <- cc.genes$g2m.genes
+
+sce.harmony <- CellCycleScoring(
+  sce.harmony,
+  s.features = s.genes, 
+  g2m.features = g2m.genes, 
+  set.ident = TRUE)
+
+pdf("Cell cycle.pdf")
+sce.harmony <- RunPCA(sce.harmony, features = c(s.genes, g2m.genes), reduction.name = "cell_cycle")
+DimPlot(sce.harmony, reduction = "cell_cycle")
+DimPlot(sce.harmony, reduction = "wnn.umap")
+dev.off()
+# Filter doublets---------------------------------------------------------------
 if(TRUE){
-  # Principal-component (PC) analysis was performed   on the 2,000 most variable genes, and the first 20 PCs were used for t-SNE and UMAP for data embedding into two dimensions.
-  
-  # Cluster---------------------------------------------------------------------
-  pdf("clustree without integrating data.pdf")
-  sce <- FindNeighbors(sce, reduction = "pca", dims = 1:20)
-  sce <- FindClusters(sce, resolution = seq(0.1, 1, 0.1))
-  clustree(sce, prefix = "RNA_snn_res.")
-  dev.off()
-  
-  # Visualization---------------------------------------------------------------
-  #UMAP
-  sce <- RunUMAP(sce, reduction = "pca", min_dist = 0.3, dims = 1:20)
-  #T-SNE
-  sce <- RunTSNE(sce, reduction = "pca", dims = 1:20)
-  
-  pdf("umap and tsne without integrating data.pdf")
-  sce <- RegroupIdents(sce, metadata = "RNA_snn_res.0.9")
-  DimPlot(sce, group.by = "orig.ident", reduction = "umap", label = T)
-  DimPlot(sce, group.by = "RNA_snn_res.0.9", reduction = "umap", label = T)
-  DimPlot(sce, group.by = "orig.ident", reduction = "tsne", label = T)
-  DimPlot(sce, group.by = "RNA_snn_res.0.9", reduction = "tsne", label = T)
-  dev.off()
+  # scDblFinder
+  sce.harmony <- as.SingleCellExperiment(sce.harmony, assay = "RNA")
+  sce.harmony.scdbl <- scDblFinder(
+    sce.harmony, 
+    clusters = sce.harmony$wsnn_res.0.2,
+    samples = sce.harmony$orig.ident,
+    dbr.sd = 1) %>% 
+    as.Seurat %>%
+    subset(scDblFinder.class == "singlet")
 }
 # Annotation--------------------------------------------------------------------
 sce <- RegroupIdents(sce, metadata = "wsnn_res.0.6")
@@ -297,6 +405,6 @@ if(TRUE){
 # p1 + p2 + p3
 # # ggsave(..., width = 18, height = 6)
 # 
-# save(sce, file = "C:/D/.../sce.annot.Rdata")
+# save(sce, file = "sce.annot.Rdata")
 
 
