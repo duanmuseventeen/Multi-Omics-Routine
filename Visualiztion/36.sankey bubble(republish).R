@@ -11,8 +11,7 @@ require(ggsankey)
 require(AnnotationDbi)
 require(RColorBrewer)
 # Load data---------------------------------------------------------------------
-dat <- readxl::read_excel("C:/D/Labmates/金思佳/2025-01-06 sankey/GSE183464_NEU1 for R.xlsx",
-                          sheet = "Sheet4")
+dat <- readxl::read_excel("dat for R.xlsx")
 
 # ORA---------------------------------------------------------------------------
 geneList <- bitr(dat$gene_name, fromType = "SYMBOL", toType = "ENTREZID", "org.Hs.eg.db")
@@ -38,18 +37,18 @@ ERA_GO <- enrichGO(
   readable = T)
 ERA_GO <- setReadable(ERA_GO, 'org.Hs.eg.db', 'ENTREZID')
 # graphics----------------------------------------------------------------------
-# pathway <- ERA_GO@result %>% 
-#   filter(Description %in% c("glycosylation",
-#                             "glycolipid metabolic process",
-#                             "membrane lipid metabolic process",
-#                             "protein O-linked glycosylation",
-#                             "sialylation",
-#                             "N-glycan processing",
-#                             "monoatomic anion transport",
-#                             "glycoprotein catabolic process",
-#                             "lipid glycosylation",
-#                             "N-acetylglucosamine metabolic process"
-#   ))
+pathway <- ERA_GO@result %>% 
+  filter(Description %in% c("glycosylation",
+                            "glycolipid metabolic process",
+                            "membrane lipid metabolic process",
+                            "protein O-linked glycosylation",
+                            "sialylation",
+                            "N-glycan processing",
+                            "monoatomic anion transport",
+                            "glycoprotein catabolic process",
+                            "lipid glycosylation",
+                            "N-acetylglucosamine metabolic process"
+  ))
 
 symbol <- str_split(pathway$geneID, "/")
 names(symbol) <- pathway$Description
