@@ -466,7 +466,7 @@ p3 <- DimPlot(sce, reduction = "umap",
 p1 + p2 + p3
 # ggsave(..., width = 18, height = 6)
 
-save(sce, file = "C:/D/.../sce.annot.Rdata")
+save(sce, file = "sce.annot.Rdata")
 
 
 
