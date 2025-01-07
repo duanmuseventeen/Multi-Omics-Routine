@@ -2,6 +2,10 @@
 # GSE201048
 # PMID: 35739273
 
+# https://satijalab.org/seurat/articles/seurat5_integration.html#:~:text=Seurat%20v5%20assays%20store%20data%20in%20layers.%20These,%28layer%3D%27counts%27%29%2C%20normalized%20data%20%28layer%3D%27data%27%29%2C%20or%20z-scored%2Fvariance-stabilized%20data%20%28layer%3D%27scale.data%27%29.
+# Note that since the data is split into layers, normalization and variable feature identification is performed for each batch independently (a consensus set of variable features is automatically identified).
+# Once integrative analysis is complete, you can rejoin the layers - which collapses the individual datasets together and recreates the original counts and data layers. You will need to do this before performing any differential expression analysis. However, you can always resplit the layers in case you would like to reperform integrative analysis.
+
 # https://epicimmuneatlas.org/NatNeu2022/
 # https://zenodo.org/records/6477100
 
@@ -242,6 +246,9 @@ table(sce@meta.data$orig.ident)
 # 9117     6008     8172
 
 # We first perform pre-processing and dimensional reduction on both assays independently. We use standard normalization, but you can also use SCTransform or any alternative method.
+# https://satijalab.org/seurat/articles/seurat5_integration.html#:~:text=Seurat%20v5%20assays%20store%20data%20in%20layers.%20These,%28layer%3D%27counts%27%29%2C%20normalized%20data%20%28layer%3D%27data%27%29%2C%20or%20z-scored%2Fvariance-stabilized%20data%20%28layer%3D%27scale.data%27%29.
+# Note that since the data is split into layers, normalization and variable feature identification is performed for each batch independently (a consensus set of variable features is automatically identified).
+# Once integrative analysis is complete, you can rejoin the layers - which collapses the individual datasets together and recreates the original counts and data layers. You will need to do this before performing any differential expression analysis. However, you can always resplit the layers in case you would like to reperform integrative analysis.
 
 DefaultAssay(sce) <- 'RNA'
 sce <- sce %>% 
@@ -263,9 +270,6 @@ dev.off()
 # Integration-------------------------------------------------------------------
 DefaultAssay(sce) <- 'RNA'
 
-sce[["RNA"]] <- JoinLayers(sce[["RNA"]])
-sce[["ADT"]] <- JoinLayers(sce[["ADT"]])
-
 sce.harmony <- RunHarmony(
   sce,
   group.by.vars = "orig.ident",
@@ -275,6 +279,9 @@ sce.harmony <- RunHarmony(
   group.by.vars = "orig.ident",
   reduction.use = "apca",
   reduction.save = "harmony.apca")
+
+sce[["RNA"]] <- JoinLayers(sce[["RNA"]])
+sce[["ADT"]] <- JoinLayers(sce[["ADT"]])
 # Identify multimodal neighbors.------------------------------------------------
 # These will be stored in the neighbors slot, 
 # and can be accessed using sce[['weighted.nn']]
@@ -346,12 +353,100 @@ if(TRUE){
   sce.harmony <- as.SingleCellExperiment(sce.harmony, assay = "RNA")
   sce.harmony.scdbl <- scDblFinder(
     sce.harmony, 
-    clusters = sce.harmony$wsnn_res.0.2,
+    clusters = sce.harmony$wsnn_res.0.02,
     samples = sce.harmony$orig.ident,
     dbr.sd = 1) %>% 
     as.Seurat %>%
     subset(scDblFinder.class == "singlet")
+  
+  dim(sce.harmony)
+  # [1] 32738 72361
+  dim(sce.harmony.scdbl)
+  # [1] 32738 66751
 }
+# a serious wf requires removing the doublets and re-log-normalize, integrate,----
+# cluster, visualize-------------------------------------------------------------
+sce <- scobj.GEX
+# Add meta.data-----------------------------------------------------------------
+# QC----------------------------------------------------------------------------
+sce[["percent.mt"]] <- PercentageFeatureSet(sce, assay = "RNA", pattern = "^MT-")
+sce[["percent.rp"]] <- PercentageFeatureSet(sce, assay = "RNA", pattern = "^RP[SL]")
+sce[["percent.hb"]] <- PercentageFeatureSet(sce, pattern = "^HB[^(P)]")
+
+sce <- subset(
+  sce, 
+  subset = nFeature_RNA > 500 & 
+    nFeature_RNA < 4500 & 
+    nCount_RNA < 15000 &
+    percent.mt < 10 &
+    percent.hb < 1)  
+
+sce@meta.data$id <- rownames(sce@meta.data) 
+sce@meta.data <- sce@meta.data %>% 
+  mutate(singlet = case_when(id %in% rownames(sce.harmony.scdbl@meta.data) ~ 1,
+                             TRUE ~ 0))
+
+sce <- subset(sce, subset = singlet == 1)
+
+DefaultAssay(sce) <- 'RNA'
+sce <- sce %>% 
+  NormalizeData(normalization.method = "LogNormalize", scale.factor = 10000) %>% 
+  FindVariableFeatures(selection.method = "vst", nfeatures = 2000) %>% 
+  ScaleData %>% 
+  RunPCA(npcs = 50)
+
+DefaultAssay(sce) <- 'ADT'
+sce <- sce %>%
+  NormalizeData(normalization.method = 'CLR', margin = 2) %>%
+  ScaleData() %>%
+  RunPCA(features = rownames(sce), npcs = 50, reduction.name = 'apca')
+# 9 apca
+# Integration-------------------------------------------------------------------
+DefaultAssay(sce) <- 'RNA'
+
+sce.harmony <- RunHarmony(
+    sce,
+    group.by.vars = "orig.ident",
+    reduction.use = "pca",
+    reduction.save = "harmony.pca") %>% 
+  RunHarmony(
+    group.by.vars = "orig.ident",
+    reduction.use = "apca",
+    reduction.save = "harmony.apca") 
+sce[["RNA"]] <- JoinLayers(sce[["RNA"]])
+sce[["ADT"]] <- JoinLayers(sce[["ADT"]])
+# Cluster & Visualization-------------------------------------------------------
+sce.harmony <- sce.harmony %>% 
+  FindMultiModalNeighbors(
+    reduction.list = list("harmony.pca", "harmony.apca"), 
+    dims.list = list(1:30, 1:9), 
+  modality.weight.name = c("RNA.weight", "ADT.weight")) %>%
+    FindClusters(
+    graph.name = "wsnn", 
+    algorithm = 3,
+    resolution = seq(0.01,0.1,0.01), 
+    verbose = FALSE)
+
+pdf("clustree-R2.pdf", width = 10, height = 12)
+clustree(sce.harmony, prefix = "wsnn_res.")
+dev.off()
+
+sce.harmony <- RunUMAP(
+  sce.harmony, 
+  nn.name = "weighted.nn",
+  reduction.name = "wnn.umap", 
+  reduction.key = "wnnUMAP_")
+sce.harmony <- RunTSNE(
+  sce.harmony, 
+  nn.name = "weighted.nn", 
+  reduction.name = "wnn.tsne", 
+  reduction.key = "wnnTSNE_")
+
+pdf("clusters.pdf")
+DimPlot(sce.harmony, group.by = "orig.ident", reduction = "wnn.umap", label = T)
+DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.umap", label = T)
+# DimPlot(sce.harmony, group.by = "wsnn_res.0.02", reduction = "wnn.tsne", label = T)
+dev.off()
 # Annotation--------------------------------------------------------------------
 sce <- RegroupIdents(sce, metadata = "wsnn_res.0.6")
 sce.copy <- sce
@@ -390,21 +485,19 @@ if(TRUE){
   # dev.off()
 }
 
-# sce@meta.data$cell_type <- "Unknown" #
-# sce@meta.data$cell_type[sce@meta.data$wsnn_res.0.6 == 0] <- ""
-# 
-# p1 <- DimPlot(sce, reduction = "umap",
-#               group.by = "wsnn_res.0.6",
-#               label = TRUE, pt.size = 0.5) 
-# p2 <- DimPlot(sce, reduction = "umap",
-#               group.by = "cell_type",
-#               label = TRUE, pt.size = 0.5)
-# p3 <- DimPlot(sce, reduction = "umap",
-#               group.by = "orig.ident",
-#               label = TRUE, pt.size = 0.5) 
-# p1 + p2 + p3
-# # ggsave(..., width = 18, height = 6)
-# 
-# save(sce, file = "sce.annot.Rdata")
+sce@meta.data$cell_type <- "Unknown" #
+sce@meta.data$cell_type[sce@meta.data$wsnn_res.0.6 == 0] <- ""
+
+p1 <- DimPlot(sce, reduction = "umap",
+              group.by = "wsnn_res.0.6",
+              label = TRUE, pt.size = 0.5)
+p2 <- DimPlot(sce, reduction = "umap",
+              group.by = "cell_type",
+              label = TRUE, pt.size = 0.5)
+p3 <- DimPlot(sce, reduction = "umap",
+              group.by = "orig.ident",
+              label = TRUE, pt.size = 0.5)
+p1 + p2 + p3
+# ggsave(..., width = 18, height = 6)
 
 
