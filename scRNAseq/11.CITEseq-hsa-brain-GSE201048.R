@@ -206,18 +206,20 @@ sce <- sce %>%
   ScaleData %>% 
   RunPCA(npcs = 50)
 
-# DefaultAssay(sce) <- 'ADT'
-# sce <- sce %>% 
-#   NormalizeData(normalization.method = 'CLR', margin = 2) %>% 
-#   ScaleData() %>% 
-#   RunPCA(features = rownames(sce), reduction.name = 'apca')
+DefaultAssay(sce) <- 'ADT'
+sce <- sce %>% 
+  NormalizeData(normalization.method = 'CLR', margin = 2) %>% 
+  ScaleData() %>% 
+  RunPCA(features = rownames(sce), reduction.name = 'apca')
+
+DefaultAssay(sce) <- 'RNA'
 
 #Examine and visualize PCA results a few different ways
 pdf("QC-PCA.pdf")
 DimHeatmap(sce, dims = 1:6, cells = 500, balanced = TRUE)
 ElbowPlot(sce, reduction = "pca", ndims = 50)
 dev.off()
-# Not Integrate Data-----------------------------------------
+# Not Integrate Data------------------------------------------------------------
 if(TRUE){
   # Principal-component (PC) analysis was performed   on the 2,000 most variable genes, and the first 20 PCs were used for t-SNE and UMAP for data embedding into two dimensions.
   
@@ -243,7 +245,6 @@ if(TRUE){
   dev.off()
 }
 # Annotation--------------------------------------------------------------------
-# wsnn_res.0.9
 sce <- RegroupIdents(sce, metadata = "wsnn_res.0.6")
 sce.copy <- sce
 
