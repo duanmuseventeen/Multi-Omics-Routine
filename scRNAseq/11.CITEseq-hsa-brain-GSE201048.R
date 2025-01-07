@@ -36,7 +36,7 @@ library(ROGUE)
 library(scDblFinder)
 library(CellMixS)
 # Observe-------------------------------------------------------------------------
-scobj <- readRDS("C:/D/R project/Multi-Omics-Routine/scRNAseq/GSE201048_brain_imm_all_cells_25_cluster.rds")
+scobj <- readRDS("GSE201048_brain_imm_all_cells_25_cluster.rds")
 scobj@assays$RNA$counts %>% dim
 [1] 22950 85000
 scobj@assays$ADT$counts %>% dim
