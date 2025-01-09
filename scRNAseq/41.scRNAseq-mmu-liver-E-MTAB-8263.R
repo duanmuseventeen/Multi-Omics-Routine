@@ -209,8 +209,9 @@ if(TRUE){
   # https://blog.csdn.net/hx2024/article/details/140810266
   
   # scDblFinder
-  sce.harmony <- as.SingleCellExperiment(scobj.harmony, assay = "SCT") %>% 
-    scDblFinder(
+  sce.harmony <- as.SingleCellExperiment(scobj.harmony, assay = "SCT")
+  sce.harmony <- scDblFinder(
+    sce.harmony,
     samples = sce.harmony$library_id,
     clusters = sce.harmony$SCT_snn_res.0.4,
     dbr.sd = 1) 
