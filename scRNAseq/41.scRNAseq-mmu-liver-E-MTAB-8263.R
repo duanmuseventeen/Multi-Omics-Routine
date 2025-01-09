@@ -192,16 +192,16 @@ head(mm.pairs$G1)
 
 all(rownames(scobj.harmony) == dat$SYMBOL)
 
-sce <- as.SingleCellExperiment(scobj.harmony, assay = "RNA")
+# sce <- as.SingleCellExperiment(scobj.harmony, assay = "RNA")
 # 警告信息:
 # 1: Layer ‘data’ is empty 
 # 2: Layer ‘scale.data’ is empty 
 
-assignments <- cyclone(sce, pairs = mm.pairs)
+# assignments <- cyclone(sce, pairs = mm.pairs)
 
 # head(assignments$scores)
 
-table(assignments$phases)
+# table(assignments$phases)
 
 # doublets----------------------------------------------------------------------
 if(TRUE){
