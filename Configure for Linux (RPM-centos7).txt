@@ -13,7 +13,7 @@ conda activate scRNAseq
 conda install -y -c bioconda fastqc
 pip3 install multiqc # install in env python3.11
 conda install -y -c bioconda python=3.7.0 sra-tools
-conda install -y -c bioconda hisat2 
+conda install -y -c bioconda hisat2=2.0.3
 conda install -y -c bioconda samtools
 conda install -y -c bioconda sambamba bedtools deeptools
 conda install -y -c bioconda htseq
@@ -23,6 +23,7 @@ conda install -y -c bioconda cutadapt
 conda install -y -c bioconda trim-galore
 conda install -y -c trimmomatic
 conda install -y -c hcc aspera-cli
+conda install -y subread
 pip install scanpy
 conda install -y -c conda-forge leidenalg
 pip install macs3
