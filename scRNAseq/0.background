@@ -22,3 +22,18 @@ Q6. When run Read10X(...),
 Error in cbind.Matrix(x, y, deparse.level = 0L) :
   number of rows of matrices must match
 A6. This error is induced by different number of features among sc files.
+
+Q7. FindMarkers and FindAllMarkers
+A7. According to https://github.com/satijalab/seurat/discussions/4032:
+Thanks for asking. We had anticipated extending Seurat to actively support DE 
+using the pearson residuals of sctransform, but have decided not to do so. 
+In some cases, Pearson residuals may not be directly comparable across different 
+datasets, particularly if there are batch effects that are unrelated to 
+sequencing depth. While it is possible to correct these differences using 
+the SCTransform-based integration workflow for the purposes of visualization/
+clustering/etc., we do not recommend running differential expression directly 
+on Pearson residuals. Instead, we recommend running DE on the standard RNA assay.
+
+# 1. 理论上，FindAllMarkers调用FindMarkers. 实际上，FindMarkers 和 FindAllMarkers结果相似，略有不同.
+# 2. 建议使用RNA::counts做差异分析.
+# 3. 当时前处理使用SCT时，使用默认的SCT assay和RNA assay得到的结果有所区别.
