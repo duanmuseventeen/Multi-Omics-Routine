@@ -37,3 +37,25 @@ on Pearson residuals. Instead, we recommend running DE on the standard RNA assay
 # 1. 理论上，FindAllMarkers调用FindMarkers. 实际上，FindMarkers 和 FindAllMarkers结果相似，略有不同.
 # 2. 建议使用RNA::counts做差异分析.
 # 3. 当时前处理使用SCT时，使用默认的SCT assay和RNA assay得到的结果有所区别.
+
+Q8. Error in utils::download.file(url, path, method = method, quiet = quiet, : download from ‘https:
+A8. options(timeout = 600000000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
