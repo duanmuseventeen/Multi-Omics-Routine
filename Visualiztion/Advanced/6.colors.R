@@ -1,7 +1,7 @@
 # gradient
-colorRampPalette(c("white","#007947"))
+colorRampPalette(c("white","#007947"))(200)
                 
-colorRampPalette(c("white","red3"))        
+colorRampPalette(c("white","red3"))(200)        
 
 # for single cell
 # https://github.com/friedpine/scRNASeq_ESCC/blob/main/3c.R
