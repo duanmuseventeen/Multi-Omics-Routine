@@ -38,6 +38,9 @@ conda install -y -c bioconda bowtie2
 
 # R4.4-------------------------------------------------------
 conda activate R4.4
+
+conda install conda-forge::r-terra
+
 pip install -U scvelo
 
 # Download R4.4.2 from CRAN
