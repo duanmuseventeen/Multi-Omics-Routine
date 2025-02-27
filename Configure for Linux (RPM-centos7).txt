@@ -42,6 +42,7 @@ conda activate R4.4
 conda install conda-forge::r-terra # for installation of monocle3
 packageurl <- "https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.1.tar.gz"
 install.packages(packageurl, repos=NULL, type="source") # for installation of lme4 and monocle3
+conda install conda-forge::r-sf # for installation of monocle3
 
 pip install -U scvelo
 
