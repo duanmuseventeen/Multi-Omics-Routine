@@ -62,6 +62,11 @@ wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-
 unzip Trimmomatic-0.39.zip
 java -jar Trimmomatic-0.39/trimmomatic-0.39.jar -h
 
+# cpdb------------------------------------------------------
+
+# python3.11------------------------------------------------
+conda install numpy scipy cython numba matplotlib scikit-learn h5py click
+
 # pyscenic--------------------------------------------------
 conda create -n scenic_protocol python=3.6
 conda activate scenic_protocol
