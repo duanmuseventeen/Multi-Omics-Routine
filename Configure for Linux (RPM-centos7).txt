@@ -38,6 +38,8 @@ conda install -y -c bioconda bowtie2
 
 # R4.4-------------------------------------------------------
 conda activate R4.4
+pip install -U scvelo
+
 # Download R4.4.2 from CRAN
 tar -zxvf R4.4.2.tar.gz
 bash ./configure --enable-R-shlib --prefix=/home/yourname/R-4.4.2
