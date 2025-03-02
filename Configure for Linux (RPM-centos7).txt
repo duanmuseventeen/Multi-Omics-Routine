@@ -79,6 +79,11 @@ conda install numpy scipy cython numba matplotlib scikit-learn h5py click
 # omicverse------------------------------------------------------
 # https://omicverse.readthedocs.io/en/latest/Installation_guild/#using-conda
 conda create -n omicverse python=3.10
+conda install pytorch torchvision torchaudio cpuonly -c pytorch
+conda install pyg -c pyg
+conda install python-annoy -c conda-forge
+conda install omicverse -c conda-forge
+python -c "import omicverse"
 
 # pyscenic--------------------------------------------------
 conda create -n scenic_protocol python=3.6
