@@ -76,6 +76,9 @@ java -jar Trimmomatic-0.39/trimmomatic-0.39.jar -h
 # python3.11------------------------------------------------
 conda install numpy scipy cython numba matplotlib scikit-learn h5py click
 
+# omicverse------------------------------------------------------
+conda create -n omicverse python=3.10
+
 # pyscenic--------------------------------------------------
 conda create -n scenic_protocol python=3.6
 conda activate scenic_protocol
