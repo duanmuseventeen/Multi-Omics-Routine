@@ -1,5 +1,6 @@
 # https://scanpy.readthedocs.io/en/stable/tutorials/basics/clustering.html
 # https://scanpy.readthedocs.io/en/stable/tutorials/basics/integrating-data-using-ingest.html
+# https://scanpy.readthedocs.io/en/stable/tutorials/basics/clustering-2017.html
 # https://github.com/brianhie/scanorama
 
 # Load pkgs--------------------------------------------------------------------
