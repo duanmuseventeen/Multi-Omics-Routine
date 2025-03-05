@@ -5,6 +5,7 @@
 ## load pkgs---------------------------------------------------------------------
 library(tidydr) # Y叔
 library(ggplot2)
+library(scCustomize)
 ## 1 axis------------------------------------------------------------------------
 # https://zhuanlan.zhihu.com/p/669051636
 DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = TRUE, pt.size = 1.2) + 
