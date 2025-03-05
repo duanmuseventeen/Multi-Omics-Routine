@@ -1,6 +1,8 @@
 # optimization of scRNAseq graphics
 # use data from GSE115469
 
+# https://mp.weixin.qq.com/s/CljLXy9au2sjm4sR_gp9wQ
+
 # R-----------------------------------------------------------------------------
 ## load pkgs---------------------------------------------------------------------
 library(tidydr) # Y叔
