@@ -1,0 +1,8 @@
+1. cytolytic score
+The cytolytic score is a measure of local immune cytolytic activity calculated by the geometric mean of gene expression of granzyme A (GZMA) and perforin (PRF1).
+Molecular and genetic properties of tumors associated with local immune cytolytic activity. Cell. 2015;160:48-61.
+
+2. T-cell exhaustion level
+To estimate T-cell exhaustion level, the murine T-cell exhaustion signature was obtained. The level of T-cell exhaustion was determined by the mean expression of the up-regulated genes subtracted by the mean expression of down-regulated.
+Molecular signature of CD8+ T cell exhaustion during chronic viral infection. Immunity. 2007;27:670-84.
+T-cell exhaustion, co-stimulation and clinical outcome in autoimmunity and infection. Nature. 2015;523:612-6.
