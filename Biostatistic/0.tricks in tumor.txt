@@ -10,7 +10,10 @@ T-cell exhaustion, co-stimulation and clinical outcome in autoimmunity and infec
 3. risk score
 risk score= ∑_(i=1)^n▒〖[coef(mRNAi)*Expression(mRNAi)]〗
 
-
+4. Definition of cytotoxicity, exhaustion and anergy scores
+To assess the transcriptional characteristics of various T cell subsets, we evaluated their exhaustion score, cytotoxicity score, and anergy score, which were established based on a predefined set of genes obtained from a published pan-cancer T cell study.31 Each score was calculated as the average expression level of the respective gene set.
+Distinct cellular mechanisms underlie chemotherapies and PD-L1 blockade combinations in triple-negative breast cancer. Cancer Cell. 2025 Jan 30:S1535-6108(25)00025-X.
+[31] pmid: 37248301
 
 
 
