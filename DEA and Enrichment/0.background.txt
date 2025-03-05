@@ -1,2 +1,0 @@
-Q1. Analyzing RNA-seq data with DESeq2
-A1. https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#can-i-use-deseq2-to-analyze-a-dataset-without-replicates
