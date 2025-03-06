@@ -4,4 +4,8 @@ du -h
 tree -h #查看层级结构
 
 yum list packagename --showduplicates  #查看yum可安装包的版本
-conda search numpy #查看conda可安装包的版本
+yum install packagename
+yum remove packagename
+
+conda search packagename #查看conda可安装包的版本
+conda install packagename
