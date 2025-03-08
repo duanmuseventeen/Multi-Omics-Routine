@@ -21,4 +21,7 @@ c("#B2182B","#E69F00","#56B4E9","#009E73","#F0E442",
   "#7E6148B2","yellow", 
   "darkolivegreen1", "lightskyblue")
 
+c("#e8d5d5","#fad8b7","#f5b0af","#b3ccb0","#d2e7a7","#afe5f6")
+c("#c79494","#f39d49","#e73a36","#3d7d35","#8ec321","#30bbea")
+
 
