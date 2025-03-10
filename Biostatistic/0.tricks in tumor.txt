@@ -24,6 +24,10 @@ Immunotherapy. Methods in Molecular Biology, 2120 (Springer), pp. 223–232. htt
 [77] TIDE: (2018). Signatures of T cell dysfunction and exclusion predict cancer immunotherapy response. Nat. Med. 24, 1550–1558. https://doi.org/10.1038/s41591-018-0136-1.
 [26] EcoTyper: (2021). Atlas of clinically distinct cell states and ecosystems across human solid tumors. Cell 184, 5482–5496.e28. https://doi.org/10.1016/j.cell.2021.09.014.
 
+6. Degree of hypoxia
+We hypothesized that hypoxic tumors may harbor more anaerobic bacteria as these bacteria are well adapted for low-oxygen environments. To test this, we measured the degree of hypoxia using the hallmark hypoxia gene signature in a set of metastatic tumors with matched RNA sequencing (RNA-seq) data.
+A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
+
 
 
 
