@@ -28,6 +28,9 @@ Immunotherapy. Methods in Molecular Biology, 2120 (Springer), pp. 223–232. htt
 We hypothesized that hypoxic tumors may harbor more anaerobic bacteria as these bacteria are well adapted for low-oxygen environments. To test this, we measured the degree of hypoxia using the hallmark hypoxia gene signature in a set of metastatic tumors with matched RNA sequencing (RNA-seq) data.
 A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 
+7. Modeling batch effects
+Next, we sought to account for false associations derived from technical confounders. To do this we made use of linear mixed effects models (LME) by which we account for sequencer type and hospital location as random effects.
+A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 
 
 
