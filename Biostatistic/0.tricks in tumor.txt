@@ -15,6 +15,15 @@ To assess the transcriptional characteristics of various T cell subsets, we eval
 Distinct cellular mechanisms underlie chemotherapies and PD-L1 blockade combinations in triple-negative breast cancer. Cancer Cell. 2025 Jan 30:S1535-6108(25)00025-X.
 [31] pmid: 37248301
 
+5. Tumor immune infiltration
+Immune cell deconvolution was performed on TPM-normalized counts by CIBERSORT (absolute) using the immunedeconv framework. Tumor Immune Dysfunction and Exclusion (TIDE) signatures were computed using the tool, tidepy on TPM normalized gene counts. Immune cell states were deconvolved using EcoTyper using default settings on TPM normalized counts.
+
+A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
+[76] CIBERSORT: (2020). Immunedeconv: An R Package for Unified Access to Computational Methods for Estimating Immune Cell Fractions from Bulk RNA-Sequencing Data. In Bioinformatics for Cancer
+Immunotherapy. Methods in Molecular Biology, 2120 (Springer), pp. 223–232. https://doi.org/10.1007/978-1-0716-0327-7_16.
+[77] TIDE: (2018). Signatures of T cell dysfunction and exclusion predict cancer immunotherapy response. Nat. Med. 24, 1550–1558. https://doi.org/10.1038/s41591-018-0136-1.
+[26] EcoTyper: (2021). Atlas of clinically distinct cell states and ecosystems across human solid tumors. Cell 184, 5482–5496.e28. https://doi.org/10.1016/j.cell.2021.09.014.
+
 
 
 
