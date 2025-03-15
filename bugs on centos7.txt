@@ -1,0 +1,4 @@
+# https://blog.csdn.net/charlotte1516/article/details/138619334
+# https://blog.csdn.net/charlotte1516/article/details/138582776?spm=1001.2014.3001.5501
+# 检查glibc版本
+strings /lib/x86_64-linux-gnu/libc.so.6 |grep GLIBC_
