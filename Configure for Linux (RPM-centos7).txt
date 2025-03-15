@@ -101,7 +101,13 @@ python -m ipykernel install --user --name=scenic_protocol
 
 pyscenic -h
 
+# aspera--------------------------------------------------
+# https://blog.csdn.net/andy_cwz/article/details/143335193
+conda create -n aspera
+conda activate aspera
+conda install -c hcc aspera-cli=3.7.7 -y
 
-
+which ascp
+ascp -h
 
 
