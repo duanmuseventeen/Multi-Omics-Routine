@@ -1,4 +1,72 @@
+1. /lib64/libstdc++.so.6: version GLIBCXX_3.4.20 not found
+
 # https://blog.csdn.net/charlotte1516/article/details/138619334
 # https://blog.csdn.net/charlotte1516/article/details/138582776?spm=1001.2014.3001.5501
 # 检查glibc版本
 strings /lib/x86_64-linux-gnu/libc.so.6 |grep GLIBC_
+
+# https://www.jianshu.com/p/050b2b777b9d
+1) 查看系统版本
+strings /usr/lib64/libstdc++.so.6 | grep GLIBCXX
+GLIBCXX_3.4
+GLIBCXX_3.4.1
+GLIBCXX_3.4.2
+GLIBCXX_3.4.3
+GLIBCXX_3.4.4
+GLIBCXX_3.4.5
+GLIBCXX_3.4.6
+GLIBCXX_3.4.7
+GLIBCXX_3.4.8
+GLIBCXX_3.4.9
+GLIBCXX_3.4.10
+GLIBCXX_3.4.11
+GLIBCXX_3.4.12
+GLIBCXX_3.4.13
+GLIBCXX_3.4.14
+GLIBCXX_3.4.15
+GLIBCXX_3.4.16
+GLIBCXX_3.4.17
+GLIBCXX_3.4.18
+GLIBCXX_3.4.19
+GLIBCXX_DEBUG_MESSAGE_LENGTH
+
+发现少了GLIBCXX_3.4.20，解决方法是升级libstdc++.
+
+2)
+sudo yum provides libstdc++.so.6
+Loaded plugins: fastestmirror, langpacks
+Determining fastest mirrors
+libstdc++-4.8.5-39.el7.i686 : GNU Standard C++ Library
+Repo        : base
+Matched from:
+Provides    : libstdc++.so.6
+
+3) 
+cd /usr/local/lib64
+# 下载最新版本的libstdc.so_.6.0.26
+sudo wget http://www.vuln.cn/wp-content/uploads/2019/08/libstdc.so_.6.0.26.zip
+unzip libstdc.so_.6.0.26.zip
+# 将下载的最新版本拷贝到 /usr/lib64
+cp libstdc++.so.6.0.26 /usr/lib64
+cd  /usr/lib64
+# 查看 /usr/lib64下libstdc++.so.6链接的版本
+ls -l | grep libstdc++
+libstdc++.so.6 ->libstdc++.so.6.0.19
+# 删除/usr/lib64原来的软连接libstdc++.so.6，删除之前先备份一份
+sudo rm libstdc++.so.6
+# 链接新的版本
+sudo ln -s libstdc++.so.6.0.26 libstdc++.so.6
+# 查看新版本，成功
+strings /usr/lib64/libstdc++.so.6 | grep GLIBCXX
+...
+GLIBCXX_3.4.18
+GLIBCXX_3.4.19
+GLIBCXX_3.4.20
+GLIBCXX_3.4.21
+GLIBCXX_3.4.22
+GLIBCXX_3.4.23
+GLIBCXX_3.4.24
+GLIBCXX_3.4.25
+GLIBCXX_3.4.26
+GLIBCXX_DEBUG_MESSAGE_LENGTH
+...
