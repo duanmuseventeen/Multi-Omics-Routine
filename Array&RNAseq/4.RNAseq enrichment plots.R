@@ -1,3 +1,6 @@
+# Reference
+# https://guangchuangyu.github.io/2016/07/leading-edge-analysis/
+
 library(stringr)
 library(dplyr)
 library(DESeq2)
@@ -22,21 +25,21 @@ mytheme <- theme_bw() +
 
 # ORA enrichment----------------------------------------------------------------
 # In general, geneList are names of DEGs 
-ERA_KEGG <- enrichKEGG(
+ORA_KEGG <- enrichKEGG(
   gene = geneList,
   organism = "mmu",
   keyType = "kegg",
   pvalueCutoff = 1, 
   qvalueCutoff = 1)
-ERA_KEGG <- setReadable(ERA_KEGG, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
+ORA_KEGG <- setReadable(ORA_KEGG, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
 
 # for Mus musculus only
-ERA_KEGG@result$Description <- ERA_KEGG@result$Description %>% 
-  str_remove(" - Mus musculus \\(house mouse\\)") %>% 
-  dotplot(showCategory = 20) + 
+ORA_KEGG@result$Description <- ORA_KEGG@result$Description %>% 
+  str_remove(" - Mus musculus \\(house mouse\\)")
+dotplot(ORA_KEGG, showCategory = 20) + 
   scale_y_discrete(labels=function(x) str_wrap(x, width=50))
 
-ERA_GO <- enrichGO(
+ORA_GO <- enrichGO(
   gene = geneList,
   OrgDb = "org.Mm.eg.db",
   keyType = "ENTREZID", 
@@ -47,15 +50,17 @@ ERA_GO <- enrichGO(
   minGSSize = 10,
   maxGSSize = 500,
   readable = T)
-ERA_GO <- setReadable(ERA_GO, 'org.Mm.eg.db', 'ENTREZID')
+ORA_GO <- setReadable(ORA_GO, 'org.Mm.eg.db', 'ENTREZID')
 
-BPtop10 <- ERA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "BP");BPtop10 <- BPtop10$ID[1:10]
-CCtop10 <- ERA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "CC");CCtop10 <- CCtop10$ID[1:10]
-MFtop10 <- ERA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "MF");MFtop10 <- MFtop10$ID[1:10]
+BPtop10 <- ORA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "BP");BPtop10 <- BPtop10$ID[1:10]
+CCtop10 <- ORA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "CC");CCtop10 <- CCtop10$ID[1:10]
+MFtop10 <- ORA_GO@result %>% arrange(p.adjust) %>% filter(ONTOLOGY == "MF");MFtop10 <- MFtop10$ID[1:10]
 
-ERA_GO@result %>% 
-  filter(ID %in% c(BPtop10, CCtop10, MFtop10)) %>% 
-  dotplot(
+ORA_GO@result %>% 
+  filter(ID %in% c(BPtop10, CCtop10, MFtop10))
+                   
+dotplot(
+    ORA_GO,
     col = "pvalue", 
     showCategory = 50) + 
     facet_grid(ONTOLOGY~., scale='free') + 
