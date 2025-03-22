@@ -1,5 +1,6 @@
 # Reference
 # https://guangchuangyu.github.io/2016/07/leading-edge-analysis/
+# https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html
 
 library(stringr)
 library(dplyr)
