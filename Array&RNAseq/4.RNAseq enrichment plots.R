@@ -12,7 +12,7 @@ library(enrichplot)
 require(survminer)
 require(survival)
 library(clusterProfiler)
-library(DEXSeq)
+library(ReactomePA)
 
 mytheme <- theme_bw() +
   theme(text = element_text(size = 12), 
@@ -66,6 +66,13 @@ dotplot(
     showCategory = 50) + 
     facet_grid(ONTOLOGY~., scale='free') + 
     scale_y_discrete(labels=function(x) str_wrap(x, width=50))
+
+ORA_Reactome <- ReactomePA::enrichPathway(
+  gene= geneList, 
+  pvalueCutoff = 1, 
+  readable=TRUE, 
+  organism = "human")
+clusterProfiler::dotplot(Reactome)
 
 # GSEA enrichment---------------------------------------------------------------
 # NES can be DEA results from gseKEGG or gseGO
@@ -238,3 +245,9 @@ GSEA_GO <- gseGO(geneList = genes,
                  verbose      = FALSE, 
                  eps = 0)
 GSEA_GO <- setReadable(GSEA_GO, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
+
+
+# Visualization--------------------------------------------------------------- 
+require(aPEAR)
+enrichmentNetwork(as.data.frame(GSEA_GO@result), drawEllipses = TRUE,
+                  fontSize = 4, repelLabels = TRUE)
