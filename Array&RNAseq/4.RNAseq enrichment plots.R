@@ -1,6 +1,8 @@
 # Reference
 # https://guangchuangyu.github.io/2016/07/leading-edge-analysis/
 # https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html
+# https://github.com/kerseviciute/aPEAR
+# https://mp.weixin.qq.com/s/eX8mc5ssTQht8rhU0bbp6g
 
 library(stringr)
 library(dplyr)
@@ -249,5 +251,8 @@ GSEA_GO <- setReadable(GSEA_GO, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
 
 # Visualization--------------------------------------------------------------- 
 require(aPEAR)
-enrichmentNetwork(as.data.frame(GSEA_GO@result), drawEllipses = TRUE,
+p <- enrichmentNetwork(as.data.frame(Reactome@result), drawEllipses = TRUE,
                   fontSize = 4, repelLabels = TRUE)
+
+library(plotly)
+ggplotly(p, tooltip=c('ID', 'Cluster', 'Cluster size'))
