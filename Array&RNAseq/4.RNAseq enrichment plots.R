@@ -75,7 +75,7 @@ ORA_Reactome <- ReactomePA::enrichPathway(
   pvalueCutoff = 1, 
   readable=TRUE, 
   organism = "human")
-clusterProfiler::dotplot(Reactome)
+clusterProfiler::dotplot(ORA_Reactome)
 
 # GSEA enrichment---------------------------------------------------------------
 # NES can be DEA results from gseKEGG or gseGO
