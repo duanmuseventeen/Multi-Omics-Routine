@@ -32,6 +32,10 @@ A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 Next, we sought to account for false associations derived from technical confounders. To do this we made use of linear mixed effects models (LME) by which we account for sequencer type and hospital location as random effects.
 A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 
+8. Synergy scores
+Synergy scores were calculated using SynergyFinder (https://synergyfinder.org/).
+Screening of patient-derived organoids identifies mitophagy as a cell-intrinsic vulnerability in colorectal cancer during statin treatment, pmid: 40154491
+
 
 
 
