@@ -7,6 +7,11 @@
 # https://www.jianshu.com/p/de8fccabc2e7
 # https://zhuanlan.zhihu.com/p/830574147
 
+There are ties in the preranked stats (21.6% of the list).
+# https://github.com/YuLab-SMU/clusterProfiler/issues/214
+# https://www.biostars.org/p/9575619/
+# https://groups.google.com/g/gsea-help/c/CCCC5gyO7Jg?pli=1
+
 library(stringr)
 library(dplyr)
 library(DESeq2)
