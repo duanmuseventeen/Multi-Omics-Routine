@@ -4,6 +4,7 @@
 # https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html
 # https://github.com/kerseviciute/aPEAR
 # https://mp.weixin.qq.com/s/eX8mc5ssTQht8rhU0bbp6g
+# https://www.jianshu.com/p/de8fccabc2e7
 
 library(stringr)
 library(dplyr)
@@ -230,7 +231,7 @@ gg_GOE_dot <- function(NES, Topn = 10){
     mytheme
 }
 
-# geneList2 are log2FC named with entrezID
+# geneList2 are sorted log2FC named with entrezID
 GSEA_KEGG <- gseKEGG(geneList = geneList2, 
                      seed = 1011,
                      organism = "mmu",
@@ -249,7 +250,21 @@ GSEA_GO <- gseGO(geneList = genes,
                  eps = 0)
 GSEA_GO <- setReadable(GSEA_GO, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
 
+# GSEA with fgsea-------------------------------------------------------------                   
+# geneList2 are sorted log2FC with names
+library(fgsea)
 
+gmt <- qusage::read.gmt("HP_HEPATIC_FIBROSIS.v2024.1.Hs.gmt") 
+fgseaRes <- fgsea(gmt, geneList2, minSize = 5, maxSize = 500, nperm=1000, gseaParam = 1)
+# pathway      pval      padj    log2err        ES       NES  size
+# <char>     <num>     <num>      <num>     <num>     <num> <int>
+# 1: HP_HEPATIC_FIBROSIS 0.9775785 0.9775785 0.05195125 0.1966983 0.7319902   122
+#    leadingEdge
+#         <list>
+# 1: ARHGAP31....
+
+plotEnrichment(gmt, geneList2)
+plotGseaTable(gmt, geneList2, fgseaRes, gseaParam=0.5)
 # Visualization--------------------------------------------------------------- 
 require(aPEAR)
 p <- enrichmentNetwork(as.data.frame(Reactome@result), drawEllipses = TRUE,
