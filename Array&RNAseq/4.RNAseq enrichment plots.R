@@ -267,7 +267,7 @@ fgseaRes <- fgsea(gmt, geneList2, minSize = 5, maxSize = 500, nperm=1000, gseaPa
 #         <list>
 # 1: ARHGAP31....
 
-plotEnrichment(gmt, geneList2)
+plotEnrichment(gmt$HP_HEPATIC_FIBROSIS, geneList2)
 plotGseaTable(gmt, geneList2, fgseaRes, gseaParam=0.5)
 # Visualization--------------------------------------------------------------- 
 require(aPEAR)
