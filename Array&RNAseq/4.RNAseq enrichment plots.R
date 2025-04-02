@@ -18,6 +18,9 @@ require(survminer)
 require(survival)
 library(clusterProfiler)
 library(ReactomePA)
+# library(GseaVis)
+# devtools::install_github("nicolash2/gggsea")
+# library(gggsea)
 
 mytheme <- theme_bw() +
   theme(text = element_text(size = 12), 
