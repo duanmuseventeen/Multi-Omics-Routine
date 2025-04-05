@@ -4,10 +4,12 @@ du -h
 tree -h #查看层级结构
 lsblk # 查看硬件层级结构
 
+# linux kernel------------------------------------------------------
 uname # 显示操作系统名称：
 uname -a # 显示所有系统信息：
 uname -r # 显示内核版本：
-uname -m # 显示机器硬件名称：
+uname -m # 显示机器硬件名称
+cat /proc/version
 
 # yum---------------------------------------------------------------
 yum list packagename --showduplicates  #查看yum可安装包的版本
@@ -22,6 +24,7 @@ dnf install -y wget # 安装wget
 dnf upgrade # 升级所有软件包
 dnf remove -y wget # 卸载wget
 
+# conda-------------------------------------------------------------
 conda search packagename #查看conda可安装包的版本
 conda install packagename
 
