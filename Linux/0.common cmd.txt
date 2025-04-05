@@ -33,5 +33,47 @@ conda create --name envname python=3.7
 conda env list # 等同于conda  info --envs
 conda activate envname
 
+# systemd-----------------------------------------------------------
+# https://ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html
+
+# 1. systemctl
+systemctl是 Systemd 的主命令，用于管理系统。
+
+sudo systemctl reboot # 重启系统
+sudo systemctl poweroff # 关闭系统，切断电源
+sudo systemctl halt # CPU停止工作
+sudo systemctl suspend # 暂停系统
+sudo systemctl hibernate # 让系统进入冬眠状态
+sudo systemctl hybrid-sleep # 让系统进入交互式休眠状态
+sudo systemctl rescue # 启动进入救援状态（单用户状态）
+
+# 2. systemd-analyze
+systemd-analyze命令用于查看启动耗时。
+
+systemd-analyze # 查看启动耗时                                                                                   
+systemd-analyze blame # 查看每个服务的启动耗时
+systemd-analyze critical-chain # 显示瀑布状的启动过程流
+systemd-analyze critical-chain atd.service # 显示指定服务的启动流
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Docker------------------------------------------------------------
 # https://blog.csdn.net/leah126/article/details/131871717
