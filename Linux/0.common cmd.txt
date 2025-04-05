@@ -2,6 +2,7 @@ top #查看内存、CPU占用
 df -h #查看硬盘使用
 du -h
 tree -h #查看层级结构
+lsblk # 查看硬件层级结构
 
 yum list packagename --showduplicates  #查看yum可安装包的版本
 yum install packagename
