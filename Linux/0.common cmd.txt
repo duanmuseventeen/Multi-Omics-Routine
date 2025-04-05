@@ -55,7 +55,11 @@ systemd-analyze blame # 查看每个服务的启动耗时
 systemd-analyze critical-chain # 显示瀑布状的启动过程流
 systemd-analyze critical-chain atd.service # 显示指定服务的启动流
 
+# 3. hostnamectl
+hostnamectl命令用于查看当前主机的信息。
 
+hostnamectl # 显示当前主机的信息
+sudo hostnamectl set-hostname rhel7 # 设置主机名。
 
 
 
