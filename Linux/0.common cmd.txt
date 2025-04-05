@@ -10,6 +10,7 @@ uname -a # 显示所有系统信息：
 uname -r # 显示内核版本：
 uname -m # 显示机器硬件名称
 cat /proc/version
+lsb_release -a # Linux Standard Base
 
 # yum---------------------------------------------------------------
 yum list packagename --showduplicates  #查看yum可安装包的版本
