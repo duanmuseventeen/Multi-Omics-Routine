@@ -4,9 +4,18 @@ du -h
 tree -h #查看层级结构
 lsblk # 查看硬件层级结构
 
+# yum---------------------------------------------------------------
 yum list packagename --showduplicates  #查看yum可安装包的版本
 yum install packagename
 yum remove packagename
+
+# dnf---------------------------------------------------------------
+dnf --version # 查看DNF版本 
+dnf repolist # 查看可用的软件库 
+dnf search <package-name> # 搜索软件包 
+dnf install -y wget # 安装wget  
+dnf upgrade # 升级所有软件包
+dnf remove -y wget # 卸载wget
 
 conda search packagename #查看conda可安装包的版本
 conda install packagename
@@ -14,3 +23,5 @@ conda install packagename
 conda create --name envname python=3.7
 conda env list # 等同于conda  info --envs
 conda activate envname
+
+
