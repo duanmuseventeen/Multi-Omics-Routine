@@ -33,4 +33,5 @@ conda create --name envname python=3.7
 conda env list # 等同于conda  info --envs
 conda activate envname
 
-
+# Docker------------------------------------------------------------
+# https://blog.csdn.net/leah126/article/details/131871717
