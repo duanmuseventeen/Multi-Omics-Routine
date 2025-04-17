@@ -259,6 +259,17 @@ GSEA_GO <- gseGO(geneList = genes,
                  eps = 0)
 GSEA_GO <- setReadable(GSEA_GO, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
 
+GSEA_REACTOME <- ReactomePA::gsePathway(genes,
+                     organism= "mouse",
+                     minGSSize= 10,
+                     maxGSSize= 500,
+                     pvalueCutoff= 1,
+                     pAdjustMethod= "BH",
+                     verbose= FALSE,
+                     eps= 0)
+GSEA_REACTOME <- setReadable(GSEA_REACTOME, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
+
+                     
 # GSEA with fgsea-------------------------------------------------------------                   
 # geneList2 are sorted log2FC with names
 library(fgsea)
