@@ -269,6 +269,11 @@ GSEA_REACTOME <- ReactomePA::gsePathway(genes,
                      eps= 0)
 GSEA_REACTOME <- setReadable(GSEA_REACTOME, OrgDb = "org.Mm.eg.db", keyType = "ENTREZID")
 
+enrichplot::gseaplot2(GSEA_REACTOME, "R-MMU-2173789")
+enrichplot::gseaplot2(GSEA_KEGG, c(9,22,29), pvalue_table = TRUE)
+
+GseaVis::gseaNb(object = GSEA_REACTOME, geneSetID = 'R-MMU-2173789')
+
                      
 # GSEA with fgsea-------------------------------------------------------------                   
 # geneList2 are sorted log2FC with names
