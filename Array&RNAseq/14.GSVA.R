@@ -1,4 +1,6 @@
 # https://blog.csdn.net/dolanjiang/article/details/144673628
+# According to the theory, the input should be data adjusted for the length of gene (eg. RPKM, FPKM, TPM, CPM), but not count.
+# In fact, the results from TPM or raw count are simliar.
 
 require(GSVA)
 require(dplyr)
