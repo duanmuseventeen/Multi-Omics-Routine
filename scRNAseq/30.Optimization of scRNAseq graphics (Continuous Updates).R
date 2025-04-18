@@ -2,12 +2,14 @@
 # use data from GSE115469
 
 # https://mp.weixin.qq.com/s/CljLXy9au2sjm4sR_gp9wQ
+# https://github.com/pwwang/scplotter
 
 # R-----------------------------------------------------------------------------
 ## load pkgs---------------------------------------------------------------------
 library(tidydr) # Y叔
 library(ggplot2)
 library(scCustomize)
+library(scplotter)
 ## 1 axis------------------------------------------------------------------------
 # https://zhuanlan.zhihu.com/p/669051636
 DimPlot(scobj.h.sc, reduction = "UMAP", group.by = "cell_type", label = TRUE, pt.size = 1.2) + 
