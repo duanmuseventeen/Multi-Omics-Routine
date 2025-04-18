@@ -99,6 +99,17 @@ plot_density(scobj.h.sc, "ACTB")
 plot_density(scobj.h.sc, c("ACTB","GAPDH"), joint = TRUE)
 ## *example----------------------------------------------------------------------
 # https://cloud.tencent.com/developer/article/2317517
-# python------------------------------------------------------------------------
+# python-------------------------------------------------------------------------
 # https://blog.csdn.net/wcy1995427/article/details/140009111
 # https://www.cnblogs.com/starlitnightly/p/18262565
+
+## 6 Colors----------------------------------------------------------------------
+# https://blog.csdn.net/weixin_40695088/article/details/136603067
+p1 <- FeaturePlot(object = sce2, features = "CD3D") 
+
+p2 <- FeaturePlot(sce2, "CD3D", cols = c("#F0F921FF", "#7301A8FF"))
+
+p3 <- FeaturePlot(sce2, "CD3D", cols = brewer.pal(10, name = "RdBu"))
+
+p4 <- FeaturePlot(object = sce2, features = "CD3D") + 
+  scale_colour_gradientn(colours = rev(brewer.pal(n = 10, name = "RdBu")))
