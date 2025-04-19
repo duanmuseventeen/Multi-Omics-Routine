@@ -36,6 +36,17 @@ A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 Synergy scores were calculated using SynergyFinder (https://synergyfinder.org/).
 Screening of patient-derived organoids identifies mitophagy as a cell-intrinsic vulnerability in colorectal cancer during statin treatment, pmid: 40154491
 
+9. Define M1/M2 and proliferation phenotypes
+The M1/M2 phenotype of each myeloid cell was defined as the mean expression of gene signatures (Azizi et al., 2018). Genes associated 
+with ‘‘classically activated’’ (M1) macrophages include CCL5, CCR7, CD40, CD86, CXCL9, CXCL10, CXCL11, IDO1, IL1A,
+IL1B, IL6, IRF1, IRF5 and KYNU, while CCL4, CCL13, CCL18, CCL20, CCL22, CD276, CLEC7A, CTSA, CTSB, CTSC, CTSD,
+FN1, IL4R, IRF4, LYVE1, MMP9, MMP14, MMP19, MSR1, TGFB1, TGFB2, TGFB3, TNFSF8, TNFSF12, VEGFA, VEGFB and VEGFC
+were used to define the signature of ‘‘alternatively activated’’ (M2) macrophages.
+The average expression of known proliferation-related genes was defined as the proliferation score (Whitfield et al., 2006). These
+proliferation genes include AURKA, BUB1, CCNB1, CCND1, CCNE1, DEK, E2F1, FEN1, FOXM1, H2AFZ, HMGB2, MCM2, MCM3,
+MCM4, MCM5, MCM6, MKI67, MYBL2, PCNA, PLK1, TOP2A, TYMS and ZWINT.
+Single-Cell Analyses Inform Mechanisms of Myeloid-Targeted Therapies in Colon Cancer, pmid: 32302573
+
 
 
 
