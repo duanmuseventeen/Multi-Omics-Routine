@@ -17,7 +17,6 @@ Distinct cellular mechanisms underlie chemotherapies and PD-L1 blockade combinat
 
 5. Tumor immune infiltration
 Immune cell deconvolution was performed on TPM-normalized counts by CIBERSORT (absolute) using the immunedeconv framework. Tumor Immune Dysfunction and Exclusion (TIDE) signatures were computed using the tool, tidepy on TPM normalized gene counts. Immune cell states were deconvolved using EcoTyper using default settings on TPM normalized counts.
-
 A Pan-Cancer analysis of the microbiome in metastatic cancer, pmid: 38599211
 [76] CIBERSORT: (2020). Immunedeconv: An R Package for Unified Access to Computational Methods for Estimating Immune Cell Fractions from Bulk RNA-Sequencing Data. In Bioinformatics for Cancer
 Immunotherapy. Methods in Molecular Biology, 2120 (Springer), pp. 223–232. https://doi.org/10.1007/978-1-0716-0327-7_16.
@@ -46,6 +45,12 @@ The average expression of known proliferation-related genes was defined as the p
 proliferation genes include AURKA, BUB1, CCNB1, CCND1, CCNE1, DEK, E2F1, FEN1, FOXM1, H2AFZ, HMGB2, MCM2, MCM3,
 MCM4, MCM5, MCM6, MKI67, MYBL2, PCNA, PLK1, TOP2A, TYMS and ZWINT.
 Single-Cell Analyses Inform Mechanisms of Myeloid-Targeted Therapies in Colon Cancer, pmid: 32302573
+
+10. Progenitor exhaustion and terminal exhaustion signatures
+Progenitor exhaustion and terminal exhaustion signatures used in Figures 2D and 2F were derived from a previous melanoma
+study28 (Table S4), and genes related to a T cell mediated immune response to tumor cells in Figure 2B were obtained from
+MSigDB (version 7.5.1, https://www.gsea-msigdb.org/gsea/index.jsp).
+Progenitor-like exhausted SPRY1+CD8+ T cells potentiate responsiveness to neoadjuvant PD-1 blockade in esophageal squamous cell carcinoma, pmid: 37832554
 
 
 
