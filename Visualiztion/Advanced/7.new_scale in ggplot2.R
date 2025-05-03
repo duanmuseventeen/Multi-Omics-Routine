@@ -16,7 +16,6 @@ p <- ggplot() +
   geom_path(data = dat.fit2$s[dat.fit2$ord,],
             aes(x = umap_1, y = umap_2), col = "blue3") +
   scale_color_viridis(name="Slingshot:\nPseudotime2", option = "A") +
-  guides(colour = guide_legend(title = "Slingshot:\nPseudotime2")) +
   ggtitle("Slingshot CD8T") +
   theme_bw() +
   theme(text = element_text(size = 16),
