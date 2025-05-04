@@ -49,7 +49,7 @@ plot_cells(cds,
            label_branch_points=FALSE,
            graph_label_size=1.5)
 
-all(colnames(CD8T@assays$RNA$counts) == names(pseudotime(cds)))
+all(colnames(seurat.obj@assays$RNA$counts) == names(pseudotime(cds)))
 # [1] TRUE
 seurat.obj[['pseudotime']] <- pseudotime(cds)
 seurat.obj@reductions$umap@cell.embeddings %>% 
@@ -97,3 +97,27 @@ print_app <- function(widget, output_path = "G:/seurat.obj monocle3 3D") {
 print_app(cds_3d_plot_obj)
 
 save(cds, cds_3d, file = "monocle3.Rdata")
+
+AFD_genes = c("HAVCR2","CXCL13","IFNG","TCF7","XCL1")
+AFD_lineage_cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
+
+plot_genes_in_pseudotime(AFD_lineage_cds,
+                         label_by_short_name = FALSE,
+                         color_cells_by="pseudotime",
+                         min_expr=0.5)
+all(colnames(seurat.obj@assays$RNA$counts) == names(pseudotime(cds)))
+# [1] TRUE
+seurat.obj[['pseudotime']] <- pseudotime(cds)
+seurat.obj@assays$RNA@counts[AFD_genes,] %>% t %>% 
+  as.data.frame %>%
+  tibble::rownames_to_column("barcode") %>% 
+  left_join(seurat.obj@meta.data %>% 
+              tibble::rownames_to_column("barcode"), by = "barcode") %>% 
+  tidyr::pivot_longer(cols = AFD_genes, names_to = "Symbol", values_to = "counts") %>% 
+  ggplot(aes(x = pseudotime, y = counts, color = pseudotime)) +
+  geom_point() +
+  geom_smooth(method = "loess", n = 60, span = 0.6) +
+  scale_color_viridis(option = "A") +
+  facet_grid(Symbol ~ .) +
+  theme_bw() +
+  theme(text = element_text(size = 12), panel.grid = element_blank())
