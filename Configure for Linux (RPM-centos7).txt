@@ -4,7 +4,7 @@ sh Anaconda3-2024.10-1-Linux-x86_64.sh
 conda config --add channels conda-forge
 conda config --add channels bioconda
 
-conda create -n R4.4
+conda create -n R4.4 python=3.9
 conda create -n scRNAseq
 conda create -n python2.7
 
@@ -61,9 +61,11 @@ conda install conda-forge::r-spdep # for installation of monocle3
 pip install -U scvelo
 
 # Download R4.4.2 from CRAN
-tar -zxvf R4.4.2.tar.gz
-bash ./configure --enable-R-shlib --prefix=/home/yourname/R-4.4.2
-make&&make install
+# tar -zxvf R4.4.2.tar.gz
+# bash ./configure --enable-R-shlib --prefix=/home/yourname/R-4.4.2
+# make&&make install
+
+conda install r-base=4.4.2
 conda install conda-forge::r-rcpp
 conda install r-devtools
 
