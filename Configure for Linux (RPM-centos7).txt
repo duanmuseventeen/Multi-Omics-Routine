@@ -52,12 +52,6 @@ conda install -y -c bioconda bowtie2
 # R4.4-------------------------------------------------------
 conda activate R4.4
 
-conda install conda-forge::r-terra # for installation of monocle3
-packageurl <- "https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.1.tar.gz"
-install.packages(packageurl, repos=NULL, type="source") # for installation of lme4 and monocle3
-conda install conda-forge::r-sf # for installation of monocle3
-conda install conda-forge::r-spdep # for installation of monocle3
-
 pip install -U scvelo
 
 # Download R4.4.2 from CRAN
@@ -68,6 +62,12 @@ pip install -U scvelo
 conda install r-base=4.4.2
 conda install conda-forge::r-rcpp
 conda install r-devtools
+
+conda install conda-forge::r-terra # for installation of monocle3
+packageurl <- "https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.1.tar.gz"
+install.packages(packageurl, repos=NULL, type="source") # for installation of lme4 and monocle3
+conda install conda-forge::r-sf # for installation of monocle3
+conda install conda-forge::r-spdep # for installation of monocle3
 
 # https://github.com/broadinstitute/inferCNV/wiki/Installing-infercnv
 inferCNV包安装需要JAGS，安装JAGS需要依赖于LAPACK。
