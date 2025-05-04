@@ -49,6 +49,18 @@ plot_cells(cds,
            label_branch_points=FALSE,
            graph_label_size=1.5)
 
+all(colnames(CD8T@assays$RNA$counts) == names(pseudotime(cds)))
+# [1] TRUE
+seurat.obj[['pseudotime']] <- pseudotime(cds)
+seurat.obj@reductions$umap@cell.embeddings %>% 
+  as.data.frame %>% 
+  tibble::rownames_to_column("barcode") %>% 
+  left_join(seurat.obj@meta.data %>% 
+              tibble::rownames_to_column("barcode"), by = "barcode") %>% 
+ggplot(aes(x = umap_1, y = umap_2, color = pseudotime)) +
+  geom_point() +
+  scale_color_viridis(option = "A")
+
 # Working with 3D trajectories
 cds_3d <- reduce_dimension(cds, max_components = 3, reduction_method = "UMAP")
 cds_3d <- cluster_cells(cds_3d)
