@@ -8,6 +8,11 @@ conda create -n R4.4
 conda create -n scRNAseq
 conda create -n python2.7
 
+java -version
+# Reference
+# Download java of matched version from https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html
+# https://blog.csdn.net/Obscurede/article/details/131854725
+
 # scRNAseq--------------------------------------------------
 conda activate scRNAseq
 conda install -y -c bioconda fastqc
@@ -56,11 +61,6 @@ conda install r-devtools
 
 # https://github.com/broadinstitute/inferCNV/wiki/Installing-infercnv
 inferCNV包安装需要JAGS，安装JAGS需要依赖于LAPACK。
-
-java -version
-# Reference
-# Download java of matched version from https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html
-# https://blog.csdn.net/Obscurede/article/details/131854725
 
 rpm -i xx.rpm
 sudo update-alternatives --config java # set the default version of java to use
