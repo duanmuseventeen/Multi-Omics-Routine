@@ -98,26 +98,78 @@ print_app(cds_3d_plot_obj)
 
 save(cds, cds_3d, file = "monocle3.Rdata")
 
-AFD_genes = c("HAVCR2","CXCL13","IFNG","TCF7","XCL1")
+rowData(cds) <- data.frame(
+  id = rownames(rowData(cds)),
+  gene_short_name = rownames(rowData(cds)),
+  num_cells_expressed = rowSums(exprs(cds) > 0),
+  row.names = rownames(rowData(cds)),
+  stringsAsFactors = FALSE
+)
+cds <- estimate_size_factors(cds)
+AFD_genes = c("HAVCR2","CXCL13","IFNG","TCF7","XCL1","CD44","NKG7")
 AFD_lineage_cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
+# AFD_lineage_cds <- detect_genes(AFD_lineage_cds)
+# https://github.com/cole-trapnell-lab/monocle3/issues/344
+summary(pseudotime(AFD_lineage_cds))
+AFD_lineage_cds <- AFD_lineage_cds[, pseudotime(AFD_lineage_cds) != Inf]
+summary(pseudotime(AFD_lineage_cds))
 
-plot_genes_in_pseudotime(AFD_lineage_cds,
-                         label_by_short_name = FALSE,
-                         color_cells_by="pseudotime",
-                         min_expr=0.5)
-all(colnames(seurat.obj@assays$RNA$counts) == names(pseudotime(cds)))
-# [1] TRUE
-seurat.obj[['pseudotime']] <- pseudotime(cds)
-seurat.obj@assays$RNA@counts[AFD_genes,] %>% t %>% 
-  as.data.frame %>%
-  tibble::rownames_to_column("barcode") %>% 
-  left_join(seurat.obj@meta.data %>% 
-              tibble::rownames_to_column("barcode"), by = "barcode") %>% 
-  tidyr::pivot_longer(cols = AFD_genes, names_to = "Symbol", values_to = "counts") %>% 
-  ggplot(aes(x = pseudotime, y = counts, color = pseudotime)) +
-  geom_point() +
-  geom_smooth(method = "loess", n = 60, span = 0.6) +
-  scale_color_viridis(option = "A") +
-  facet_grid(Symbol ~ .) +
-  theme_bw() +
-  theme(text = element_text(size = 12), panel.grid = element_blank())
+gene_fits1 <- fit_models(AFD_lineage_cds, model_formula_str = "~pseudotime") 
+gene_fits2 <- fit_models(AFD_lineage_cds, model_formula_str = "~pseudotime + orig.ident")
+compare_models(gene_fits1, gene_fits2) %>% select(gene_short_name, q_value)
+# Likelihood based analysis and quasipoisson
+# The quasi-poisson distribution doesn't have a real likelihood function, so some of Monocle's methods won't work with it. Several of the columns in results tables from evaluate_fits() and compare_models() will be NA.
+
+fit_coefs <- coefficient_table(gene_fits2)
+fit_coefs <- fit_coefs %>% filter(term != "(Intercept)")
+fit_coefs %>% filter (q_value < 0.05) %>%
+  select(gene_short_name, term, q_value, estimate)
+plot_genes_violin(AFD_lineage_cds, group_cells_by="cell_type", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+# plot_genes_hybrid(AFD_lineage_cds, group_cells_by="cell_type", ncol=2) +
+#   theme(axis.text.x=element_text(angle=45, hjust=1))
+
+# expression_family	Distribution	Accuracy	Speed	Notes
+# quasipoisson	Quasi-poisson	++	++	Default for fit_models(). Recommended for most users.
+# negbinomial	Negative binomial	+++	+	Recommended for users with small datasets (fewer than 1,000 cells).
+# poisson	Poisson	-	+++	Not recommended. For debugging and testing only.
+# binomial	Binomial	++	++	Recommended for single-cell ATAC-seq
+
+# https://github.com/satijalab/seurat-wrappers/issues/97
+AFD_genes = c("SELL","IL7R","HAVCR2","PDCD1","IFNG","GNLY","PRF1","CD44")
+AFD_lineage_cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
+AFD_lineage_cds <- detect_genes(AFD_lineage_cds)
+AFD_lineage_cds <- AFD_lineage_cds[, pseudotime(AFD_lineage_cds) != Inf]
+monocle3::plot_genes_in_pseudotime(
+  AFD_lineage_cds,
+  label_by_short_name = FALSE,
+  color_cells_by="cell_type",
+  nrow = 4, ncol = 2,
+  min_expr=0.5)
+# nrow
+# ncol
+# panel_order
+# vertical_jitter
+# horizontal_jitter
+# key:   
+# model_tbl = fit_models(cds_subset, model_formula_str = trend_formula)
+# model_expectation <- model_predictions(model_tbl, new_data = new_data)
+if(FALSE){
+  all(colnames(seurat.obj@assays$RNA$counts) == names(pseudotime(cds)))
+  # [1] TRUE
+  seurat.obj[['pseudotime']] <- pseudotime(cds)
+  dat.gg <- seurat.obj@assays$RNA@counts[AFD_genes,] %>% t %>% 
+    as.data.frame %>%
+    tibble::rownames_to_column("barcode") %>% 
+    left_join(seurat.obj@meta.data %>% 
+                tibble::rownames_to_column("barcode"), by = "barcode") %>% 
+    tidyr::pivot_longer(cols = AFD_genes, names_to = "Symbol", values_to = "counts")
+  ggplot(dat.gg %>% filter(Symbol %in% c("CXCL13")), 
+         aes(x = pseudotime, y = counts, color = pseudotime)) +
+    geom_point() +
+    geom_smooth(method = "loess", n = 50, span = 0.2) +
+    scale_color_viridis(option = "A") +
+    facet_grid(Symbol ~ .) +
+    theme_bw() +
+    theme(text = element_text(size = 12), panel.grid = element_blank())
+}
