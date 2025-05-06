@@ -22,7 +22,7 @@ boxplot(dat[,-1], outline = F, col = "red")
 dim(dat)
 # [1] 7910    7
 # QC----------------------------------------------------------------------------
-# Here, we calculate the sum the proteins, who have the same name
+# Here, we calculate the sum of the proteins, who have the same name
 dat <- dat %>% 
   filter(complete.cases(.)) %>% 
   left_join(annot %>% dplyr::select(Accession, `Gene Name`), by = "Accession")
