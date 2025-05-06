@@ -37,6 +37,7 @@ dat <- rawdat %>%
   filter(complete.cases(WT4_11)) %>% 
   filter(complete.cases(WT4_12))
 
+# Here, we calculate the mean of the proteins, who have the same name
 dat.uni <- dat %>% 
   tidyr::pivot_longer(cols = c("CKO2_11","CKO2_8","CKO4_19","WT4_10","WT4_11","WT4_12"), 
                       names_to = "ID", values_to = "intensity") %>% 
@@ -73,9 +74,9 @@ report <- data.frame(
          fdr = p.adjust(p.value, method = "fdr")) %>% 
   mutate(log2FC = log2(FC))
 
-sum(report$p.value < 0.05) # 1307
-sum(report$fdr < 0.05) # 808
-sum(report$fdr < 0.05 & abs(report$log2FC) > log2(1.2)) # 288
+sum(report$p.value < 0.05) 
+sum(report$fdr < 0.05)
+sum(report$fdr < 0.05 & abs(report$log2FC) > log2(1.2))
 # Visualization-----------------------------------------------------------------
 geom_volcano <- function(dat = report, pos.num = 2,neg.num = -2){
   require(ggplot2)
