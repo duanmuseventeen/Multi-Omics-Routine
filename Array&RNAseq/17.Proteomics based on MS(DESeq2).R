@@ -1,4 +1,4 @@
-# data type: 基于质谱的蛋白组数据
+# data type: 基于质谱的蛋白组数据-Label free DIA
 # company: 青莲百奥
 # sample: tissue from mice
 # software: 
