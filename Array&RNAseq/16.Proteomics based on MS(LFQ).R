@@ -1,4 +1,4 @@
-# data type: 基于质谱的蛋白组数据
+# data type: 基于质谱的蛋白组数据-相对定量 标记 化学标记 TMT
 # company: 景杰生物
 # sample: tissue from mice
 # software: MaxQuant
