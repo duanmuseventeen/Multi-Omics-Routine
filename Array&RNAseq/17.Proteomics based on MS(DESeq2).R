@@ -1,5 +1,6 @@
 # data type: 基于质谱的蛋白组数据
 # company: 青莲百奥
+# sample: tissue from mice
 # software: 
 
 
