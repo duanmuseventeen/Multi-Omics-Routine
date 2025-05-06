@@ -1,5 +1,6 @@
 # data type: 基于质谱的蛋白组数据
 # company: 景杰生物
+# sample: tissue from mice
 # software: MaxQuant
 # Maxquant处理，LFQ normalization
 # 4.MaxQuant中的Intensity，LFQ和iBAQ
