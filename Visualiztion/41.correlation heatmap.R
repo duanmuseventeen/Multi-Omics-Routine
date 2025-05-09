@@ -1,7 +1,7 @@
 require(dplyr)
 require(ggplot2)
 
-gut <- readxl::read_excel("gut.xlsx") %>% 
+gut <- readxl::read_excel("41.correlation heatmap.xlsx") %>% 
   tibble::column_to_rownames("Sample")
 
 ggcorheat <- function(dat, cor.method = "spearman", 
