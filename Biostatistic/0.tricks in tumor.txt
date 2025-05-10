@@ -52,6 +52,11 @@ study28 (Table S4), and genes related to a T cell mediated immune response to tu
 MSigDB (version 7.5.1, https://www.gsea-msigdb.org/gsea/index.jsp).
 Progenitor-like exhausted SPRY1+CD8+ T cells potentiate responsiveness to neoadjuvant PD-1 blockade in esophageal squamous cell carcinoma, pmid: 37832554
 
+11. The immune stimulatory and inhibitory scores
+The immune stimulatory and inhibitory scores were calculated with markers collected from Tumor Immune System Interaction Database
+and published studies (Supplementary Table 14).
+Single-cell and spatial RNA sequencing identify divergent microenvironments and progression signatures in early- versus late-onset prostate cancer, pmid: 40211000
+
 
 
 
