@@ -80,6 +80,9 @@ https://blog.csdn.net/weixin_42192188/article/details/131842054
 download the package using the url from the error
 devtools::install_local("CARMA/ZikunY-CARMA-8df428a.tar.gz", type = "binary")
 
+Q3: https://pyscenic.readthedocs.io/databases/hg19-500bp-upstream-7species.mc9nr.feather
+A3: https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/
+https://shendure-web.gs.washington.edu/content/members/cao1025/public/index/gene_TF_list/
 
 
 
