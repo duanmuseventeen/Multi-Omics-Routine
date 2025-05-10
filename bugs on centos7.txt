@@ -84,6 +84,7 @@ Q3: https://pyscenic.readthedocs.io/databases/hg19-500bp-upstream-7species.mc9nr
 A3: https://resources.aertslab.org/cistarget/
 https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/
 https://shendure-web.gs.washington.edu/content/members/cao1025/public/index/gene_TF_list/
+https://www.jianshu.com/p/71ed43163ce1
 
 
 
