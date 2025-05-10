@@ -1,6 +1,6 @@
-Q1. dotnet: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by dotnet)
+Q1: dotnet: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by dotnet)
 dotnet: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by dotnet)
-A1.
+A1:
 # https://blog.csdn.net/charlotte1516/article/details/138619334
 # https://blog.csdn.net/charlotte1516/article/details/138582776?spm=1001.2014.3001.5501
 # 检查glibc版本
@@ -71,3 +71,27 @@ GLIBCXX_3.4.25
 GLIBCXX_3.4.26
 GLIBCXX_DEBUG_MESSAGE_LENGTH
 ...
+
+Q2: Downloading GitHub repo ZikunY/CARMA@HEAD
+Error in utils::download.file(url, path, method = method, quiet = quiet,  : 
+  download from 'https://api.github.com/repos/ZikunY/CARMA/tarball/HEAD' failed
+A1:                     
+https://blog.csdn.net/weixin_42192188/article/details/131842054
+download the package using the url from the error
+devtools::install_local("CARMA/ZikunY-CARMA-8df428a.tar.gz", type = "binary")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
