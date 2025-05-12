@@ -81,6 +81,8 @@ pip install cnmf
 pip install harmonypy
 pip install scikit-misc
 
+conda install -c conda-forge squidpy
+
 # omicverse------------------------------------------------------
 # https://omicverse.readthedocs.io/en/latest/Installation_guild/#using-conda
 conda create -n omicverse python=3.10
