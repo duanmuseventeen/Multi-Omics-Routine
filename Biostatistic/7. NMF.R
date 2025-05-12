@@ -100,6 +100,46 @@ extractFeatures(res_nmf)
 # 2. 使用降采样的数据运算，结果为NA，原因未知
 
 # 之后尝试用Python测试
+# python------------------------------------------------------------------------
+# https://mp.weixin.qq.com/s/YHgRZlun812jJDkf2fnB5g
+
+conda activate python3.11
+# python代码运行
+# prepare步骤 
+-c COUNTS, --counts COUNTS
+[prepare] Input (cell x gene) counts matrix as .h5ad, .mtx,
+df.npz, or tab delimited text file
+
+cnmf prepare --output-dir ./res \ # 输出的文件夹为res
+--name cNMF_res \ # 命名为cNMF_res
+-c ./subdat.txt \ # 指定输入文件
+-k 2 3 4 5 6 7 8 9 10 11 12 13 \ # 指定要尝试的因子数
+--n-iter 100 --seed 123# 每个k值运行100次，并设定种子数
+
+# factorize步骤
+cnmf factorize --output-dir ./res \ # 指定输出目录，与prepare阶段一致，确保读取之前准备好的数据
+--name cNMF_res \ # 与prepare保持一致，告诉程序使用哪一组预处理结果
+--worker-index 0 --total-workers 1 # 当前工作进程的编号，编号从0开始。同时单核运行
+# --total-workers必须为1，否则输出文件缺失
+
+# combine步骤
+cnmf combine --output-dir ./res --name cNMF_res # 执行合并步骤进行结果合并
+
+# k_selection_图
+cnmf k_selection_plot --output-dir ./res \ # 生成K值评估图，指定分析相同路径
+--name cNMF_res # 
+
+cnmf consensus --output-dir ./res \ # 执行共识分析，读取结果
+--name cNMF_res \ # 与前面保持一致
+--components 4 \ # 最终选定的因子数 k=4
+--local-density-threshold 2 \ # 调整聚类时的密度阈值
+--show-clustering # 输出可视化结果
+
+
+
+
+
+
 
 
 
