@@ -83,7 +83,7 @@ plot.new(); legend(0,1, fill=colVars$cell_type, legend=names(colVars$cell_type))
 org <- "hgnc" # or mgi, or dmel
 # db_mcVersion <- 'v9'
 dbDir <- "G:/Database/TF-SCENIC + RcisTarget/human" # RcisTarget databases location
-myDatasetTitle <- "SCENIC ESCC" # choose a name for your analysis
+myDatasetTitle <- "SCENIC" # choose a name for your analysis
 data(defaultDbNames)
 # dbs <- defaultDbNames[[org]]
 dbs <- c("hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.scores.feather",
@@ -124,11 +124,8 @@ saveRDS(scenicOptions, file="G:/scenicOptions.Rds")
 
 ...
 # ================================== Python ====================================
-load("5.Myeloid/scobj.M.1500.20.0.4(withoutregression)注释.Rdata")
-fig <- subset(scobj.M.h, subset = cell_type != "doublets")
-DC <- subset(fig, subset = cell_type %in% c("cDC1_CCR7","cDC2_FCER1A","pDC_LILRA4"))
-
-write.table(DC@assays$RNA$counts, "G:/Seurat2h5/DC.tsv", sep = "\t")
+load("DC.Rdata")
+write.csv(DC@assays$RNA$counts, "DC.csv")
 
 # SCENIC steps
 # STEP 1: Gene regulatory network inference, and generation of co-expression modules
@@ -142,11 +139,11 @@ write.table(DC@assays$RNA$counts, "G:/Seurat2h5/DC.tsv", sep = "\t")
 # tf_names = load_tf_names( f_tfs )
 
 # Step 1
-pyscenic grn /data/FYM/pyscenic/DC.csv allTFs_hg38.txt -o adj.csv --num_workers 8
+pyscenic grn DC.csv allTFs_hg38.txt -o adj.csv --num_workers 8
 # Step 2-3
 pyscenic ctx adj.tsv \
 hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather \
---annotations_fname /data/FYM/pyscenic/motif/motifs-v9-nr.hgnc-m0.001-o0.0.tbl \
+--annotations_fname motifs-v9-nr.hgnc-m0.001-o0.0.tbl \
 --expression_mtx_fname DC.csv \
 --output reg.csv \
 --mask_dropouts \
@@ -182,7 +179,7 @@ reg.csv \
 
 # Q ----------------------------------------------------------------------------
 # 1. pySCENIC运行的原理
-# 2. 安装pySCENIC 0.12
+
 
 
 
