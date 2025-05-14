@@ -1,0 +1,79 @@
+---
+title: "47.ST-Basic Knowledge"
+author:
+  - duanmuseventeen
+date: "2025-05-14"
+documentclass: ctexart
+output:
+  rmdformats::readthedown:
+  self_contained: yes
+  thumbnails: yes
+  lightbox: yes
+  gallery: no
+  highlight: tango
+---
+
+**1. Theory of Technology**<br>
+Overview of Illumina Sequencing by Synthesis Workflow | Standard SBS chemistry<br>
+https://www.youtube.com/watch?v=fCd6B5HRaZ8&t=1s<br>
+【陈巍学基因】视频1：Illumina测序化学原理<br>
+https://www.bilibili.com/video/BV1oJ411r7e7/?spm_id_from=333.337.search-card.all.click&vd_source=7687d926bc3779b048e880123e66bca4<br>
+nCounter Technology by NanoString - Direct Detection for Gene and Protein Expression Profiling<br>
+https://www.youtube.com/watch?v=dlz3q3Bq5B4<br>
+【陈巍学基因】视频106: FFPE Visium 石蜡切片空间转录组<br>
+https://www.bilibili.com/video/BV1Qa4y1375K?spm_id_from=333.788.videopod.sections&vd_source=7687d926bc3779b048e880123e66bca4<br>
+【陈巍学基因】视频125: Visium HD 高分辨率空间转录组技术<br>
+https://www.bilibili.com/video/BV1eH4y1N7Ge?spm_id_from=333.788.videopod.sections&vd_source=7687d926bc3779b048e880123e66bca4<br>
+【陈巍学基因】视频127: 10X Genomics 的四种空间转录组技术<br>
+https://www.bilibili.com/video/BV1FT421Q7Xs/?spm_id_from=333.1007.top_right_bar_window_default_collection.content.click&vd_source=7687d926bc3779b048e880123e66bca4<br>
+【陈巍学基因】视频109: 华大时空转录组技术 Stereo-seq<br>
+https://www.bilibili.com/video/BV1Uj411D7Le?spm_id_from=333.788.videopod.sections&vd_source=7687d926bc3779b048e880123e66bca4<br>
+【陈巍学基因】视频59：Nanopore测序<br>
+https://www.bilibili.com/video/BV1KJ411k7R2?spm_id_from=333.788.videopod.sections&vd_source=7687d926bc3779b048e880123e66bca4<br>
+
+**2. Offical Tutorial**<br>
+10X<br>
+https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/output-overview<br>
+https://www.10xgenomics.com/support/software/loupe-browser/latest<br>
+https://www.10xgenomics.com/support/software/loupe-vdj-browser/latest<br>
+satija-lab<br>
+https://satijalab.org/seurat/articles/visiumhd_analysis_vignette<br>
+https://satijalab.org/seurat/articles/visiumhd_analysis_vignette<br>
+https://satijalab.org/seurat/articles/spatial_vignette<br>
+
+**3. Other**<br>
+Loupe Browser Tutorial [LATEST]<br>
+https://www.youtube.com/watch?v=wBZhG1pVcT4<br>
+
+**4. Article of Technology**<br>
+pmid: 30923225<br>
+year: 2019<br>
+title: Slide-seq: A Scalable Technology for Measuring Genome-Wide Expression at High Spatial Resolution<br>
+
+**5. Summary**<br>
+
+|水平 |技术         |Environment                   |LOD       |Detected molecular species                                                                                                            |
+|:----|:------------|:-----------------------------|:---------|:-------------------------------------------------------------------------------------------------------------------------------------|
+|代谢 |Dynamic SIMS |High vacuum                   |pmol-fmol |Elements                                                                                                                              |
+|代谢 |Static SIMS  |High vacuum                   |pmol-fmol |Elements, metabolite fragments, drug fragments, and lipid fragments                                                                   |
+|代谢 |MALDI        |High vacuum, low vacuum or AP |fmol-amol |Metabolites (e.g., amino acids, alkaloids, glycosides, phenolics, fatty acids, and glycerides), drugs, lipids, peptides, and proteins |
+|代谢 |LDI          |High vacuum, low vacuum or AP |fmol-amol |Metabolites (e.g., terpenoids, alkaloids, saccharides, glycerides), drugs and lipids                                                  |
+|代谢 |DESI         |AP                            |fmol      |Metabolites (e.g., amino acids, terpenoids, alkaloids, glycosides, and glycerides), drugs and lipids and small peptides               |
+|代谢 |LA-ESI       |AP                            |pmol-fmol |Metabolites (e.g., amino acids, alkaloids, glycosides, and glycerides), drugs and lipids and small peptides                           |
+
+**6. Article using ST**<br>
+pmid: 39567686<br>
+year: 2024<br>
+title: Spatially restricted immune and microbiotadriven adaptation of the gut<br>
+
+**7. Code**<br>
+```{r}
+# load pkgs---------------------------------------------------------------------
+# packages required for Visium HD
+# install.packages("hdf5r")
+# install.packages("arrow")
+suppressMessages(library(Seurat))
+suppressMessages(library(ggplot2))
+suppressMessages(library(patchwork))
+suppressMessages(library(dplyr))
+```
