@@ -29,6 +29,12 @@
 # 来源：简书
 # 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
+# 2025, NG, pmid: 40169792
+# ... The output of the pySCENIC workflow was then transferred into the R environment. Differentially
+# activated regulons in each subpopulation were identified by a linear model from the LIMMA package58. 
+# The P value was adjusted by the Benjamini–Hochberg procedure. Regulons with an adjusted P
+# value < 0.001 were deemed significantly differentially activated.
+
 library(SCENIC)
 library(Seurat)
 library(ggplot2)
