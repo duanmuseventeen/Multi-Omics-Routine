@@ -12,7 +12,7 @@ require(Startrac)
 require(miloR)
 require(Augur)
 
-load("Seurat.Rdata") # fig
+load("Seurat.Rdata") # seurat.obj
 # Ro/e =========================================================================
 # tissue migration and state transition. 
 # We present STARTRAC as a framework, defined by four indices, to analyse different 
@@ -40,10 +40,10 @@ load("Seurat.Rdata") # fig
 # in the specific tissue, that is, depleted. By calculating the STARTRAC-dist indices 
 # via R_o/e, we can quantify the tissue preference of T cell clusters efficiently.
 
-data <- fig@meta.data
+data <- seurat.obj@meta.data
 data$majorCluster = data$cell_type
 data$patient = data$sample
-data$loc = data$smoking
+data$loc = data$condition
 Roe <- calTissueDist(data,
                      byPatient = F,
                      colname.cluster = "majorCluster", # 不同细胞亚群
@@ -52,16 +52,6 @@ Roe <- calTissueDist(data,
                      method = "chisq", # "chisq", "fisher", and "freq" 
                      min.rowSum = 0) 
 Roe
-# non-smoker    smoker
-# cDC1_CCR7        1.3691707 0.5479240
-# cDC2_FCER1A      0.9696462 1.0371704
-# Macrophage_IL1B  1.4003862 0.5096984
-# Monocyte_S100A8  1.1556725 0.8093679
-# Myeloid_MKI67    0.9309508 1.0845557
-# pDC_LILRA4       0.8304513 1.2076246
-# TAM_MERTK        0.9589392 1.0502819
-# TAM_SPP1         0.5546770 1.5453298
-# TAM_SPP1/C1QC    0.9211508 1.0965565
 
 # col_fun <- colorRamp2(c(min(Roe, na.rm = TRUE), 1, max(Roe, na.rm = TRUE)), 
 #                       c("blue", "white", "red"))
@@ -96,8 +86,8 @@ Roe
 # From Seurat object
 # The Seurat package includes a converter to SingleCellExperiment.
 
-fig_sce <- as.SingleCellExperiment(fig)
-fig_milo <- Milo(fig_sce)
+seurat.obj_sce <- as.SingleCellExperiment(seurat.obj)
+seurat.obj_milo <- Milo(seurat.obj_sce)
   
 # 1. Build a graph and neighbourhoods.------------------------------------------
 # We need to add the KNN graph to the Milo object. This is stored in the graph slot, 
@@ -106,7 +96,7 @@ fig_milo <- Milo(fig_sce)
 
 # d	
 # The number of dimensions to use if the input is a matrix of cells X reduced dimensions. If this is provided, transposed should also be set=TRUE.
-milo.obj <- buildGraph(fig_milo, k=20, d=20)
+milo.obj <- buildGraph(seurat.obj_milo, k=20, d=20)
 # 2. Defining representative neighbourhoods-------------------------------------
 milo.obj <- makeNhoods(milo.obj, k=20, d=20, refined=TRUE, prop=0.2)
 plotNhoodSizeHist(milo.obj)
@@ -125,24 +115,13 @@ head(nhoodCounts(milo.obj))
 # 5 3 1  3  . 3  3 15  5 13 13
 # 6 . .  7  . 7  .  .  7  7  .
 # 4. Differential abundance testing---------------------------------------------
-design <- data.frame(colData(milo.obj))[,c("sample", "smoking")]
+design <- data.frame(colData(milo.obj))[,c("sample", "condition")]
 design <- distinct(design)
 rownames(design) <- design$sample
 ## Reorder rownames to match columns of nhoodCounts(milo)
 design <- design[colnames(nhoodCounts(milo.obj)), , drop=FALSE]
 
 design
-# sample    smoking
-# T01    T01     smoker
-# T02    T02 non-smoker
-# T03    T03     smoker
-# T04    T04 non-smoker
-# T05    T05 non-smoker
-# T06    T06     smoker
-# T07    T07     smoker
-# T08    T08 non-smoker
-# T09    T09     smoker
-# T10    T10     smoker
 
 milo.obj <- calcNhoodDistance(milo.obj, d=20)
 ## 'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
@@ -150,7 +129,7 @@ milo.obj <- calcNhoodDistance(milo.obj, d=20)
 ## See help("Deprecated") and help("Matrix-deprecated").
 
 # rownames(design) <- design$sample
-da_results <- testNhoods(milo.obj, design = ~ smoking, design.df = design)
+da_results <- testNhoods(milo.obj, design = ~ condition, design.df = design)
 
 # This calculates a Fold-change and corrected P-value for each neighbourhood, 
 # which indicates whether there is significant differential abundance between 
@@ -171,8 +150,8 @@ milo.obj <- buildNhoodGraph(milo.obj)
 scater::plotUMAP(milo.obj) + plotNhoodGraphDA(milo.obj, da_results, alpha=0.05) +
   patchwork::plot_layout(guides="collect")
 # Augur ========================================================================
-fig@meta.data$labels <- fig@meta.data$smoking
+seurat.obj@meta.data$labels <- seurat.obj@meta.data$condition
 
-augur <- calculate_auc(fig, cell_type_col = "cell_type", label_col = "smoking")
+augur <- calculate_auc(seurat.obj, cell_type_col = "cell_type", label_col = "condition")
 
 augur$AUC
