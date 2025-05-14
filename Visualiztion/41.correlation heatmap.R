@@ -71,3 +71,10 @@ ggcorheat <- function(dat, cor.method = "spearman",
 p1 <- ggcorheat(dat = gut)
 ggsave(plot = p1, filename = paste0("gut",".pdf"), 
        device = "pdf",width = 8, height = 8, dpi = 300)
+
+# Interestingly, even we conduct FDR to avoid the false positive results, particularly,
+# in correlation analysis, FDR adjustion increase the number of significant correlation (
+# fdr-q < 0.05).
+
+
+
