@@ -120,6 +120,7 @@ ascp -h
 cell ranger
 # https://www.10xgenomics.com/support/software/cell-ranger/downloads
 cat /proc/cpuinfo # to check system requirements
+cat /etc/redhat-release
 
 
 
