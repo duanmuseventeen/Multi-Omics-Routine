@@ -117,4 +117,28 @@ conda install -c hcc aspera-cli=3.7.7 -y
 which ascp
 ascp -h
 
+cell ranger
+# https://www.10xgenomics.com/support/software/cell-ranger/downloads
+cat /proc/cpuinfo # to check system requirements
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
