@@ -121,7 +121,10 @@ cell ranger
 # https://www.10xgenomics.com/support/software/cell-ranger/downloads
 cat /proc/cpuinfo # to check system requirements
 cat /etc/redhat-release
-
+...
+# add cellranger to PATH (also .bashrc)
+export PATH=/opt/cellranger-x.y.z:$PATH
+source ~/.bashrc
 
 
 
