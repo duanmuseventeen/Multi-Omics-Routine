@@ -2,6 +2,8 @@
 # Theory
 # https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_the_ec50.htm
 
+# https://github.com/DoseResponse/drc/blob/master/
+
 # https://rstudio-pubs-static.s3.amazonaws.com/788707_37e78b45ea234e778c901227fba475ed.html
 # https://www.jingege.wang/2023/08/09/%e5%89%82%e9%87%8f%e7%9b%b8%e5%ba%94%e5%85%b3%e7%b3%bb%e6%9b%b2%e7%ba%bf%e5%8f%8aic50%e8%ae%a1%e7%ae%97%ef%bc%9agraphpad-r%e8%af%ad%e8%a8%80/
 # https://cran.r-project.org/web/packages/ec50estimator/vignettes/how_to_use.html
@@ -157,6 +159,13 @@ ED(ec50_GLP_1R, respLev = c(50), type = "absolute")
 # 4.4451e-05
 # ppm is the absolute EC50. # # # # 
 
+# CI
+confint(ec50_GLP_1R, level = 0.95)
+# 2.5 %        97.5 %
+# b:(Intercept) -3.153204e+00 -1.653275e+00
+# d:(Intercept)  9.524915e+01  1.032680e+02
+# e:(Intercept)  3.889507e-05  4.945671e-05
+
 #### Plotting the model with absolute and relative EC50 as labelled data points----
 #Use my drm to predict y values for the relative EC50 (we know absolute y is 50)
 x_value <- c(summary(ec50_GLP_1R)$coefficients["e:(Intercept)","Estimate"])
@@ -172,6 +181,22 @@ points(x_value, predicted_y, pch = 15, cex = 1.5)
 text(ED(ec50_GLP_1R, respLev = c(50), type = "absolute")[1,1], 50, labels=expression(bold("Absolute EC50")), cex= 1, adj = c(-0.1, 1))
 text(x_value, predicted_y, labels=expression(bold("Relative EC50")), cex= 1, adj = c(-0.1, -0.9))
 title("Dose Response Curve")
+
+cols <- RColorBrewer::brewer.pal(4,'Set2') #from RColorBrewer
+
+plot(ec50_GLP_1R,
+     type= "all",
+     col=cols[1], #auto color selection for curves
+     pch=16,
+     lwd=1,
+     cex.axis=0.8,
+     # legend = TRUE,
+     xlab= "[Compound] (nM)",
+     ylab = "Intensity Sum")
+plot(ec50_GLP_1R,
+     col = cols[1],
+     add=TRUE,
+     type='confidence')
 
 #### For multi group------------------------------------------------------------
 ec50 <- drm(`cAMP response (% agonist max)` ~ dose, 
@@ -211,3 +236,111 @@ title("Dose Response Curve")
 
 # 以上计算结果与Prism Graphpad 9计算结果相同
 # 但原文结果无法重复
+#### Visualization--------------------------------------------------------------
+# method1: 
+# method1.1:
+ggplot() + 
+  geom_jitter(data = dat, aes(x = dose, y = `cAMP response (% agonist max)`, 
+                              colour = `cAMP response (% agonist max)`)) +
+  geom_line(data = data.frame(
+    dose = seq(range(dat$dose)[1],range(dat$dose)[2],length.out = 1000),
+    stringsAsFactors = FALSE
+  ) %>% 
+    mutate(response = ec50_GLP_1R$curve[[1]](dose)),
+  aes(x = dose, y = response, colour = response)) +
+  scale_x_log10() + 
+  scale_color_viridis_c(option = "B") +
+  theme_classic() +
+  theme(panel.grid = element_blank())
+
+# method1.2:
+line <- plot(ec50_GLP_1R,
+             type= "all",
+             pch=16,
+             lwd=1,
+             cex.axis=0.8,
+             legend = TRUE,
+             xlab= "[Compound] (nM)",
+             ylab = "Intensity Sum")
+
+se <- predict(ec50_GLP_1R, 
+              newdata = data.frame(
+                dose = seq(range(dat$dose)[1],range(dat$dose)[2],length.out = 1000)),
+              interval = "confidence",
+              level = 0.95)[, c("Lower", "Upper")] %>% 
+  as.data.frame %>% 
+  mutate(x = seq(range(dat$dose)[1],range(dat$dose)[2],length.out = 1000))
+
+ggplot() + 
+  geom_jitter(data = dat %>% filter(group == 'GLP-1R'),
+              aes(x = log(dose), y = `cAMP response (% agonist max)`,
+                              colour = `cAMP response (% agonist max)`)) +
+  geom_line(data = line, aes(x = log(dose), y = `1`), colour = "steelblue") +
+  geom_ribbon(data = se, aes(x = log(x), ymin = Lower, ymax = Upper), 
+              fill = "steelblue", alpha = 0.2) +
+  theme_classic() +
+  theme(panel.grid = element_blank())
+# method2: ---------------------------------------------------------------------
+# https://rstudio-pubs-static.s3.amazonaws.com/788707_37e78b45ea234e778c901227fba475ed.html
+library(RColorBrewer)
+
+Finally, let’s plot the curves side- by side
+
+cols <- brewer.pal(4,'Set2') #from RColorBrewer
+
+par(mfrow=c(1,2)) #(n row, n col) 
+
+for (i in 1:curve_cnt){ #note curves list index starts at 1
+  DR = filter(DF_norm, Weeks==weeks[i,1]) 
+  DR.mi <- drm(AggObj_IntSum ~ Concentration, 
+               data= DR,
+               robust = 'mean', #non-robust least squares estimation ("mean")
+               fct = LL.4(names = c("Hill slope", "Min", "Max", "EC50")))
+  plot(DR.mi,
+       type= "all",
+       col=cols[i], #auto color selection for curves
+       pch=16,
+       lwd=1,
+       cex.axis=0.8,
+       xlim = c(1e-4, 20),
+       ylim = c(0, 5E+09),
+       legend = TRUE,
+       legendText = (paste(toString(weeks[i,1]), 'weeks')), 
+       xlab= "[Compound] (nM)",
+       ylab = "Intensity Sum")
+  plot(DR.mi,
+       col = cols[i],
+       xlim = c(1e-4, 20),
+       ylim = c(0, 5E+09),
+       add=TRUE,
+       type='confidence')}
+
+
+As suspected, the curves does not reach a steady plateau. Therefore we can’t quantitatively compare best-fit curve EC50 and top values. However, there is a clear trend- the longer timecourse (7 weeks) has a stronger response in terms of both potency of compound (smaller EC50) and higher max (non-existent plateau). This can be easily visualized if we plot the suves on top of each other this time.
+
+par(mfrow=c(1,1)) #(n row, n col) 
+
+for (i in 1:curve_cnt){ #note curves list index starts at 1
+  DR = filter(DF_norm, Weeks==weeks[i,1]) 
+  DR.mi <- drm(AggObj_IntSum ~ Concentration, 
+               data= DR,
+               robust = 'mean', #non-robust least squares estimation ("mean")
+               fct = LL.4(names = c("Hill slope", "Min", "Max", "EC50")))
+  plot(DR.mi,
+       type= "all",
+       col=cols[i], #auto color selection for curves
+       pch=16,
+       lwd=1,
+       cex.axis=0.8,
+       xlim = c(1e-4, 20),
+       ylim = c(0, 5E+09),
+       legend = FALSE,
+       xlab= "[Compound] (nM)",
+       ylab = "Intensity Sum")
+  plot(DR.mi,
+       col = cols[i],
+       xlim = c(1e-4, 20),
+       ylim = c(0, 5E+09),
+       add=TRUE,
+       type='confidence')
+  par(new=TRUE)} #Add new=TRUE arg to overlay graphs
