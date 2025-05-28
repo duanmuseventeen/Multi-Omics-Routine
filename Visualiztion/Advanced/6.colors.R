@@ -26,4 +26,27 @@ c("#B2182B","#E69F00","#56B4E9","#009E73","#F0E442",
 c("#e8d5d5","#fad8b7","#f5b0af","#b3ccb0","#d2e7a7","#afe5f6")
 c("#c79494","#f39d49","#e73a36","#3d7d35","#8ec321","#30bbea")
 
+c("#F37252","#F7935A","#FCB461","#FED297","#FFF0DC","#E3F5F6","#ABE0E4","#7FC6D3","#779FC6","#6F78B9")
+
+
+new_colors_list = {
+ 'IPHC/IBC' : '#E76254',
+ 'Fibroblasts': '#EF8A47',
+ 'DC/PC': '#f4a494',
+ 'Basal cell': '#FFE6B7',
+ 'Intermediate cell': '#AADCE0',
+ 'Marginal cell': '#528FAD',
+ 'Hair cell': '#a4549c',
+ 'Spiral ganglion neuron': '#1E466E',
+ 'Reissner’s membrane': '#C7B8BD',
+ 'Schwann cell': '#8C4834',
+ 'Capillary endothelial cell': '#C17E65',
+ 'Pericytes': '#645cac',
+ 'T/NK': '#EFD061',
+ 'B cell': '#547857',
+ 'Mac/Mono': '#c49c94',
+ 'Red blood cell': '#f7b6d2',
+ 'Neutrophil': '#dbdb8d'
+}
+
 
