@@ -14,3 +14,25 @@ ggpairs(dat2, columns = 2:8, title = "Technical replicates: IFRV")
 ggpairs(dat3, columns = 2:8, title = "Technical replicates: VGTE")
 ggpairs(dat4, columns = 2:8, title = "Technical replicates: MVRN")
 ggpairs(dat5, columns = 2:8, title = "Technical replicates: NREC")
+
+# OPTIMAL-----------------------------------------------------------------------
+# https://zhuanlan.zhihu.com/p/506277796
+
+# Not Run
+p <- ggpairs(dat.ally, columns = 2:8, title = "",
+        mapping = ggplot2::aes(color = group),
+        upper = list(continuous = wrap("cor",method = "spearman")), # 更改相关性系数，?ggally_cor，查看函数参数，默认pearson。
+        lower = list(continuous = "smooth", # ggally_smooth()
+                     #combo = "facethist", 
+                     #discrete = "facetbar", 
+                     na ="na"),
+        # lower = list(continuous = wrap("smooth",se = TRUE)), # 默认lm
+        # lower = list(continuous = wrap("smooth",method = "loess",se = TRUE)), # 默认lm
+        diag = list(continuous = "densityDiag", # 'densityDiag', 'barDiag', 'blankDiag'可选
+                    #discrete = "barDiag", # 'barDiag', 'blankDiag'可选 
+                    #diag =NULL # 不显示diag部分
+                    na = "naDiag")
+        ) + 
+  scale_color_manual(values = c("#f67152","#fcb460","#aadfe5","#6e77b8"))
+
+ggsave(plot = p, filename = "correlation matrix.pdf", device = "pdf",width = 10, height = 10, dpi = 300)
