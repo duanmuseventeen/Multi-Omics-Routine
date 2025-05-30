@@ -44,7 +44,7 @@ cols <- RColorBrewer::brewer.pal(4,'Set2') #from RColorBrewer
 ggplot(dat, aes(x = dose, y = `cAMP response (% agonist max)`, 
                 color = group, shape = group)) +
   geom_point(size = 4) +
-  geom_smooth(method = "nls", formula = y ~ SSfpl(x, A, B, C, D), se = FALSE) +
+  geom_smooth(method = "nls", formula = y ~ SSfpl(x, A, B, xmid, scal), se = FALSE) +
   scale_x_log10(guide = "prism_minor",
                 breaks = trans_breaks(log10, function(x) 10^x),
                 labels = trans_format(log10, math_format(10^.x)),
@@ -66,9 +66,6 @@ ggplot(dat, aes(x = log(dose), y = `cAMP response (% agonist max)`,
   theme_bw() +
   theme(text = element_text(size = 16),
         panel.grid = element_blank())
-
-
-
 
 
 
