@@ -5,10 +5,17 @@ mytable <- mtcars %>%
   group_by(cyl) %>% 
   summarise(sum(mpg))
 
+t1 <- ttheme_default(core = list(
+  fg_params = list(fontface = c(rep("plain", 3), "bold.italic", "bold.italic")),
+  bg_params = list(fill = c("gray80","steelblue2", "pink2"),
+                   alpha = c(0.8, 1, 0.8))
+    )
+  )
+
 ggplot(data = mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
   geom_col() +
-  annotation_custom(grob = gridExtra::tableGrob(mytable, rows = NULL),
-                    xmin = 7, xmax = 9,
+  annotation_custom(grob = gridExtra::tableGrob(mytable, rows = NULL, theme = t1),
+                    xmin = 2.5, xmax = 3.5,
                     ymin = 250, ymax = 300) +
   theme_bw() +
   theme(text = element_text(size = 14))
