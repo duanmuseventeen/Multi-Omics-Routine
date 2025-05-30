@@ -3,6 +3,7 @@
 require(dplyr)
 require(ggplot2)
 require(ggforce)
+require(ggpp)
 
 dat <- readxl::read_excel("7.38347143-Source Data Fig2.xlsx", sheet = "2e")
 
@@ -101,5 +102,15 @@ dat %>%
   theme_bw() +
   theme(text = element_text(size = 16),
         panel.grid = element_blank())
+# Revision::zoom by ggpp--------------------------------------------------------
+p <- ggplot(mtcars, aes(factor(cyl), mpg, colour = factor(cyl))) +
+  stat_boxplot() +
+  labs(y = NULL, x = "Engine cylinders (number)") +
+  theme_bw(9) + theme(legend.position = "none")
 
+ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
+  geom_point(show.legend = FALSE) +
+  annotate("plot", x = I(0.05), y = I(0.05), label = p, 
+           hjust = "inward", vjust = "inward") +
+  expand_limits(y = 0, x = 0)
 
