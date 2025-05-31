@@ -1,5 +1,13 @@
+# goal
+# require(plyr)
+require(tidyverse)
+require(magrittr)
+require(stringr)
 require(dplyr)
+require(tibble)
 require(tidyr)
+require(purrr)
+require(ggplot2)
 
 # base--------------------------------------------------------------------------
 row(mtcars)
