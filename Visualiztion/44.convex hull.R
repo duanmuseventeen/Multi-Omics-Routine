@@ -16,4 +16,28 @@ ggplot(data = mtcars, aes(x = mpg, y = wt, color= factor(cyl), fill = factor(cyl
   geom_point() + 
   geom_polygon(data = plyr::ddply(mtcars, ~ cyl, mychull),
                aes(x = mpg, y = wt, color= factor(cyl)),
-               alpha = 0.2)
+               alpha = 0.2) + 
+  labs(color = "", fill = "") +
+  theme_bw() +
+  theme(plot.margin = margin(c(30,30,30,30)), panel.grid = element_blank())
+
+ggplot(data = mtcars, aes(x = mpg, y = wt, color= factor(cyl), fill = factor(cyl))) + 
+  geom_point() + 
+  geom_polygon(data = mtcars %>%
+                 group_by(cyl) %>%
+                 slice(chull(mpg, wt)),
+               aes(x = mpg, y = wt, color= factor(cyl)),
+               alpha = 0.2) + 
+  labs(color = "", fill = "") +
+  theme_bw() +
+  theme(plot.margin = margin(c(30,30,30,30)), panel.grid = element_blank())
+
+
+
+
+
+
+
+
+
+
