@@ -1,3 +1,8 @@
+# Ref
+# https://ggplot2.tidyverse.org/reference/geom_point.html
+# https://ggplot2.tidyverse.org/reference/layer_stats.html
+# https://ggplot2.tidyverse.org/reference/geom_function.html
+
 require(ggplot2)
 require(dplyr)
 require(ggsci)
@@ -15,18 +20,37 @@ tibble::tibble(
   ggplot(aes(x = symbol, y = value, fill = group))+
   geom_split_violin(trim = T, colour = NA)+
   geom_point(stat = 'summary',fun=mean,
-             position = position_dodge(width = 0.9))+
-  scale_fill_manual(values = c("#197EC099", "#FED43999")) +
-  stat_compare_means(label = 'p.signif') +
+             position = position_dodge(width = 0.9)) +
   stat_summary(fun.min = function(x){quantile(x)[2]},
                fun.max = function(x){quantile(x)[4]},
                geom = 'errorbar',color='black',
                width = 0.01,size = 0.5,
                position = position_dodge(width = 0.9)) +
+  scale_fill_manual(values = c("#197EC099", "#FED43999")) +
+  stat_compare_means(label = 'p.signif') +
   labs(xlab = "", ylab = "Relative expression") +
   theme_bw() +
   theme(text = element_text(size = 12))
 
+
+tibble::tibble(
+  symbol = rep(letters[1:8], each = 100),
+  group = rep(c("A","B"),each = 50) %>% rep(8),
+  value = rnorm(800)) %>% 
+  ggplot(aes(x = symbol, y = value, fill = group))+
+  geom_split_violin(trim = T, colour = NA)+
+  stat_summary(geom = "point", fun = mean,
+               position = position_dodge(width = 0.9)) +
+  stat_summary(fun.min = function(x){quantile(x)[2]},
+               fun.max = function(x){quantile(x)[4]},
+               geom = 'errorbar',color='black',
+               width = 0.01,size = 0.5,
+               position = position_dodge(width = 0.9)) +
+  scale_fill_manual(values = c("#197EC099", "#FED43999")) +
+  stat_compare_means(label = 'p.signif') +
+  labs(xlab = "", ylab = "Relative expression") +
+  theme_bw() +
+  theme(text = element_text(size = 12))
 # gghalves----------------------------------------------------------------------
 dat <- tibble::tibble(
   symbol = rep(letters[1:8], each = 100),
