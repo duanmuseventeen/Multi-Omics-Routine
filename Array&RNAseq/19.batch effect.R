@@ -23,3 +23,48 @@ pca_bf_sva <- prcomp(t(mydata), scale. = T, rank. = 3)
 
 pca_af_sva <- prcomp(t(data.sva), scale. = T, rank. = 3)
 # limma::removeBatchEffect------------------------------------------------------
+
+# Example-----------------------------------------------------------------------
+# This is a RNA sequencing data without known group of interest
+
+# Note 1: if know length of genes, ComBat_seq are suggested for RNA seq data with counts as input
+# Note 2: if know group of interest, it should be added into model.matrix
+# Note 3: because the fpkm data corrected for batch effect here, we use ComBat fun
+#         the data was log transformed to obtain a similar distribution to data from array
+
+dat <- readxl::read_excel("All_gene_fpkm.xlsx")
+dat <- dat %>% tibble::column_to_rownames("ID")
+
+id <- colnames(dat)
+batch <- id
+batch[str_sub(id, 1, 1) %in% c("A","B","C")] <- 1
+batch[str_sub(id, 1, 1) %in% c("D","E")] <- 2
+batch <- as.factor(batch)
+
+meta<- data.frame(
+  # group = factor(group),
+  row.names = id,
+  stringsAsFactors = FALSE
+)
+
+dat.combat <- ComBat(
+  dat = log2(dat + 1), 
+  batch = batch, 
+  mod = model.matrix(~1, data = meta), 
+  par.prior=TRUE, 
+  prior.plots=TRUE
+)
+
+# Found 4881 genes with uniform expression within a single batch (all zeros); these will not be adjusted for batch.
+# Found2batches
+# Adjusting for0covariate(s) or covariate level(s)
+# Standardizing Data across genes
+# Fitting L/S model and finding priors
+# Finding parametric adjustments
+# Adjusting the Data
+
+dat.combat.exp <- exp(dat.combat) - 1
+
+export::table2excel(dat.combat.exp, "expr_correted_batch.xlsx", add.rownames = TRUE)
+
+
