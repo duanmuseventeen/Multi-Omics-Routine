@@ -22,3 +22,4 @@ data.sva <- ComBat(mydata, batch = meta$GEO,
 pca_bf_sva <- prcomp(t(mydata), scale. = T, rank. = 3)
 
 pca_af_sva <- prcomp(t(data.sva), scale. = T, rank. = 3)
+# limma::removeBatchEffect------------------------------------------------------
