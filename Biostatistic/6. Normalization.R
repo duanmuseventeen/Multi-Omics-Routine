@@ -4,6 +4,7 @@
 # pmid: 24942700
 # pmid: 27694351
 
+# normalization-----------------------------------------------------------------
 for (i in 1:ncol(data)) {
   tmp <- data[[i]]
   
@@ -25,3 +26,31 @@ for (i in 1:ncol(data)) {
 
 # VSN
 limma::normalizeVSN()
+
+# scale-------------------------------------------------------------------------
+# Center scaling
+x - mean(x)
+
+# unit variance scaling
+(x - mean(x)) / sd(x)
+scale(x)
+
+# Pareto scaling
+(x - mean(x)) / sqrt(sd(x))
+
+# scale to 0 ~ 1
+(x - min(x)) / (max(x) - min(x))
+
+# scale to -1 ~ 1
+(x - min(x)) / (max(x) - min(x)) * 2 - 1
+
+
+
+
+
+
+
+
+
+
+
