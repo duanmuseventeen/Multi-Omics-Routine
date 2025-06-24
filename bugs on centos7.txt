@@ -86,7 +86,11 @@ https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg19/refseq_
 https://shendure-web.gs.washington.edu/content/members/cao1025/public/index/gene_TF_list/
 https://www.jianshu.com/p/71ed43163ce1
 
-
+Q4: 错误: package or namespace load failed for ‘rJava’:
+ loadNamespace()里算'rJava'时.onLoad失败了，详细内容：
+  调用: fun(libname, pkgname)
+  错误: JAVA_HOME cannot be determined from the Registry
+A4: 该错误由于未安装Java引起。搜索 JDK 64（根据实际情况），在ORACLE下载Java并安装，添加环境路径，即可解决。
 
 
 
