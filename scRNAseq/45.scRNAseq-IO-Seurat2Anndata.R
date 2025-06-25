@@ -85,6 +85,8 @@ if(FALSE){
 }
 
 # 3: sceasy
+# https://github.com/meta-cancer/scPLC/blob/main/codes/1b-1.scanpy_seurat2anndata.R
+
 # BiocManager::install(c("LoomExperiment"))
 # devtools::install_github("cellgeni/sceasy")
 library(sceasy)
