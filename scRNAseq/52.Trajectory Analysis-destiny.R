@@ -41,6 +41,6 @@ dm_global <- DiffusionMap(
   verbose = FALSE)
 plot(dm_global, 
      col = factor(fig$cell_type, 
-                  levels = c("Neu_S100A12","Neu_NLRP3","Neu_CCL4","Neu_IFIT1"),
+                  levels = c("A","B","C","D"),
                   labels = colors_list[c(1,3,5,7)]) %>% as.character, 
      pch = 20)
