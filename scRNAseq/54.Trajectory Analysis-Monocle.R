@@ -73,7 +73,8 @@ cds <- detectGenes(cds, min_expr = 0.1)
 # Constructing Trajectory
 diff_test_res <- differentialGeneTest(
   cds[expressed_genes,],
-  fullModelFormulaStr = "~sm.ns(Pseudotime)")
+  fullModelFormulaStr = "~sm.ns(Pseudotime) + sample",
+  reducedModelFormulaStr = "~sample")
 ordering_genes <- row.names(subset(diff_test_res, qval < 0.01))
 cds <- setOrderingFilter(cds, ordering_genes)
 plot_ordering_genes(cds)
