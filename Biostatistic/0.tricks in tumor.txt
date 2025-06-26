@@ -57,6 +57,10 @@ The immune stimulatory and inhibitory scores were calculated with markers collec
 and published studies (Supplementary Table 14).
 Single-cell and spatial RNA sequencing identify divergent microenvironments and progression signatures in early- versus late-onset prostate cancer, pmid: 40211000
 
+12. Differ Neutrophils from Tumor associated Neutrophils
+SingleR (v.1.10.0)47 was also used to assess the similarity of neutrophil clusters in this study compared to previously reported neutrophil subsets.
+Liver tumour immune microenvironment subtypes and neutrophil heterogeneity, pmid: 36352227
+
 
 
 
