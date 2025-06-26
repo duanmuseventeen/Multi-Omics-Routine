@@ -106,16 +106,19 @@ rowData(cds) <- data.frame(
   stringsAsFactors = FALSE
 )
 cds <- estimate_size_factors(cds)
-AFD_genes = c("HAVCR2","CXCL13","IFNG","TCF7","XCL1","CD44","NKG7")
-AFD_lineage_cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
-# AFD_lineage_cds <- detect_genes(AFD_lineage_cds)
-# https://github.com/cole-trapnell-lab/monocle3/issues/344
-summary(pseudotime(AFD_lineage_cds))
-AFD_lineage_cds <- AFD_lineage_cds[, pseudotime(AFD_lineage_cds) != Inf]
-summary(pseudotime(AFD_lineage_cds))
+cds <- estimate_size_factors(cds)
+cds <- monocle3::detect_genes(cds)
+geneexpr <- fData(cds)
+cds <- cds[rownames(rowData(cds)) %in% 
+            names(geneexpr$num_cells_expressed)[geneexpr$num_cells_expressed > 10],]
 
-gene_fits1 <- fit_models(AFD_lineage_cds, model_formula_str = "~pseudotime") 
-gene_fits2 <- fit_models(AFD_lineage_cds, model_formula_str = "~pseudotime + orig.ident")
+# https://github.com/cole-trapnell-lab/monocle3/issues/344
+summary(pseudotime(cds))
+cds <- cds[, pseudotime(cds) != Inf]
+summary(pseudotime(cds))
+
+gene_fits1 <- fit_models(cds, model_formula_str = "~pseudotime") 
+gene_fits2 <- fit_models(cds, model_formula_str = "~pseudotime + orig.ident")
 compare_models(gene_fits1, gene_fits2) %>% select(gene_short_name, q_value)
 # Likelihood based analysis and quasipoisson
 # The quasi-poisson distribution doesn't have a real likelihood function, so some of Monocle's methods won't work with it. Several of the columns in results tables from evaluate_fits() and compare_models() will be NA.
@@ -124,9 +127,9 @@ fit_coefs <- coefficient_table(gene_fits2)
 fit_coefs <- fit_coefs %>% filter(term != "(Intercept)")
 fit_coefs %>% filter (q_value < 0.05) %>%
   select(gene_short_name, term, q_value, estimate)
-plot_genes_violin(AFD_lineage_cds, group_cells_by="cell_type", ncol=2) +
+plot_genes_violin(cds, group_cells_by="cell_type", ncol=2) +
   theme(axis.text.x=element_text(angle=45, hjust=1))
-# plot_genes_hybrid(AFD_lineage_cds, group_cells_by="cell_type", ncol=2) +
+# plot_genes_hybrid(cds, group_cells_by="cell_type", ncol=2) +
 #   theme(axis.text.x=element_text(angle=45, hjust=1))
 
 # expression_family	Distribution	Accuracy	Speed	Notes
@@ -137,11 +140,11 @@ plot_genes_violin(AFD_lineage_cds, group_cells_by="cell_type", ncol=2) +
 
 # https://github.com/satijalab/seurat-wrappers/issues/97
 AFD_genes = c("SELL","IL7R","HAVCR2","PDCD1","IFNG","GNLY","PRF1","CD44")
-AFD_lineage_cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
-AFD_lineage_cds <- detect_genes(AFD_lineage_cds)
-AFD_lineage_cds <- AFD_lineage_cds[, pseudotime(AFD_lineage_cds) != Inf]
+cds = cds[rownames(rowData(cds)) %in% AFD_genes,]
+cds <- detect_genes(cds)
+cds <- cds[, pseudotime(cds) != Inf]
 monocle3::plot_genes_in_pseudotime(
-  AFD_lineage_cds,
+  cds,
   label_by_short_name = FALSE,
   color_cells_by="cell_type",
   nrow = 4, ncol = 2,
