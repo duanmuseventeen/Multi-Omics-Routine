@@ -61,6 +61,23 @@ Single-cell and spatial RNA sequencing identify divergent microenvironments and 
 SingleR (v.1.10.0)47 was also used to assess the similarity of neutrophil clusters in this study compared to previously reported neutrophil subsets.
 Liver tumour immune microenvironment subtypes and neutrophil heterogeneity, pmid: 36352227
 
+13. Peptide Scoring
+The peptide scoring heuristic evaluates four key properties, weighted by their overall importance. In order of decreasing weight, these
+are: HLAthena binding rank, NetMHC binding rank, gene TPM, and gene cancer cell fraction. Each property is assigned to a predefined
+category—very strong, strong, good, weak, bad, or failing—based on property-specific thresholds. These categories are mapped
+to numerical values ranging from 1 (very strong) to 0 (failing). Each numerical value is then multiplied by the corresponding property
+weight, and the weighted values are summed to compute the final peptide score.
+A multi-adjuvant personal neoantigen vaccine generates potent immunity in melanoma, pmid: 40645179
+
+14. Neoantigen prediction
+To predict neoantigens, the detected coding mutations were converted into peptide sequences, and the translated neoantigens (i.e.
+peptides with missense mutations and insertions/deletions) were sliced into 8, 9, 10, 11 amino acid lengths for HLA class I binding
+prediction. Antigen prediction was performed using HLAthena17 and NetMHCpan version 4.0 (patients P101 – 108) and NetMHC pan
+4.1 (patients P109 – 111)58 (eluted ligand rank). NetMHC prediction scores were ranked using HLAthena’s ranking models. Each potential
+antigen was ranked as follows: (1) predicted strong binder (rank<0.5) by both prediction models; (2) predicted strong binder by
+HLAthena only; (3) predicted strong binder by NetMHCpan only; (4) predicted weak binder (rank<2) by both prediction models; (5)
+predicted weak binder by HLAthena only; (6) predicted weak binder by NetMHCpan only, (7) not a predicted binder.
+A multi-adjuvant personal neoantigen vaccine generates potent immunity in melanoma, pmid: 40645179
 
 
 
