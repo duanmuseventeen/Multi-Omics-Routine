@@ -79,5 +79,17 @@ HLAthena only; (3) predicted strong binder by NetMHCpan only; (4) predicted weak
 predicted weak binder by HLAthena only; (6) predicted weak binder by NetMHCpan only, (7) not a predicted binder.
 A multi-adjuvant personal neoantigen vaccine generates potent immunity in melanoma, pmid: 40645179
 
+15. Site score. [neoantigens of PTM]
+The score was designed to determine whether a PTM tends to fall within the peptide anchor positions or the center positions of the peptide. We
+manually determined anchoring or middle positions per haplotype based on the canonical binding motif (Supplementary Information). The percentage of modified
+residues or background unmodified residues was summed up for the anchor and middle position in each haplotype. Then, a site score odds ratio was calculated
+as follows:
+Anchormod/Middlemod
+Anchorbckgrnd/Middlebckgrnd 
+An enrichment in the anchor positions will result in a high positive score, while an enrichment in the center of the peptide will result in a negative score.
+Each haplotype–PTM pair was also given a significance value, based on a χ2 test comparing the percentage distribution between the anchor and the middle, in the
+modified and background residues. Benjamini–Hochberg correction was used to control for multiple hypothesis testing.
+Post-translational modifications reshape the antigenic landscape of the MHC I immunopeptidome in tumors, pmid: 36203013
+
 
 
