@@ -101,6 +101,11 @@ if(GSE115574){
   eset <- ReadAffy(celfile.path = "GSE115574/GSE115574_RAW/") %>% 
     rma()
   # mas5()
+
+  # some plaform cannot be read by affy pkg, pls use oligo pkg according to warning
+  # library(oligo)
+  # eset <- oligo::read.celfiles(filenames = dir("GSE77287_RAW/", full.names = T)) %>% 
+  #  oligo::rma()
   
   expr_GSE115574 <- eset %>% exprs
   # annotate--------------------------------------------------------------------
@@ -184,3 +189,4 @@ if(GSE115574){
     t.test(expr.right[,x] ~ meta.right$disease) 
   })
 }
+
