@@ -152,6 +152,9 @@ expression_mtx_fname  The name of the file that contains the expression
 # Step 1
 pyscenic grn DC.csv allTFs_hg38.txt -o adj.csv --num_workers 8
 # Step 2-3
+# Gene-based databases are meant to be used with (py)SCENIC and for motif enrichment in gene sets with cisTarget.
+# Region-based databases are meant to be used with SCENIC+ and for motif enrichment in region sets with cisTarget.
+
 pyscenic ctx adj.tsv \
 hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather \
 --annotations_fname motifs-v9-nr.hgnc-m0.001-o0.0.tbl \
@@ -185,11 +188,15 @@ hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather \
 pyscenic aucell \
 DC.csv \
 reg.csv \
---output pyscenic_DC_res.loom pyscenic_DC_res.csv \
+--output pyscenic_DC_res.loom \ # pyscenic_DC_res.csv
 --num_workers 8
+
+# 结果解读----------------------------------------------------------------------
+# https://zhuanlan.zhihu.com/p/31567655578
 
 # Q ----------------------------------------------------------------------------
 # 1. pySCENIC运行的原理
+
 
 
 
