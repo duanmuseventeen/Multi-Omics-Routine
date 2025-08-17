@@ -138,6 +138,11 @@ write.csv(DC@assays$RNA$counts, "DC.csv")
 # Phase Ia: GRN inference using the GRNBoost2 algorithm
 # For this step the CLI version of SCENIC is used. This step can be deployed on an High Performance Computing system. We use the counts matrix (without log transformation or further processing) from the loom file we wrote earlier. Output: List of adjacencies between a TF and its targets stored in ADJACENCIES_FNAME.
 
+expression_mtx_fname  The name of the file that contains the expression
+                        matrix for the single cell experiment. Two file
+                        formats are supported: csv (rows=cells x
+                        columns=genes) or loom (rows=genes x columns=cells).
+
 # transcription factors list
 # f_tfs = "/ddn1/vol1/staging/leuven/stg_00002/lcb/cflerin/resources/allTFs_hg38.txt" # human
 # f_tfs = "/ddn1/vol1/staging/leuven/stg_00002/lcb/cflerin/resources/allTFs_dmel.txt" # drosophila
@@ -185,6 +190,7 @@ reg.csv \
 
 # Q ----------------------------------------------------------------------------
 # 1. pySCENIC运行的原理
+
 
 
 
