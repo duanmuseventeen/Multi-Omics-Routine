@@ -130,6 +130,11 @@ saveRDS(scenicOptions, file="G:/scenicOptions.Rds")
 
 ...
 # ================================== Python ====================================
+conda list | grep loompy
+# loompy                     2.0.17           pypi_0                pypi
+# loompy with other version (eg. 3.0.8) generate loom files with different format, 
+# which cannot be read by R (SCopeLoomR::open_loom, loomR::connect, rhdf5::H5Fopen)
+
 load("DC.Rdata")
 write.csv(DC@assays$RNA$counts, "DC.csv")
 
@@ -196,6 +201,7 @@ reg.csv \
 
 # Q ----------------------------------------------------------------------------
 # 1. pySCENIC运行的原理
+
 
 
 
