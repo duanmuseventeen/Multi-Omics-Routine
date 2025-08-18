@@ -27,7 +27,9 @@ for (i in unique(seurat.obj$cell_type)) {
   n <- n + 1
 }
 
-write.table(normalised_log_counts, "cpdb/normalised_log_counts.tsv", sep = "\t")
+normalised_log_counts <- seurat.obj@assays$RNA$data
+normalised_log_counts <- as.matrix(normalised_log_counts)
+write.csv(normalised_log_counts, "cpdb/normalised_log_counts.csv")
 meta.data <- seurat.obj@meta.data
 meta.data$barcode <- rownames(meta.data)
 write.table(meta.data, "cpdb/bulk_metadata.tsv", sep = "\t")
@@ -43,7 +45,7 @@ pd.set_option('display.max_columns', 100)
 
 cpdb_file_path = '/data/FYM/cpdb/cellphonedb_v500_NatProtocol/v5.0.0/cellphonedb.zip'
 meta_file_path = 'bulk_metadata.tsv'
-counts_file_path = 'normalised_log_counts.tsv'
+counts_file_path = 'normalised_log_counts.csv'
 # microenvs_file_path = 'data/microenvironment.tsv'
 out_path = 'method1/'
 degs_file_path = 'DEGs.tsv'
@@ -130,6 +132,7 @@ cpdb_results = cpdb_degs_analysis_method.call(
   output_suffix = None,                                       # Replaces the timestamp in the output files by a user defined string in the  (default: None)
   threads = 25
 )
+
 
 
 
