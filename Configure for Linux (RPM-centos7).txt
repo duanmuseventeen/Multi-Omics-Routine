@@ -126,6 +126,19 @@ cat /etc/redhat-release
 export PATH=/opt/cellranger-x.y.z:$PATH
 source ~/.bashrc
 
+# git (centos7)--------------------------------------------------
+# https://blog.csdn.net/qq_42951560/article/details/124604800
+首先，把老版本的 Git 卸掉。
+sudo yum -y remove git
+sudo yum -y remove git-*
+
+添加 End Point 到 CentOS 7 仓库
+sudo yum -y install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm
+
+安装 Git
+sudo yum -y install git
+
+git --version
 
 
 
