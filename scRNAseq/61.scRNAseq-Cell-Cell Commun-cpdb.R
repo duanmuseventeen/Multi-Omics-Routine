@@ -10,6 +10,8 @@
 # 如果网络不佳，无法下载database文件，可以换用win端下载，完成后复制到linux
 # 结果解读请参考官方教程
 
+# NormalizeData不依赖样本，对每个细胞分别处理。因此，直接从总体数据提取log-count即可。
+
 # cpdb_file_path: (mandatory) path to the database cellphonedb.zip.
 # meta_file_path: (mandatory) path to the meta file linking cell barcodes to cluster labels metadata.tsv.
 # counts_file_path: (mandatory) paths to normalized counts file (not z-transformed), 
@@ -132,6 +134,7 @@ cpdb_results = cpdb_degs_analysis_method.call(
   output_suffix = None,                                       # Replaces the timestamp in the output files by a user defined string in the  (default: None)
   threads = 25
 )
+
 
 
 
