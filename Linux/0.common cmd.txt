@@ -95,7 +95,8 @@ hostnamectl # 显示当前主机的信息
 sudo hostnamectl set-hostname rhel7 # 设置主机名。
 
 
-
+# 查看进程对应的命令-------------------------------------------------
+cat /proc/pid/cmdline
 
 
 
@@ -114,3 +115,4 @@ sudo hostnamectl set-hostname rhel7 # 设置主机名。
 
 # Docker------------------------------------------------------------
 # https://blog.csdn.net/leah126/article/details/131871717
+
