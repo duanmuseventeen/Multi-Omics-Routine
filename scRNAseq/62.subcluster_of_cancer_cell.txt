@@ -1,1 +1,26 @@
+# [1] pmid: 36162205, ESCC, wihtout reference
+# A total of 8 subsets (C0C8) were identified for epithelial cells, with each subset having unique marker genes (Figure 3ac).
+
+# [2] pmid: 40211000, PRAD, with reference
+# In accordance with previously reported PCa epithelial
+# subtypes18, malignant epithelia exhibited a luminal subtype feature,
+# other epithelia showed a basal feature, and normal cells showed
+# elevated expression of PTPRC, which is a pan-white cell marker, suggesting
+# a mixed subgroup with immune cell contamination (Fig. 1h),
+# which were excluded from further study. Such mixed subgroup might
+# arise from the process of batch effect removal or the existence of cells
+# co-expressing different cell type markers17,19.
+
+# [3] pmid: 39741182, ESCC, without reference
+# A total of 3 epithelial cell subclusters were classified, most of which
+# originated from tumor samples and metastatic lymph nodes
+# (Fig. 2a, b). The majority of epithelial cells obtained from adjacent
+# tissues were ME1 subcluster, implying the relatively low malignant
+# potential of ME1 subcluster. ME2 (Wilcoxon rank-sum test, MET vs AN, p = 0.01; 
+# ESCC vs AN, p < 0.001; MET vs ESCC, p = 0.37) and ME3 (Wilcoxon rank-sum test, 
+# MET vs AN, p = 0.04; ESCC vs AN, p = 0.001; MET vs ESCC, p = 0.46) subclusters 
+# were predominantly collected from tumor samples and metastatic lymph nodes,
+# indicating that ME2 and ME3 subclusters may have a high metastatic potential (Fig. 2b).
+
+
 
