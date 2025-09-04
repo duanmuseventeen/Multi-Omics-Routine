@@ -306,6 +306,7 @@ p <- ORA_Reactome@result %>%
   ggplot(aes(x = x, y = Description, color = pvalue, fill = pvalue, size = Count)) +
   geom_point(shape = 21) +
   labs(x = "Gene Ratio", y = "") +
+  scale_y_discrete(labels=function(x) str_wrap(x, width=50)) +
   scale_size_continuous(range = c(3,6)) + 
   scale_color_viridis() +
   scale_fill_viridis() + 
@@ -321,4 +322,5 @@ p <- enrichmentNetwork(as.data.frame(Reactome@result), drawEllipses = TRUE,
 
 library(plotly)
 ggplotly(p, tooltip=c('ID', 'Cluster', 'Cluster size'))
+
 
