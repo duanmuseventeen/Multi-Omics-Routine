@@ -291,9 +291,34 @@ fgseaRes <- fgsea(gmt, geneList2, minSize = 5, maxSize = 500, nperm=1000, gseaPa
 plotEnrichment(gmt$HP_HEPATIC_FIBROSIS, geneList2)
 plotGseaTable(gmt, geneList2, fgseaRes, gseaParam=0.5)
 # Visualization--------------------------------------------------------------- 
+# 1
+load("REACTOME.Rdata")
+
+p <- ORA_Reactome@result %>% 
+  filter(pvalue < 0.05) %>% 
+  mutate(a = str_remove(GeneRatio, "/[0-9]+$") %>% as.numeric,
+         b = str_remove(GeneRatio, "^[0-9]+/") %>% as.numeric) %>% 
+  mutate(x = a / b,
+         n = 1:nrow(.)) %>%
+  filter(n <= 20) %>% 
+  arrange(desc(pvalue)) %>% 
+  mutate(Description = factor(Description, levels = Description)) %>% 
+  ggplot(aes(x = x, y = Description, color = pvalue, fill = pvalue, size = Count)) +
+  geom_point(shape = 21) +
+  labs(x = "Gene Ratio", y = "") +
+  scale_size_continuous(range = c(3,6)) + 
+  scale_color_viridis() +
+  scale_fill_viridis() + 
+  theme_bw() + 
+  theme(text = element_text(size = 12))
+
+ggsave(p, filename = "REACTOME.pdf", width=6, height=6, units="in")
+                     
+# 2
 require(aPEAR)
 p <- enrichmentNetwork(as.data.frame(Reactome@result), drawEllipses = TRUE,
                   fontSize = 4, repelLabels = TRUE)
 
 library(plotly)
 ggplotly(p, tooltip=c('ID', 'Cluster', 'Cluster size'))
+
