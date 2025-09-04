@@ -22,5 +22,11 @@
 # were predominantly collected from tumor samples and metastatic lymph nodes,
 # indicating that ME2 and ME3 subclusters may have a high metastatic potential (Fig. 2b).
 
+# [4] pmid: 37769655, LUAD, without reference
+# To understand the synergistic anti-tumor effects induced by the
+# deletion of ERO1A in tumors, we compared the transcriptomes
+# of identified tumor clusters from Ero1aWT and Ero1aKO tumors
+# based on scRNA-seq analyses (Figure 3A).
+
 
 
