@@ -176,3 +176,21 @@ if(FALSE){
     theme_bw() +
     theme(text = element_text(size = 12), panel.grid = element_blank())
 }
+
+# 分化轨迹中的差异基因--------------------------------------------------------
+[1] 37769655: 使用CD8+ T cell marker基因
+Moreover, marker gene expression for exhausted CD8+ T cells, including Lag3, Havcr2, and Pdcd1, was 
+increased during the resting stage and reduced during the activated stage (Figure 2G).
+
+
+
+
+
+
+
+
+
+
+
+
+
