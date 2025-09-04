@@ -28,5 +28,9 @@
 # of identified tumor clusters from Ero1aWT and Ero1aKO tumors
 # based on scRNA-seq analyses (Figure 3A).
 
+# [5] pmid: 34019793, ESCC, without reference
+# The epithelial cluster, mostly comprised of tumor cells, showed tumor compartment specificity as compared to adjacent normal. 
+
+
 
 
