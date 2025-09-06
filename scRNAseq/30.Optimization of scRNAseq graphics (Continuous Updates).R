@@ -115,3 +115,10 @@ p3 <- FeaturePlot(sce2, "CD3D", cols = brewer.pal(10, name = "RdBu"))
 
 p4 <- FeaturePlot(object = sce2, features = "CD3D") + 
   scale_colour_gradientn(colours = rev(brewer.pal(n = 10, name = "RdBu")))
+
+# examples========================================================================
+# example 1
+https://github.com/youwh1996/ealy-LUAD-scRNA/blob/main/eLUAD%20(1).r
+FeaturePlot(NKT,reduction='metacell',features='inhibit')+
+scale_colour_gradientn(colours = colorRampPalette(#c("white", "orange", "tomato","mediumorchid4", "midnightblue"))
+                                 c('white','#FFCA62','#FFB336','#FF9700','#FF5A00','#F24410','#E52C22','#DD1D23','#C20030','#930039','#8C003A','#6F003D','#56033F'))(1000)) 
