@@ -154,4 +154,10 @@ seurat.obj@meta.data$labels <- seurat.obj@meta.data$condition
 
 augur <- calculate_auc(seurat.obj, cell_type_col = "cell_type", label_col = "condition")
 
+# odds ratio ===================================================================
+pmid: 37696831
+
+
+
 augur$AUC
+
