@@ -97,5 +97,12 @@ function of T cells in tumors, we focused our screening efforts on mitochondrial
 MitoProteome [37], and AmiGO [38], we identified a total of 1264 mitochondria-related genes (Supplementary Fig. S1B).
 SARDH in the 1-C metabolism sculpts the T-cell fate and serves as a potential cancer therapeutic target, pmid: 40830700
 
+17. Enrichment score and exhaustion score (at the level of gene)
+For each gene, we defined its enrichment score according to the descending ranking of its log2FC values. For genes significantly 
+upregulated in exhausted CD8+ T cells, we further performed Pearson’s correlation analysis between gene expression levels and the 
+signature scores of T-cell exhaustion in CD8+ T cells [10], which were defined on the basis of the average expression
+levels of PDCD1, CTLA4, HAVCR2, LAG3, and TOX. P values were adjusted via the Benjamini‒Hochberg approach. We defined the exhaustion
+score of each gene according to the descending ranking of correlation coefficients.
+SARDH in the 1-C metabolism sculpts the T-cell fate and serves as a potential cancer therapeutic target, pmid: 40830700
 
 
