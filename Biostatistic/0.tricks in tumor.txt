@@ -91,5 +91,11 @@ Each haplotype–PTM pair was also given a significance value, based on a χ2 te
 modified and background residues. Benjamini–Hochberg correction was used to control for multiple hypothesis testing.
 Post-translational modifications reshape the antigenic landscape of the MHC I immunopeptidome in tumors, pmid: 36203013
 
+16. mitochondria-related genes
+Given the central role of mitochondria in cell energy production and biological synthesis, which are especially vital for the fate and
+function of T cells in tumors, we focused our screening efforts on mitochondrial metabolic genes [16, 35].Using data from MitoCarta [36], 
+MitoProteome [37], and AmiGO [38], we identified a total of 1264 mitochondria-related genes (Supplementary Fig. S1B).
+SARDH in the 1-C metabolism sculpts the T-cell fate and serves as a potential cancer therapeutic target, pmid: 40830700
+
 
 
