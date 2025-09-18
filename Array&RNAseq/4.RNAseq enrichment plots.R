@@ -6,6 +6,8 @@
 # https://mp.weixin.qq.com/s/eX8mc5ssTQht8rhU0bbp6g
 # https://www.jianshu.com/p/de8fccabc2e7
 # https://zhuanlan.zhihu.com/p/830574147
+# http://bioinfo.org/kobas
+
 
 There are ties in the preranked stats (21.6% of the list).
 # https://github.com/YuLab-SMU/clusterProfiler/issues/214
@@ -322,5 +324,6 @@ p <- enrichmentNetwork(as.data.frame(Reactome@result), drawEllipses = TRUE,
 
 library(plotly)
 ggplotly(p, tooltip=c('ID', 'Cluster', 'Cluster size'))
+
 
 
