@@ -107,6 +107,81 @@ qqline(new_model$residuals)
 #display both QQ plots
 by(op)
 
+# Exploration 4-----------------------------------------------------------------
+# outliers
+load("mymetabolomics.Rdata")
+
+dat4heat <- dat.wide %>% 
+  dplyr::select(-ID, -group, -PCA)
+
+apply(dat4heat, 2, hist)
+apply(log(dat4heat), 2, hist)
+
+annot_col <- data.frame(
+  PCA = dat.wide$PCA %>% factor,
+  row.names = rownames(dat.wide)
+)
+# without treatment----
+pheatmap::pheatmap(dat4heat,scale = "column", annotation_row = annot_col)
+
+# scale df----
+dat4heat %>% 
+  scale %>% 
+  pheatmap::pheatmap(scale = "none", annotation_row = annot_col)
+
+# scale column----
+tmp <- dat4heat
+tmp[,1:ncol(tmp)] <- apply(tmp, 2, scale)
+
+apply(tmp, 2, summary)
+
+pheatmap::pheatmap(tmp, scale = "none", annotation_row = annot_col)
+
+# IQR----
+myout.IQR <- function(x){
+  y <- x
+  x[y < (quantile(y, .25) - 1.5 * IQR(y))] <- (quantile(y, .25) - 1.5 * IQR(y))
+  x[y > (quantile(y, .75) + 1.5 * IQR(y))] <- (quantile(y, .75) + 1.5 * IQR(y))
+  return(x)
+}
+tmp <- dat4heat
+tmp[,1:ncol(tmp)] <- apply(tmp, 2, myout.IQR)
+
+apply(tmp, 2, summary)
+
+# pheatmap::pheatmap(tmp, scale = "column", annotation_row = annot_col)
+pheatmap::pheatmap(scale(tmp), scale = "none", annotation_row = annot_col)
+# 95%----
+myout.95 <- function(x){
+  y <- x
+  x[y <= quantile(y, .0025)] <- quantile(y, .0025)
+  x[y >= quantile(x, .9975)] <- quantile(y, .9975)
+  return(x)
+}
+tmp <- dat4heat
+tmp[,1:ncol(tmp)] <- apply(tmp, 2, myout.95)
+
+apply(tmp, 2, summary)
+
+# pheatmap::pheatmap(tmp, scale = "column", annotation_row = annot_col)
+pheatmap::pheatmap(scale(tmp), scale = "none", annotation_row = annot_col)
+
+# log----
+dat4heat.log <- log(dat4heat + 1e-6)
+
+pheatmap::pheatmap(dat4heat.log, scale = "none", annotation_row = annot_col)
+
+dat4heat.log %>% 
+  scale %>% 
+  pheatmap::pheatmap(scale = "none", annotation_row = annot_col)
+
+dat4heat.log %>% 
+  pheatmap::pheatmap(scale = "column", annotation_row = annot_col)
+
+tmp <- dat4heat.log
+tmp[,1:ncol(tmp)] <- apply(tmp, 2, myout.IQR)
+pheatmap::pheatmap(tmp, scale = "column", annotation_row = annot_col)
+
 
 
 
