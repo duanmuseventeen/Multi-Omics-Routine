@@ -68,6 +68,51 @@ data.frame(
 # 结论:
 # scale [Z-score] 可以较好的消除量纲的影响
 # scale [Z-score] 对异常值敏感，处理前一定要先处理异常值
+# Exploration 3-----------------------------------------------------------------
+# outliers
+# 异常值处理的重点是:
+# 理解异常值的产生原因，因地制宜，采取对应的处理办法
+
+# https://statorials.org/cn/box-cox-%E5%8F%98%E6%8D%A2%E5%88%B0-r/
+
+library (MASS)
+
+#create data
+y=c(1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 6, 7, 8)
+x=c(7, 7, 8, 3, 2, 4, 4, 6, 6, 7, 5, 3, 3, 5, 8)
+
+#fit linear regression model
+model <- lm(y~x)
+
+#find optimal lambda for Box-Cox transformation 
+bc <- boxcox(y ~ x)
+(lambda <- bc$x[which.max(bc$y)])
+
+[1] -0.4242424
+
+#fit new linear regression model using the Box-Cox transformation
+new_model <- lm(((y^lambda-1)/lambda) ~ x)
+
+#define plotting area
+op <- par(pty = "s", mfrow = c(1, 2))
+
+#QQ plot for original model
+qqnorm(model$residuals)
+qqline(model$residuals)
+
+#QQ plot for Box-Cox transformed model
+qqnorm(new_model$residuals)
+qqline(new_model$residuals)
+
+#display both QQ plots
+by(op)
+
+
+
+
+
+
+
 
 
 
