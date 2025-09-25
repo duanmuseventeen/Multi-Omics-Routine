@@ -61,51 +61,57 @@ testing_data  <- dat.raw[-in_training, ]
 # Step 2: 在内部训练集中，使用嵌套交叉验证（蒙特卡洛或10折），评估不同模型的预测能力----
 # https://topepo.github.io/caret/available-models.html
 
-mymachiinelearning <- function(dat, size.finding.nc = 2822, size.finding.dis = 798, seed){
+myML <- function(dat.find = dat.find, dat.vali = dat.vali, seed = 1011, seed4caret = c(1:10, 1011)){
   suppressMessages(require(e1071))
   suppressMessages(require(randomForest))
   suppressMessages(require(neuralnet))
   suppressMessages(require(class))
   suppressMessages(require(rpart))
   suppressMessages(require(ranger))
+  suppressMessages(require(caret))
+  suppressMessages(require(kernalshap))
   # suppressMessages(require(FNN))
   
   set.seed(seed)
-  # ? Poisson sampling (poisson), systematic sampling (systematic)
-  # dat.sam <- strata(dat.raw %>% arrange(group), 'group',
-  #        size = round(table(dat.raw$group)*0.5), method = "srswor")
   
-  sele <- c(sample(rownames(dat.raw)[dat.raw$group == 0], size = 2822, replace = FALSE),
-            sample(rownames(dat.raw)[dat.raw$group == 1], size = 798, replace = FALSE))
-  
-  dat.find <- dat.raw[sele,]
-  dat.vali <- dat.raw[!rownames(dat.raw) %in% sele, ]
-  
-  set.seed(1011)
   # 0. LR-------------------------------------------------------------------------
   # 10-fold sampling
-  piece <- round(nrow(dat.raw) / 10)
-  dataList <- list()
-  dat.left <- dat.raw
-  for (i in 1:10) {
-    if(piece < nrow(dat.left)){
-      mysam <- sample(rownames(dat.left), size = piece, replace = FALSE)
-      dataList[[i]] <- dat.left[rownames(dat.left) %in% mysam, ]
-      dat.left <- dat.left[!(rownames(dat.left) %in% mysam),]
-    }else{
-      dataList[[i]] <- dat.left
-    }
-  }
-  for (i in 1:10) {
-    dat.test.lr <- dataList[[i]]
-    dat.find.lr <- dat.raw[!(rownames(dat.raw) %in% rownames(dataList[[i]])),]
-    
-    fit.lr <- glm(group ~ ., data = as.data.frame(dat.find.lr), family = binomial())
-    modelroc.lr <- roc(dat.test.lr$group, predict(fit.lr, newdata = dat.test.lr[,1:2], type='response'))
-    ci(modelroc.lr)
-  }
+  # piece <- round(nrow(dat.raw) / 10)
+  # dataList <- list()
+  # dat.left <- dat.raw
+  # for (i in 1:10) {
+  #   if(piece < nrow(dat.left)){
+  #     mysam <- sample(rownames(dat.left), size = piece, replace = FALSE)
+  #     dataList[[i]] <- dat.left[rownames(dat.left) %in% mysam, ]
+  #     dat.left <- dat.left[!(rownames(dat.left) %in% mysam),]
+  #   }else{
+  #     dataList[[i]] <- dat.left
+  #   }
+  # }
+  # for (i in 1:10) {
+  #   dat.test.lr <- dataList[[i]]
+  #   dat.find.lr <- dat.raw[!(rownames(dat.raw) %in% rownames(dataList[[i]])),]
+  #   
+  #   fit.lr <- glm(group ~ ., data = as.data.frame(dat.find.lr), family = binomial())
+  #   modelroc.lr <- roc(dat.test.lr$group, predict(fit.lr, newdata = dat.test.lr[,1:2], type='response'))
+  #   ci(modelroc.lr)
+  # }
 
-  # 1. NB[Tune]-------------------------------------------------------------------------
+  set.seed(seed)
+  control = trainControl(method = "cv", 
+                         number = 10, 
+                         preProcOptions = list(method = c("center", "scale")),
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(1:10, seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  lr.train = train(group ~ ., data = dat.find, method = "glm", metric = "ROC",
+                   family = binomial(),
+                   trControl = control)
+  # lr.train
+  # lr.train$resample
+  # 1. {scale-insens} NB[Tune]-------------------------------------------------------------------------
   # require(e1071)
   # fit.nb <- naiveBayes(group ~ ., data = dat.find, laplace=0)
   # modelroc.nb <- roc(dat.vali$group, predict(fit.nb, dat.vali) %>% as.numeric)
@@ -117,19 +123,23 @@ mymachiinelearning <- function(dat, size.finding.nc = 2822, size.finding.dis = 7
   # modelroc.NB <- roc(dat.vali$group, predict(fit.NB, dat.vali)$class %>% as.numeric)
   # ci(modelroc.NB)
   
-  library(caret)
   grid = expand.grid(usekernel = c(FALSE),
                      fL = c(0, 0.5, 1),
                      adjust = 1)
+  set.seed(seed)
   control = trainControl(method = "cv", 
                          number = 10, 
-                         returnResamp = "all")
-  nb.train = train(group ~ ., data = dat.find, method = "nb", 
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(lapply(as.list(rep(100,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                  seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  nb.train = train(group ~ ., data = dat.find, method = "nb", metric = "ROC",
                    trControl = control, tuneGrid = grid)
-  nb.train
-  
-  nb.train$resample
-  # 2. XGBoost[Tune]--------------------------------------------------------------------
+  # nb.train
+  # nb.train$resample
+  # 2. {tree} XGBoost[Tune]--------------------------------------------------------------------
   # https://xgboost.readthedocs.io/en/release_1.5.0/R-package/xgboostPresentation.html
   # Extreme Gradient Boosting, which is an efficient implementation of the gradient boosting framework from Chen & Guestrin (2016) <doi:10.1145/2939672.2939785>. This package is its R interface. The package includes efficient linear model solver and tree learning algorithms. The package can automatically do parallel computation on a single machine which could be more than 10 times faster than existing gradient boosting packages. It supports various objective functions, including regression, classification and ranking. The package is made to be extensible, so that users are also allowed to define their own objectives easily.
   
@@ -146,64 +156,85 @@ mymachiinelearning <- function(dat, size.finding.nc = 2822, size.finding.dis = 7
   # modelroc.bst <- roc(dat.vali$group, predict(bst, dat.vali[,1:2] %>% as.matrix))
   # ci(modelroc.bst)
   
-  library(caret)
-  grid = expand.grid(nrounds = 10,
+  grid = expand.grid(nrounds = 1000,
                      max_depth = c(3:6),
                      eta = c(0.1, 0.2, 0.3),
                      gamma = c(0.01, 0.1, 0.2, 0.5, 1.0),
                      colsample_bytree = 1,
                      min_child_weight = c(0.5, 1, 1.5),
                      subsample = 1)
+  set.seed(seed)
   control = trainControl(method = "cv", 
                          number = 10, 
-                         returnResamp = "all")
-  xbg.train = train(group ~ ., data = dat.find, method = "xgbTree", 
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(lapply(as.list(rep(1000,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                  seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  xgb.train = train(group ~ ., data = dat.find, method = "xgbTree", metric = "ROC",
                     # objective = "binary:logistic", 
                     nthread = 4,
                     trControl = control, tuneGrid = grid)
-  xbg.train
-  
-  xbg.train$resample
-  
-  # 3. RF [Tune]-------------------------------------------------------------------------
-  # fit.rf <- randomForest(dat.find$group ~ ., data=dat.find, ntree=500, mtry=2,
+  # xgb.train
+  # xgb.train$resample
+  # 3. {tree} RF [Tune]-------------------------------------------------------------------------
+  # fit.rf <- randomForest(group ~ ., data=dat.find, ntree=500, mtry=2,
   #                        importance=FALSE, proximity=FALSE)
   # modelroc.rf <- roc(dat.vali$group, predict(fit.rf, dat.vali) %>% as.numeric)
   # 
-  # # fit.RF <- ranger::ranger(dat.find$group ~ ., data = dat.find, num.trees = 500, importance = "none")
+  # # fit.RF <- ranger::ranger(group ~ ., data = dat.find, num.trees = 1000, mtry = 1, importance = "none", probability = TRUE)
   # # modelroc.RF <- roc(dat.vali$group, predict(fit.RF, dat.vali[,1:2])$predictions %>% as.numeric)
   
-  library(caret)
   grid = expand.grid(mtry = seq(1,2, by = 1))
+  set.seed(seed)
   control = trainControl(method = "cv", 
                          number = 10, 
-                         returnResamp = "all")
-  rf.train = train(group ~ ., data = dat.find, method = "rf", 
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(lapply(as.list(rep(100,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                  seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  rf.train = train(group ~ ., data = dat.find, method = "rf", metric = "ROC",
                    ntree=500, importance=FALSE, proximity=FALSE,
                    trControl = control, tuneGrid = grid)
-  rf.train
-  
-  rf.train$resample
-  # 4. SVM------------------------------------------------------------------------
+  # rf.train
+  # rf.train$resample
+  # 4. {scale-sens} SVM------------------------------------------------------------------------
   # fit.svm <- e1071::svm(group ~ ., data=dat.find, kernel = "radial")
   # tuneResult <- tune(svm, group ~ ., data=dat.find, kernel = "radial",
   #                    ranges = list(cost = c(0.1, 1, 10), gamma = c(0.1, 1, 10)))
   # bestModel <- tuneResult$best.model
   # modelroc.svm <- roc(dat.vali$group, predict(bestModel, dat.vali[,1:2]) %>% as.numeric)
   
-  library(caret)
-  grid = expand.grid(cost = c(0.01, 0.1, 1, 10, 100),
-                     gamma = c(0.01, 0.1, 1, 10, 100))
+  # fit.ksvm <- kernlab::ksvm(group ~ ., data = dat.find, type = "C-svc", 
+  #                           kernel="rbfdot", # Radial Basis kernel "Gaussian"
+  #                           kpar=list(sigma=0.05), #
+  #                           C = 1, # 
+  #                           cross = 3, 
+  #                           na.action = na.omit, scaled = FALSE)
+  # modelroc.ksvm <- roc(dat.vali$group, predict(fit.ksvm, dat.vali[,1:2]) %>% as.numeric)
+  # modelroc.ksvm
+  
+  grid = expand.grid(sigma = c(0.01, 0.1, 1, 10, 100),
+                     C = c(0.01, 0.1, 1, 10, 100))
+  set.seed(seed)
   control = trainControl(method = "cv", 
                          number = 10, 
-                         returnResamp = "all")
-  svm.train = train(group ~ ., data = dat.find, method = "svm", 
-                   kernel = "radial", 
-                   trControl = control, tuneGrid = grid)
-  svm.train
-  
-  svm.train$resample
-  # 5. KNN [Tune]------------------------------------------------------------------------
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(lapply(as.list(rep(100,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                  seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  svm.train = train(group ~ ., data = dat.find,
+                    method = "svmRadial",  metric = "ROC", 
+                    na.action = na.omit, scaled = FALSE,
+                    trControl = control, tuneGrid = grid)
+  # svm.train
+  # svm.train$resample
+  # 5. {scale-sens} KNN [Tune]------------------------------------------------------------------------
     # knn_pred <- knn(train = dat.find[,1:2], test = dat.vali[,1:2], 
     #                 cl = dat.find$group, k = k)
     # modelroc.knn <- roc(dat.vali$group, knn_pred %>% as.numeric)
@@ -221,46 +252,69 @@ mymachiinelearning <- function(dat, size.finding.nc = 2822, size.finding.dis = 7
     # modelroc.fnn <- roc(dat.vali$group, fnn_pred %>% as.numeric)
     # ci(modelroc.knn)
   
-  library(caret)
-    grid = expand.grid(.k = seq(3, 30, by = 3))
+    grid = expand.grid(.k = seq(5, 50, by = 5))
+    set.seed(seed)
     control = trainControl(method = "cv", 
                            number = 10, 
-                           returnResamp = "all")
-    knn.train = train(group ~ ., data = dat.find, method = "knn", 
+                           classProbs = TRUE, 
+                           summaryFunction = twoClassSummary,
+                           seed = c(lapply(as.list(rep(1000,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                    seed),
+                           returnResamp = "all",
+                           allowParallel = FALSE)
+    knn.train = train(group ~ ., data = dat.find, method = "knn", metric = "ROC",
                       trControl = control, tuneGrid = grid)
-    knn.train
+    # knn.train
+    # knn.train$results
     
-    knn.train$results
-    # k  Accuracy     Kappa  AccuracySD    KappaSD
-    # 1   3 0.9027598 0.7081361 0.008036174 0.02332363
-    # 2   6 0.9132564 0.7353324 0.009795308 0.02812166
-    # 3   9 0.9149138 0.7376444 0.009226799 0.02943491
-    # 4  12 0.9146353 0.7357704 0.010263832 0.03179903
-    # 5  15 0.9168452 0.7441861 0.010584061 0.03373664
-    # 6  18 0.9179517 0.7472932 0.008878386 0.02701915
-    # 7  21 0.9162935 0.7430027 0.011091996 0.03345552
-    # 8  24 0.9171207 0.7442852 0.011475976 0.03549715
-    # 9  27 0.9165698 0.7424388 0.009511465 0.02897748
-    # 10 30 0.9168445 0.7439109 0.009751585 0.02949002
-    knn.train$resample
-    knn.train$resample %>% group_by(k) %>% 
-      mutate(Accuracy_SD = sd(Accuracy),
-             Kappa_SD = sd(Kappa)) %>% 
-      mutate(Accuracy = mean(Accuracy),
-             Kappa = mean(Kappa)) %>% 
-      distinct(k, .keep_all = TRUE)
+    # knn.train$resample
+    # knn.train$resample %>% group_by(k) %>% 
+    #   mutate(Accuracy_SD = sd(Accuracy),
+    #          Kappa_SD = sd(Kappa)) %>% 
+    #   mutate(Accuracy = mean(Accuracy),
+    #          Kappa = mean(Kappa)) %>% 
+    #   distinct(k, .keep_all = TRUE)
+    # 
+    # knn.train$resample %>% group_by(Resample) %>% 
+    #   filter(Accuracy == max(Accuracy))
+    #   distinct(Resample, .keep_all = TRUE)
+    # 
+    # knn.train$control$index # 抽样结果
+  # 6. {scale-sens} NNET-----------------------------------------------------------------------
+    # single layer
+    # fit.nn <- nnet::nnet(group ~ ., data = dat.find, size = 10, rang = 0.5,
+    #                decay = 5e-4, maxit = 500, linout = FALSE)
+    # modelroc.nn <- roc(dat.vali$group, predict(fit.nn, dat.vali[,1:2])[,1] %>% as.numeric)
+    # ci(modelroc.nn)
+    # NeuralNetTools::plotnet(fit.nn)
     
-    knn.train$resample %>% group_by(Resample) %>% 
-      filter(Accuracy == max(Accuracy))
-      distinct(Resample, .keep_all = TRUE)
+    # mulitiple layers
+    # fit.neun <- neuralnet::neuralnet(
+    #   group == 1 ~ ., dat.find, rep = 1, hidden = c(3,3),
+    #   linear.output = FALSE)
+    # modelroc.neun <- roc(dat.vali$group, predict(fit.neun, dat.vali[,1:2])[,1] %>% as.numeric)
+    # ci(modelroc.neun)
+    # plot(fit.neun)
+    # NeuralNetTools::plotnet(fit.neun)
     
-    knn.train$control$index # 抽样结果
-  # 6. NNET-----------------------------------------------------------------------
-    fit.nn <- nnet::nnet(group ~ ., data = dat.find, size = 2, rang = 0.1,
-                   decay = 5e-4, maxit = 200)
-    
-    fit.neun <- neuralnet::neuralnet(group == 1 ~ ., dat.find, linear.output = FALSE)
-  # 7. DT [Tune]-------------------------------------------------------------------------
+    grid = expand.grid(size = c(1:20),
+                       decay = c(0, 1e-5, 1e-4, 1e-3, 1e-2))
+    set.seed(seed)
+    control = trainControl(method = "cv", 
+                           number = 10, 
+                           classProbs = TRUE, 
+                           summaryFunction = twoClassSummary,
+                           seed = c(lapply(as.list(rep(1000,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                    seed),
+                           returnResamp = "all",
+                           allowParallel = FALSE)
+    nn.train = train(group ~ ., data = dat.find %>% mutate(group = factor(group, labels = c("NC","CRC"))),
+                     method = "nnet", metric = "ROC",
+                     rang = 0.5, maxit = 1000, linout = FALSE,
+                     trControl = control, tuneGrid = grid)
+    # nn.train
+    # nn.train$resample
+  # 7. {tree} DT [Tune]-------------------------------------------------------------------------
   # fit.dt <- rpart::rpart(group~., data=dat.find, method = "class")
   # modelroc.dt <- roc(dat.vali$group, predict(fit.dt, dat.vali[,1:2], type="class") %>% as.numeric)
   # ci(modelroc.dt)
@@ -286,31 +340,45 @@ mymachiinelearning <- function(dat, size.finding.nc = 2822, size.finding.dis = 7
   # modelroc.dt <- roc(dat.vali$group, predict(fit.dt.prune, dat.vali[,1:2], type="class") %>% as.numeric)
   # ci(modelroc.dt)
     
-  library(caret)
-  grid = expand.grid(cp = seq(0.002, .5, by = 0.02))
+  grid = expand.grid(cp = seq(0.0001, .05, by = 0.0001))
+  set.seed(seed)
   control = trainControl(method = "cv", 
                          number = 10, 
-                         returnResamp = "all")
-  dt.train = train(group ~ ., data = dat.find, method = "rpart", 
+                         classProbs = TRUE, 
+                         summaryFunction = twoClassSummary,
+                         seed = c(lapply(as.list(rep(1000,10)), function(x){sample(c(1:x), nrow(grid), replace = FALSE)}),
+                                  seed),
+                         returnResamp = "all",
+                         allowParallel = FALSE)
+  dt.train = train(group ~ ., data = dat.find, method = "rpart", metric = "ROC",
                    trControl = control, tuneGrid = grid)
-  dt.train
-  
-  dt.train$resample
-    
+  # dt.train
+  # dt.train$resample
   # 8. RES-------------------------------------------------------------------------
-  return(list(LR = modelroc.lr$auc, 
+  res <- list(LR = lr.train, 
               # NB.e1071 = modelroc.nb$auc,
               # NB.klaR = modelroc.NB$auc,
               NB = nb.train,
               XGBoost = xgb.train,
               KNN = knn.train,
               RF = rf.train,
-              
+              SVM = svm.train,
               KNN = knn.train,
-              
+              NN = nn.train,
+              DT = dt.train)
+  save(res, file = "Flow/ML(scale).Rdata")
+  
+  return(list(LR = lr.train, 
+              # NB.e1071 = modelroc.nb$auc,
+              # NB.klaR = modelroc.NB$auc,
+              NB = nb.train,
+              XGBoost = xgb.train,
+              KNN = knn.train,
+              RF = rf.train,
+              SVM = svm.train,
+              KNN = knn.train,
+              NN = nn.train
               DT = dt.train))
 }
 
-# Step 3: 在外部测试集中，评估不同模型的预测能力，选择最佳的模型用于后续分析
-# install.packages("shapviz")
-library(shapviz)
+
