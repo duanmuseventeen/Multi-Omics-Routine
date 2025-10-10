@@ -152,7 +152,7 @@ table1contious <- function(dat = meta.new, myvar){
   ckd<- var[dat$group2 == 1]
   ckdami <- var[dat$group2 == 2]
   
-  fit <- lm(dat$group2 ~ var)
+  fit <- lm(var ~ dat$group2)
   cat(paste0(
     myvar, ":",
     "\nNC: ", mean(nc, na.rm = TRUE) %>% format(digits = 5), "±", sd(nc, na.rm = TRUE) %>% format(digits = 5),
@@ -207,4 +207,5 @@ table1cate(myvar = "gender", pos = 2) # 性别（1为男性、2为女性）
 table1cate(myvar = "hp", pos = 1) # 高血压史（1为有，2为无）
 table1cate(myvar = "dm", pos = 1) # DM：糖尿病史（1为有，2为无）
 table1cate(myvar = "smoking", pos = 1) # 吸烟史（1为有，2为无）
+
 table1cate(myvar = "drinking", pos = 1) # 饮酒史（1为有，2为无）
