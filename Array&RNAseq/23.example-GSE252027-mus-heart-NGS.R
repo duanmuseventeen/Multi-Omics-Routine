@@ -1,5 +1,3 @@
-setwd("C:/D/Project/65.Choline/GEO/GSE252027_RAW/")
-
 rm(list = ls());gc()
 
 library(dplyr)
@@ -282,5 +280,6 @@ if(FB){
   DEG14<- na.omit(DEG14)
   DEG28<- na.omit(DEG28)
 }
+
 
 
