@@ -15,6 +15,8 @@ dat <- dat %>%
   as.data.frame %>% 
   tibble::column_to_rownames("Gene name")
 dat <- round(dat)
+
+dat <- dat[!(apply(dat, 1, function(x){any(x) == 0})),]
 # DEA --------------------------------------------------------------------------
 require(DESeq2)
 
@@ -127,6 +129,7 @@ apply(gsva.heart.24, 2, function(x){
 })
 
 save(gsva.heart.6, gsva.heart.24, file = "GSE153485_GSVA.Rdata")
+
 
 
 
