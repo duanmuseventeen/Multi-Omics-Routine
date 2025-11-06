@@ -1,16 +1,18 @@
-ls
+ls -laht -A1
 tree -h #查看层级结构
 pwd
 cd
-mkdir
+mkdir/rmdir
 touch
 mv
-rm
-cp
+rm -f
+cp -r
 ln
 
+!!
+^a^b
 
-top #查看内存、CPU占用
+top -u $USER #查看内存、CPU占用
 df -h #查看硬盘使用
 du -h
 lsblk # 查看硬件层级结构
@@ -18,30 +20,28 @@ lsblk # 查看硬件层级结构
 # 以用户为主的格式显示进程状态
 ps u
 # text--------------------------------------------------------------
-head
-tail
+head/tail
 less
 more
-cat
-tac
+cat/tac
 
 sort
 cut
-wc
+wc -l
 grep
 uniq
-grep
-awk
+awk # 重点
 tr
-sed
+sed # 重点
 paste
-# linux kernel------------------------------------------------------
-uname # 显示操作系统名称：
-uname -a # 显示所有系统信息：
-uname -r # 显示内核版本：
-uname -m # 显示机器硬件名称
-cat /proc/version
-lsb_release -a # Linux Standard Base
+
+vim
+# 集群相关命令-------------------------------------------------------
+qsub xxx.pbs
+qsub -I -l nodes=1/exit
+qsub -I -l nodes=cu24/exit
+qstat -an
+pestat
 
 # yum---------------------------------------------------------------
 yum list packagename --showduplicates  #查看yum可安装包的版本
@@ -57,6 +57,7 @@ dnf upgrade # 升级所有软件包
 dnf remove -y wget # 卸载wget
 
 # conda-------------------------------------------------------------
+conda init
 conda search packagename #查看conda可安装包的版本
 conda install packagename
 conda install packagename=1.18.1
@@ -65,6 +66,18 @@ conda install packagename>=1.18.1
 conda create --name envname python=3.7
 conda env list # 等同于conda  info --envs
 conda activate envname
+conda deactivate
+conda remove -n envname
+
+# shell ------------------------------------------------------------
+
+# linux kernel------------------------------------------------------
+uname # 显示操作系统名称：
+uname -a # 显示所有系统信息：
+uname -r # 显示内核版本：
+uname -m # 显示机器硬件名称
+cat /proc/version
+lsb_release -a # Linux Standard Base
 
 # systemd-----------------------------------------------------------
 # https://ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html
@@ -99,20 +112,7 @@ sudo hostnamectl set-hostname rhel7 # 设置主机名。
 cat /proc/pid/cmdline
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Docker------------------------------------------------------------
 # https://blog.csdn.net/leah126/article/details/131871717
+
 
