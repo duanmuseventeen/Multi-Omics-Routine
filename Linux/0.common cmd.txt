@@ -41,6 +41,7 @@ qsub xxx.pbs
 qsub -I -l nodes=1/exit
 qsub -I -l nodes=cu24/exit
 qstat -an
+qdel
 pestat
 
 # yum---------------------------------------------------------------
@@ -114,5 +115,6 @@ cat /proc/pid/cmdline
 
 # Docker------------------------------------------------------------
 # https://blog.csdn.net/leah126/article/details/131871717
+
 
 
