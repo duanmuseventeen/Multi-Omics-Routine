@@ -92,6 +92,16 @@ Q4: 错误: package or namespace load failed for ‘rJava’:
   错误: JAVA_HOME cannot be determined from the Registry
 A4: 该错误由于未安装Java引起。搜索 JDK 64（根据实际情况），在ORACLE下载Java并安装，添加环境路径，即可解决。
 
+Q5: 网速不佳导致R包无法成功下载：
+A5:
+1) 延长下载等待时间：
+options("timeout")
+options(timeout = 600)
+2) 设置国内镜像：
+options(Biocexplorer.url="https://mirrors.ustc.edu.cn/bioc/")
+options(repos=c(CRAN="https://mirrors.ustc.edu.cn/CRAN/"))
+
+
 
 
 
