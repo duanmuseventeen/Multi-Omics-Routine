@@ -4,6 +4,8 @@ Single-cell RNA sequencing based on Seq-Well S^3 protocol of
   4 radical prostatectomies with matched normal samples from 4 patients. 
 Organoids derived from radical prostatectomy paired tumor and normal tissue samples.
 
+# Given limited gene symbols, this dataset is not recommended to be used.
+
 setwd("GSE176031_Seq-well/")
 
 rm(list = ls())
