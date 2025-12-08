@@ -457,3 +457,4 @@ table(sce.harmony@meta.data$wsnn_res.0.05)
 # 1487  1408 
 
 save(sce.harmony, file = "GSE201048_without_cell_type.Rdata")
+
