@@ -97,24 +97,23 @@ geom_volcano <- function(dat,pos.num = 10,neg.num = -10){
 # load data--------------------------------------------------------------------
 rna <- readxl::read_excel("转录组/count.xlsx") %>% 
   as.data.frame
-meta <-readxl::read_excel("C:/D/Labmates/齐桂红/转录组分组表.xlsx")
+meta <-readxl::read_excel("meta.xlsx")
 
 sum(duplicated(rna$id))
 sum(duplicated(rna$gene_Dbxref))
 
-dim(pro)
-# [1] 9757   16
+dim(rna)
 # 质控 (delete duplicated symbols) ---------------------------------------------
 # qc for expression, e.g. filteration of counts < 1000, does not matter significantly, 
 # if conducting DEA with DESeq2
 sum(duplicated(rna$id))
-# [1] 0
+
 sum(duplicated(rna$gene_Dbxref))
-# [1] 0
+
 sum(is.na(rna$id))
-# [1] 0
+
 sum(rna$id == "")
-# [1] 0
+
 
 count   <- rna %>%
   filter(coding_type == "protein_coding") %>% 
