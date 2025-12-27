@@ -10,10 +10,10 @@ dat %>%
   group_by(`HMBD Class`) %>% 
   mutate(prop = n / nrow(dat)) %>% 
   mutate(prop = format(prop * 100, digits = 2) %>% paste0(.,"%")) %>% 
-  ggplot(aes(area = value, fill = `HMBD Class`, 
+  ggplot(aes(area = n, fill = `HMBD Class`, 
              label = prop, subgroup = `HMBD Class`)) +
   geom_treemap() +
-  geom_treemap_subgroup_border(colour = "white", size = 5) +
+  geom_treemap_subgroup_border(colour = "white", size = 3) +
   geom_treemap_subgroup_text(place = "centre", grow = TRUE, alpha = 0.5, colour = "black") +
   geom_treemap_text(colour = "white", place = "topleft", reflow = TRUE) +
   # scale_fill_brewer(palette = "Set2") +
@@ -30,7 +30,7 @@ dat %>%
   mutate(prop = format(prop * 100, digits = 2) %>% paste0(.,"%")) %>% 
   treemap(
     index = "HMBD Class", 
-    vSize = "value",                   
+    vSize = "n",                   
     vColor = "HMBD Class",               
     type = "index",                    
     title = "Simple Treemap",
