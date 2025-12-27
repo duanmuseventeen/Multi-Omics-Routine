@@ -1,4 +1,4 @@
-dat <- readxl::read_excel(".xlsx")
+dat <- readxl::read_excel("metabolite classified by HMDB.xlsx")
 
 # treemapify----
 # install.packages("treemapify")
