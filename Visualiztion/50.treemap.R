@@ -18,7 +18,7 @@ dat %>%
   geom_treemap_text(colour = "white", place = "topleft", reflow = TRUE) +
   # scale_fill_brewer(palette = "Set2") +
   labs(title = "")
-# treem----
+# treemap----
 # install.packages("treemap")
 library(treemap)
 
