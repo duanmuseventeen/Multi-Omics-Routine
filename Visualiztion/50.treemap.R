@@ -22,6 +22,7 @@ dat %>%
 # install.packages("treemap")
 library(treemap)
 
+pdf("treemap.pdf", width = 10, height = 8)
 dat %>%
   mutate(vals = 1) %>% 
   count(`HMBD Class`, value = vals) %>%
@@ -36,3 +37,4 @@ dat %>%
     type = "index",                    
     title = "Simple Treemap",
     palette = "Pastel1")
+dev.off()
