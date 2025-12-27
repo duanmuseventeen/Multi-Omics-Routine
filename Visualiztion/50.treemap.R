@@ -27,11 +27,12 @@ dat %>%
   count(`HMBD Class`, value = vals) %>%
   group_by(`HMBD Class`) %>% 
   mutate(prop = n / nrow(dat)) %>% 
-  mutate(prop = format(prop * 100, digits = 2) %>% paste0(.,"%")) %>% 
+  mutate(prop = format(prop * 100, digits = 3) %>% paste0(.,"%")) %>% 
+  mutate(class = paste0(`HMBD Class`,"\n(",prop,")")) %>% 
   treemap(
-    index = "HMBD Class", 
+    index = "class", 
     vSize = "n",                   
-    vColor = "HMBD Class",               
+    vColor = "class",               
     type = "index",                    
     title = "Simple Treemap",
     palette = "Pastel1")
