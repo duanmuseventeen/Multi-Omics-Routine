@@ -1,11 +1,23 @@
 # https://www.zhihu.com/question/305623922
 
-# gradient
+# gradient ------------------------------------------------------------------------
 colorRampPalette(c("white","#007947"))(200)
                 
 colorRampPalette(c("white","red3"))(200)        
 
-# for single cell
+# warm (PMID: 40345201)
+c("black","red","orange")
+
+# cold (PMID: 40345201)
+c("black","blue","green")
+
+# warm (PMID: 38458196)
+colorRampPalette(
+    c('gray90','#FFCA62','#FFB336','#FF9700','#FF5A00','#F24410',
+      '#E52C22','#DD1D23','#C20030','#930039','#8C003A',
+      '#6F003D','#56033F'))(1000)
+
+# for single cell -----------------------------------------------------------------
 # https://github.com/friedpine/scRNASeq_ESCC/blob/main/3c.R
 mycol <-c("#DEEAB2","#64B473","#2D553C","#A1D8C9","#487C76","#7AAF93","#D0E4C6",
           "#F3746C","#BB4B95","#F8BFAF","#F7DDD3","#66CDF6","#598198","#D5E7F7",
@@ -48,5 +60,6 @@ new_colors_list = {
  'Red blood cell': '#f7b6d2',
  'Neutrophil': '#dbdb8d'
 }
+
 
 
