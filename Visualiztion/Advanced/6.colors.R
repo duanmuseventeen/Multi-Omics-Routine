@@ -1,5 +1,8 @@
 # https://www.zhihu.com/question/305623922
 
+# comparation ---------------------------------------------------------------------
+c("#4798ac", "#b5333b")
+
 # gradient ------------------------------------------------------------------------
 colorRampPalette(c("white","#007947"))(200)
                 
@@ -92,6 +95,7 @@ new_colors_list = {
  'Red blood cell': '#f7b6d2',
  'Neutrophil': '#dbdb8d'
 }
+
 
 
 
