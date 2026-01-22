@@ -40,6 +40,15 @@ coldcol <- c(#"turquoise2",
   "skyblue2"
 )
 
+# (PMID: 40670783)
+c(low = "#8b81bd", mid = "white", high = "#822425")
+
+# (PMID: 40301344)
+ scale_fill_distiller(palette = "RdBu",
+                      limits = c(-0.8, 0.8),
+                      breaks = seq(-0.8, 0.8, 0.4),
+                      direction = 1) 
+
 # for single cell -----------------------------------------------------------------
 # https://github.com/friedpine/scRNASeq_ESCC/blob/main/3c.R
 mycol <-c("#DEEAB2","#64B473","#2D553C","#A1D8C9","#487C76","#7AAF93","#D0E4C6",
@@ -83,6 +92,7 @@ new_colors_list = {
  'Red blood cell': '#f7b6d2',
  'Neutrophil': '#dbdb8d'
 }
+
 
 
 
