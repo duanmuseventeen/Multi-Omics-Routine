@@ -61,11 +61,14 @@ getdb <- function(pathway, superclass){
       filter(term == pathway)
     genes <- genes %>% 
       transmute(id      = term,
+                db      = "Hallmark50",
                 superclass=superclass,
-                subtype = "Hallmark50",
+                subtype = "",
                 symbol  = gene)
     }
   
   return(genes)
 }
 mysuperclass <- apply(res %>% dplyr::select(ID, superclass), 1, function(x){getdb(pathway = x[1], superclass = x[2])})
+names(mysuperclass) <- stat13$ID
+lapply(mysuperclass, function(x){anyDuplicated(x)})
