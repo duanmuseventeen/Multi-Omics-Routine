@@ -1,0 +1,71 @@
+library(org.Hs.eg.db) # for go
+# library(msigdbr)      # for kegg
+library(KEGGREST)     # for kegg
+library(reactome.db)  # for reactome
+hallmark <- clusterProfiler::read.gmt("E:/cold2hot/h.all.v2026.1.Hs.symbols.gmt")
+
+head(res[,c(2:4,37,38)])
+    db trend       ID                               Description                           superclass
+1 KEGG    up hsa04612       Antigen processing and presentation Antigen Presentation & MHC Machinery
+2 KEGG    up hsa05330                       Allograft rejection                    Adaptive Immunity
+3 KEGG    up hsa05332                 Graft-versus-host disease                    Adaptive Immunity
+4 KEGG    up hsa05322              Systemic lupus erythematosus                       Disease & Drug
+5 KEGG    up hsa04640                Hematopoietic cell lineage                                Other
+6 KEGG    up hsa04650 Natural killer cell mediated cytotoxicity                        Innate Immune
+
+getdb <- function(pathway, superclass){
+  if(str_detect(pathway, "GO:")){
+    genes <- select(org.Hs.eg.db, 
+                    keys = go_id, 
+                    columns = c("SYMBOL"), 
+                    keytype = "GOALL") # GOALL 包含子节点的所有基因
+    genes <- genes %>% 
+      transmute(
+        id      = GOALL,
+        db      = "GO",
+        subtype = ONTOLOGYALL,
+        supclass=superclass,
+        symbol  = SYMBOL
+      )
+    
+    }else if(str_detect(pathway, "hsa")){
+      genes <- keggGet(pathway)[[1]]$GENE
+      genes <- mapIds(org.Hs.eg.db, 
+                      keys = genes[seq(1, length(genes), by = 2)], 
+                      column = "SYMBOL", 
+                      keytype = "ENTREZID")
+      genes <- data.frame(
+        id      = pathway,
+        db      = "KEGG",  
+        superclass=superclass,
+        subtype = "",
+        symbol  = genes,
+        stringsAsFactors = FALSE
+      )
+    
+    }else if(str_detect(pathway, "R-HSA")){
+      genes <- mapIds(org.Hs.eg.db, 
+                     keys = reactomePATHID2EXTID[[pathway]], 
+                     column = "SYMBOL", 
+                     keytype = "ENTREZID")
+      genes <- data.frame(
+        id      = pathway,
+        db      = "REACTOME",  
+        superclass=superclass,
+        subtype = "",
+        symbol  = genes,
+        stringsAsFactors = FALSE
+      )
+    }else if(str_detect(pathway, "HALLMARK")){
+    genes <- hallmark %>% 
+      filter(term == pathway)
+    genes <- genes %>% 
+      transmute(id      = term,
+                superclass=superclass,
+                subtype = "Hallmark50",
+                symbol  = gene)
+    }
+  
+  return(genes)
+}
+mysuperclass <- apply(res %>% dplyr::select(ID, superclass), 1, function(x){getdb(pathway = x[1], superclass = x[2])})
