@@ -1,3 +1,7 @@
+# Ref: 
+# https://mp.weixin.qq.com/s/imJ5za173pKFJVad5j_5iw
+# https://www.jianshu.com/p/73cb2ebcd1b0
+
 countToTpm <- function(counts, effLen){
   rate <- log(counts) - log(effLen)
   denom <- log(sum(exp(rate)))
