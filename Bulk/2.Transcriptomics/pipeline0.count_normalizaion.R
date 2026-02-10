@@ -3,7 +3,7 @@
 # https://www.jianshu.com/p/73cb2ebcd1b0
 
 countToTpm <- function(counts, effLen){
-  rate <- log(counts) - log(effLen)
+  rate <- log(counts) - log(effLen) # row respresents genes, align with effLen
   denom <- log(sum(exp(rate)))
   exp(rate - denom + log(1e6))
 }
