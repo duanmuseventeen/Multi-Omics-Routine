@@ -116,3 +116,90 @@ p <- ggplot(dat.sankey.ml, aes(
   theme(legend.position = 'none')
 
 ggsave(p, filename = "sankey.pdf", width=10, height=10, units="in")
+
+# 2026-03-03 example2 ----
+require(dplyr)
+require(ggplot2)
+require(AnnotationDbi)
+require(ggsankey)
+require(AnnotationDbi)
+require(RColorBrewer)
+  
+  head(node)
+  # gene        coef                                 id         db subtype symbol
+  # 1 LPAR6 -0.12065943 HALLMARK_INTERFERON_ALPHA_RESPONSE Hallmark50          LPAR6
+  # 2 ERCC1 -0.11184625                         GO:0002449         GO      BP  ERCC1
+  # 3 ERCC1 -0.11184625                         GO:0002460         GO      BP  ERCC1
+  # 4 NFIL3 -0.09102736   HALLMARK_TNFA_SIGNALING_VIA_NFKB Hallmark50          NFIL3
+  # 5  BTG1 -0.08676659 HALLMARK_INTERFERON_GAMMA_RESPONSE Hallmark50           BTG1
+  # 6  BTG1 -0.08676659   HALLMARK_TNFA_SIGNALING_VIA_NFKB Hallmark50           BTG1
+  
+  head(output)
+  # gene        coef
+  # LPAR6 LPAR6 -0.12065943
+  # ERCC1 ERCC1 -0.11184625
+  # NFIL3 NFIL3 -0.09102736
+  # BTG1   BTG1 -0.08676659
+  # EXT1   EXT1 -0.08488127
+  # YAP1   YAP1 -0.08480225
+  
+  dat.sankey <- node %>% arrange(desc(coef))
+  dat.sankey$gene <- factor(dat.sankey$gene, levels = unique(dat.sankey$gene))
+  dat.sankey <- dat.sankey %>% dplyr::select(gene, id, db)
+  
+  dat <- output %>% 
+    arrange(coef) %>% 
+    mutate(Order = as.character(row_number())) %>% 
+    mutate(Order = case_when(
+      nchar(Order) == 1 ~ paste0("0", Order),
+      nchar(Order) == 2 ~ paste0("", Order)
+    )) %>% 
+    mutate(symbol = gene,
+           order_sybmol = paste0(Order,"::",gene))
+  
+  dat.sankey <- dat.sankey %>% 
+    mutate(value = 1, symbol = gene, pathway = id) %>% 
+    left_join(dat %>% mutate(symbol = gene) %>% dplyr::select(symbol, order_sybmol), by = "symbol") %>% 
+    transmute(pathway = pathway, symbol = order_sybmol, value = value)
+  
+  dat.sankey.ml <- dat.sankey %>% 
+    make_long(pathway, symbol)
+  
+  values <- dat.sankey %>% 
+    group_by(symbol) %>%
+    mutate(symbol_value = 1/n()) %>%
+    mutate(pathway_value = symbol_value) %>% 
+    ungroup() %>% 
+    arrange(pathway) %>% 
+    arrange(desc(symbol)) %>% 
+    dplyr::select(symbol_value, pathway_value) %>% 
+    as.matrix %>% t %>% 
+    as.list %>% unlist
+  
+  mycol <- c(
+    # scales::muted(rainbow(12)),
+    rep('#FFE6B7', 31), # GO
+    rep('#C7B8BD', 6), # HALL
+    rep('#AADCE0', 2), # REACTOME 
+    rep('#f4a494', 7), # KEGG
+    colorRampPalette(c('#1E466E', "white","red3" ))(71)
+  )
+  
+  ggplot(dat.sankey.ml, aes(
+    x = x, 
+    next_x = next_x,
+    node = node,
+    next_node = next_node,
+    fill = node,
+    label = node,
+    value = values)) +
+    geom_sankey(flow.alpha = 0.5,
+                # flow.fill = 'grey',
+                # flow.color = "#eeffff55", 
+                node.fill = mycol,
+                smooth = 8,
+                width = 0.08,
+                type = "alluvial") +
+    geom_sankey_text(size = 3.2, color = "black",type = "alluvial")+
+    theme_void() +
+    theme(legend.position = 'none')
