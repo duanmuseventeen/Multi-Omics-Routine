@@ -34,6 +34,7 @@ do not do recursive LASSO:
 data > LASSO1 > features1 > data[,features1] > LASSO2 > ...
 
 use penalty.factor para to set weight, coef can be β from ridge or else regressions. note: make sure coef is not 0.
+if one penalty.factor is 0, that variable will not be deleted.
 
 fit.lasso <- cv.glmnet(
   as.matrix(t(data)), 
