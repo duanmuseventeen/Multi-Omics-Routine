@@ -1,0 +1,45 @@
+head(data[,1:4])
+             1        2        3        4
+AQP3  5.272686 6.442811 1.814219 2.933990
+ARL4A 6.144410 4.974506 5.614584 4.767499
+BCAM  5.481586 4.860840 1.970174 5.920959
+BRAF  3.569020 4.358858 2.508018 3.679516
+BTG1  6.134662 6.563006 5.707356 5.089069
+CASP7 4.455561 3.830681 3.626907 4.358390
+
+head(group)
+[1] 0 0 0 0 0 0
+
+# L1 Regularization - LASSO--------------------------------------------------------------
+fit <- cv.glmnet(as.matrix(t(data)), group, alpha = 1, nfolds = 10, family = binomial(link = 'logit'), type.measure = 'auc')
+
+coef <- coef(fit, s = fit$lambda.min)
+prob <- predict(fit.lasso, newx = as.matrix(t(data)), s = "lambda.min", type = "response")
+modelroc <- roc(group, unlist(prob[,1]))
+modelroc
+
+# L2 Regularization - Ridge--------------------------------------------------------------
+fit <- cv.glmnet(as.matrix(t(data)), group, alpha = 1, nfolds = 10, family = binomial(link = 'logit'), type.measure = 'auc')
+
+coef <- coef(fit, s = fit$lambda.min)
+prob <- predict(fit.lasso, newx = as.matrix(t(data)), s = "lambda.min", type = "response")
+modelroc <- roc(group, unlist(prob[,1]))
+modelroc
+# Elastic Net ---------------------------------------------------------------------------
+alpha (0-1)
+fit <- cv.glmnet(as.matrix(t(data)), group, alpha = alpha, nfolds = 10, family = binomial(link = 'logit'), type.measure = 'auc')
+
+# Adaptive LASSO ------------------------------------------------------------------------
+do not do recursive LASSO: 
+data > LASSO1 > features1 > data[,features1] > LASSO2 > ...
+
+use penalty.factor para to set weight, coef can be β from ridge or else regressions. note: make sure coef is not 0.
+
+fit.lasso <- cv.glmnet(
+  as.matrix(t(data)), 
+  group, 
+  alpha = 0.2, 
+  nfolds = 10, 
+  family = binomial(link = 'logit'), 
+  type.measure = 'auc'
+  penalty.factor = 1/abs(coef)))
