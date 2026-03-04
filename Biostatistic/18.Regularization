@@ -44,3 +44,60 @@ fit.lasso <- cv.glmnet(
   family = binomial(link = 'logit'), 
   type.measure = 'auc'
   penalty.factor = 1/abs(coef)))
+
+# Visualization --------------------------------------------------------------------------
+gglasso <- function(fit){
+  data.lasso1 <- fit$beta %>% as.matrix %>% t %>% as.data.frame %>%
+    mutate(lambda = fit$lambda %>% log,
+           df = fit$df) %>% 
+    reshape2::melt(c("lambda", "df")) %>%
+    mutate(variable = str_remove(variable, "A"))
+  data.label <- data.lasso1 %>% group_by(variable) %>% filter(lambda == min(lambda))
+  ggplot(data.lasso1, aes(x = lambda, y = value, color = variable)) +
+    geom_line() +
+    # geom_text(data = data.label, aes(x = -10, y = value, label = variable), hjust = 1) +
+    ylab("Coefficients") +
+    xlab("Log Lambda") +
+    guides(col = "none") +
+    # scale_x_continuous(limits = c(-13,0),breaks = c(-10,-7.5,-5,-2.5)) +
+    # scale_y_continuous(n.breaks = 5) +
+    scale_x_continuous(#n.breaks = 4,
+      sec.axis = sec_axis( ~scales::rescale(.,range(data.lasso1$df)), name = "")) +
+    theme_bw() +
+    theme(text = element_text(size = 12), legend.title = element_blank(),
+          plot.margin = ggplot2::margin(30,30,30,30),
+          panel.grid = element_blank(), legend.background = element_blank(),
+          axis.title.x = element_text(vjust = -4),
+          axis.title.y = element_text(vjust = 4))
+}
+
+gglasso.cv <- function(fit){
+  data.gg <- data.frame(
+    lambda = fit.lasso$lambda,
+    loglambda = log(fit.lasso$lambda),
+    low = fit.lasso$cvlo,
+    up = fit.lasso$cvup,
+    m = fit.lasso$cvm,
+    nzero = fit.lasso$nzero,
+    group = fit.lasso$nzero %>% factor,
+    stringsAsFactors = F
+  ) %>%
+    mutate(best = ifelse(lambda == fit.lasso$lambda.min, 1, 0)) %>%
+    mutate(best = factor(best))
+  
+  ggplot(data.gg, aes(x = loglambda, y = m, color = group)) +
+    geom_vline(xintercept = log(fit.lasso$lambda.min), linetype = 2, color = "gray50") +
+    geom_point() +
+    geom_errorbar(aes(ymin = low, ymax = up)) +
+    # ggsci::scale_color_jama() +
+    xlab("log(lamda)") +
+    ylab("GLM Deviance") +
+    guides(color = "none") +
+    # guides(color = guide_legend(ncol = 3)) +
+    theme_bw() +
+    theme(text = element_text(size = 12), legend.title = element_blank(),
+          plot.margin = ggplot2::margin(30,30,30,30),
+          panel.grid = element_blank(), legend.background = element_blank(),
+          axis.title.x = element_text(vjust = -4),
+          axis.title.y = element_text(vjust = 4))
+}
