@@ -18,7 +18,7 @@ tmp <- data.frame(
   Sensitivity = modelroc$sensitivities,
   stringsAsFactors = F)
 
-ggplot(tmp, aes(Specificity, Sensitivity, col = "Lasso: AUROC=0.832\n95%Cl: 0.697 - 0.951")) +
+ggplot(tmp, aes(Specificity, Sensitivity)) +
   geom_abline(slope = 1, intercept = 1, col = "#8d8d93", linetype = 2, linewidth = 2) +
   geom_path(linewidth = 2) +
   scale_x_reverse(expand = c(0,0), n.breaks = 6) +
