@@ -1,0 +1,1 @@
+nohup prefetch --option-file PRJNA725073.txt --max-size u > PRJNA725073.log &
