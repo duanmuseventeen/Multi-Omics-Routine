@@ -1,0 +1,10 @@
+method1:
+pyscenic
+
+method2:
+To identify enriched transcription factor binding, the top 500 overexpressed or underexpressed genes 
+within a condition were uploaded to the Enrichr web tool26,27,28 to quantify enrichment for ENCODE and 
+ChEA consensus transcription factor targets. We visualized gene expression patterns using pheatmap() 
+in R or using GraphPad Prism. Analyses were conducted using R software (v.4.2.2).
+Ref: 
+NADPH-producing enzymes restrict the formation of pancreatic precancerous lesions. Nat Metab. 2026. pmid: 41922743
