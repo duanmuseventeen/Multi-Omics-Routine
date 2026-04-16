@@ -1,7 +1,13 @@
-method1: 
-GDSC (https://www.cancerrxgene.org/)
+data1: 
+GDSC (Genomics of Drug Sensitivity in Cancer, https://www.cancerrxgene.org/)
 ref: https://www.jianshu.com/p/dafe9b39aa06
 
-method2:
+data2:
+CRRP (The Cancer Therapeutics Response Portal, https://portals.broadinstitute.org/ctrp/)
+ref: https://zhuanlan.zhihu.com/p/667313153
+
+method1:
 R package oncoPredict
 ref: https://www.jingege.wang/2021/07/23/%e8%82%bf%e7%98%a4%e8%80%90%e8%8d%af%e7%a0%94%e7%a9%b6%e7%a5%9e%e5%99%a8%e4%b9%8b-gdsc/
+
+
