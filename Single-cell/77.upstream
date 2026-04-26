@@ -11,9 +11,10 @@ nohup prefetch --option-file PRJNA725073.txt --max-size u > PRJNA725073.log &
 cellranger count --help
 
 for i in $(seq 0 5); do
-cellranger count --id=SRR1435214${i} \
+cellranger count 
+   --id=SRR1435214${i} \
+   --create-bam=true \
    --fastqs=~/zhouwei/2.fastq \
    --sample=SRR1435214${i} \
    --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A
-   --create-bam=true
 done
