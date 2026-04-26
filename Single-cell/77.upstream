@@ -1,1 +1,18 @@
+Ref:
+https://www.10xgenomics.com/support/software/cell-ranger/latest/tutorials/
+
+# 下载sra文件
 nohup prefetch --option-file PRJNA725073.txt --max-size u > PRJNA725073.log &
+
+# 拆分sra文件
+./parallel_sra_spilt.sh
+
+# 运行cellranger
+cellranger count --help
+
+for i in $(seq 0 5); do
+cellranger count --id=SRR1435214${i} \
+   --fastqs=~/zhouwei/2.fastq \
+   --sample=SRR1435214${i} \
+   --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A
+done
