@@ -17,7 +17,7 @@ done
 
 for i in $(seq 0 5); do
    SAMPLE="SRR1435214${i}"
-   nohup cellranger count 
+   nohup cellranger count \
       --id=${SAMPLE} \
       --create-bam=true \
       --fastqs=~/zhouwei/2.fastq \
