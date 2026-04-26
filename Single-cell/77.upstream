@@ -16,11 +16,12 @@ for i in $(seq 0 5); do
 done
 
 for i in $(seq 0 5); do
-cellranger count 
-   --id=SRR1435214${i} \
-   --create-bam=true \
-   --fastqs=~/zhouwei/2.fastq \
-   --sample=SRR1435214${i} \
-   --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
-   --localmem=300
+   SAMPLE="SRR1435214${i}"
+   nohup cellranger count 
+      --id=${SAMPLE} \
+      --create-bam=true \
+      --fastqs=~/zhouwei/2.fastq \
+      --sample=${SAMPLE} \
+      --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
+      --localmem=300 > count_${SAMPLE}.log 2>&1 &
 done
