@@ -17,11 +17,19 @@ done
 
 for i in $(seq 0 5); do
    SAMPLE="SRR1435214${i}"
-   nohup cellranger count \
+   echo "========================================"
+   echo "开始分析样本: ${SAMPLE}"
+   echo "开始时间: $(date '+%Y-%m-%d %H:%M:%S')"
+   echo "========================================"
+   cellranger count \
       --id=${SAMPLE} \
       --create-bam=true \
       --fastqs=~/zhouwei/2.fastq \
       --sample=${SAMPLE} \
       --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
-      --localmem=300 > count_${SAMPLE}.log 2>&1 &
+      --localmem=300 > count_${SAMPLE}.log 2>&1 
+   echo "----------------------------------------"
+   echo "样本 ${SAMPLE} 分析完成"
+   echo "结束时间: $(date '+%Y-%m-%d %H:%M:%S')"
+   echo "----------------------------------------"
 done
