@@ -1,6 +1,12 @@
 Ref:
 https://www.10xgenomics.com/support/software/cell-ranger/latest/tutorials/
 
+# 相关命令，防止命令中断
+screen -S meta
+screen -ls
+screen -r meta
+screen -S meta -X quit
+
 # 下载sra文件
 nohup prefetch --option-file PRJNA725073.txt --max-size u > PRJNA725073.log &
 
