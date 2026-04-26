@@ -21,5 +21,6 @@ cellranger count
    --create-bam=true \
    --fastqs=~/zhouwei/2.fastq \
    --sample=SRR1435214${i} \
-   --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A
+   --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
+   --localmem=300
 done
