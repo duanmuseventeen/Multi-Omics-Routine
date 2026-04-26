@@ -11,6 +11,11 @@ nohup prefetch --option-file PRJNA725073.txt --max-size u > PRJNA725073.log &
 cellranger count --help
 
 for i in $(seq 0 5); do
+   mv SRR1435214${i}_1.fastq.gz SRR1435214${i}_S1_L001_R1_001.fastq.gz
+   mv SRR1435214${i}_2.fastq.gz SRR1435214${i}_S1_L001_R2_001.fastq.gz
+done
+
+for i in $(seq 0 5); do
 cellranger count 
    --id=SRR1435214${i} \
    --create-bam=true \
