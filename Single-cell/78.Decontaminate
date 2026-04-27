@@ -14,4 +14,10 @@ Ref:
 https://github.com/constantAmateur/SoupX
 https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html
 
+The problem this package attempts to solve is that all droplet based single cell RNA-seq experiments also capture ambient mRNAs present in the input solution along with cell specific mRNAs of interest. This contamination is ubiquitous and can vary hugely between experiments (2% - 50%), although around 10% seems reasonably common.
+
+There's no way to know in advance what the contamination is in an experiment, although solid tumours and low-viability cells tend to produce higher contamination fractions. As the source of the contaminating mRNAs is lysed cells in the input solution, the profile of the contamination is experiment specific and produces a batch effect.
+
+Even if you decide you don't want to use the SoupX correction methods for whatever reason, you should at least want to know how contaminated your data are.
+
 # DecontX    -------------------------------------------------------------------------------------
