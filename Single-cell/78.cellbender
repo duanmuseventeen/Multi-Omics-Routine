@@ -1,0 +1,9 @@
+Ref: 
+https://cellbender.readthedocs.io/en/latest/index.html
+
+Usage:
+cellbender remove-background --cuda --input input_file.h5 --output output_file.h5
+
+Note:
+Pre-requisites:
+raw_feature_bc_matrix.h5: A raw h5 count matrix file produced by cellranger count. (In CellRanger v2 this file was called raw_gene_bc_matrices_h5.h5).
