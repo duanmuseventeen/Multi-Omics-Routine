@@ -4,7 +4,6 @@
 
 rm(list = ls())
 
-setwd("E:/cold2hot/3.下游处理(表达矩阵数据)/scRNAseq/")
 # load pkgs --------------------------------------------------------------------
 require(Seurat)
 require(dplyr)
