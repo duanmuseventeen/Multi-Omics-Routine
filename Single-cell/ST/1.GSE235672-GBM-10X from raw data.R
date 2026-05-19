@@ -30,6 +30,10 @@ class(mystobj)
 
 dim(mystobj)
 # [1] 38224 30141
+
+Layers(mystobj[["Spatial"]])
+#  [1] "counts.1"  "counts.2"  "counts.3"  "counts.4"  "counts.5"  "counts.6"  "counts.7"  "counts.8"  "counts.9"  "counts.10" "counts.11"
+# [12] "counts.12" "counts.13" "counts.14"
 # Reduction     ----------------------------------------------------------------
 myst <- mystobj
 
