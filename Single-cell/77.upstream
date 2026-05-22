@@ -21,6 +21,7 @@ for i in $(seq 0 5); do
    mv SRR1435214${i}_2.fastq.gz SRR1435214${i}_S1_L001_R2_001.fastq.gz
 done
 
+# code 1
 for i in $(seq 0 5); do
    SAMPLE="SRR1435214${i}"
    echo "========================================"
@@ -30,7 +31,7 @@ for i in $(seq 0 5); do
    cellranger count \
       --id=${SAMPLE} \
       --create-bam=true \
-      --fastqs=~/zhouwei/2.fastq \
+      --fastqs=~/2.fastq \
       --sample=${SAMPLE} \
       --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
       --localmem=300 > count_${SAMPLE}.log 2>&1 
@@ -39,3 +40,27 @@ for i in $(seq 0 5); do
    echo "结束时间: $(date '+%Y-%m-%d %H:%M:%S')"
    echo "----------------------------------------"
 done
+
+# code 2
+while read SAMPLE
+do
+  echo "========================================"
+  echo "开始分析样本: ${SAMPLE}"
+  echo "开始时间: $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "========================================"
+  
+  cellranger count \
+  --id=${SAMPLE} \
+  --create-bam=true \
+  --fastqs=~/2.fastq \
+  --sample=${SAMPLE} \
+  --transcriptome=~/genomeref/10X/refdata-gex-GRCh38-2024-A \
+  --localmem=300 \
+  > count_${SAMPLE}.log 2>&1
+  
+  echo "----------------------------------------"
+  echo "样本 ${SAMPLE} 分析完成"
+  echo "结束时间: $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "----------------------------------------"
+
+done < samples.txt
