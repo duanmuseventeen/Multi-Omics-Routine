@@ -1,0 +1,289 @@
+primekg 项目知识图谱 kg.csv文件获取自 Sci Data, 2023 (pmid: 36732524)
+
+import os
+import json
+import pandas as pd
+from typing import Optional, List, Dict
+
+from pykeen.triples import TriplesFactory
+from pykeen.pipeline import pipeline
+from pykeen.predict import predict_target
+
+
+# =========================
+# 0. 配置区：按需修改
+# =========================
+KG_CSV_PATH = "kg.csv"   # 改成你的本地路径
+RESULT_DIR = "pykeen_primekg_results"
+
+# 先跑小实验时可设为整数，比如 200000；全量跑设为 None
+MAX_EDGES: Optional[int] = 200000
+
+# 如果你只想先跑某些关系，可写成集合；全量跑设为 None
+KEEP_RELATIONS: Optional[set] = {"protein_protein","phenotype_protein"}
+# 示例：
+# KEEP_RELATIONS = {"indication", "off-label use", "contraindication"}
+
+# 先跑一组常见模型
+MODELS = [
+    "ComplEx",
+    "DistMult",
+    "TransE",
+    "RotatE",
+    "TuckER",
+    "ConvE",
+]
+
+# 训练参数
+RANDOM_SEED = 42
+EPOCHS = 5
+BATCH_SIZE = 512 
+EMBEDDING_DIM = 256
+LEARNING_RATE = 1e-3
+
+# 如果有 GPU，可改成 "cuda"
+DEVICE = "cpu"
+
+
+# =========================
+# 1. 读取并标准化 PrimeKG CSV
+# =========================
+def load_primekg_csv(path: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    print("原始列名：", list(df.columns))
+    return df
+
+
+def pick_first_existing(columns: List[str], candidates: List[str]) -> Optional[str]:
+    for c in candidates:
+        if c in columns:
+            return c
+    return None
+
+
+def normalize_primekg_columns(df: pd.DataFrame) -> pd.DataFrame:
+    cols = list(df.columns)
+
+    x_id_col = pick_first_existing(cols, ["x_id", "source_id", "head_id"])
+    x_type_col = pick_first_existing(cols, ["x_type", "source_type", "head_type"])
+    x_name_col = pick_first_existing(cols, ["x_name", "source_name", "head_name"])
+
+    rel_col = pick_first_existing(cols, ["relation", "display_relation", "edge_type", "predicate"])
+
+    y_id_col = pick_first_existing(cols, ["y_id", "target_id", "tail_id"])
+    y_type_col = pick_first_existing(cols, ["y_type", "target_type", "tail_type"])
+    y_name_col = pick_first_existing(cols, ["y_name", "target_name", "tail_name"])
+
+    if rel_col is None:
+        raise ValueError("没找到关系列，请检查 kg.csv 中是否有 relation / display_relation / predicate 等列。")
+
+    if x_id_col is None and x_name_col is None:
+        raise ValueError("没找到头实体列，请检查 x_id/x_name。")
+    if y_id_col is None and y_name_col is None:
+        raise ValueError("没找到尾实体列，请检查 y_id/y_name。")
+
+    # 用 type:id 作为实体标签，避免不同类型同名冲突
+    def make_entity_label(prefix_id, prefix_name, prefix_type, side="x"):
+        if prefix_type is not None:
+            t = df[prefix_type].astype(str)
+        else:
+            t = pd.Series(["unknown"] * len(df), index=df.index)
+
+        if prefix_id is not None:
+            v = df[prefix_id].astype(str)
+        else:
+            v = df[prefix_name].astype(str)
+
+        return t + "::" + v
+
+    out = pd.DataFrame()
+    out["head"] = make_entity_label(x_id_col, x_name_col, x_type_col, side="x")
+    out["relation"] = df[rel_col].astype(str)
+
+    out["tail"] = make_entity_label(y_id_col, y_name_col, y_type_col, side="y")
+
+    # 附加原始信息，方便回溯
+    if x_name_col is not None:
+        out["head_name"] = df[x_name_col].astype(str)
+    if y_name_col is not None:
+        out["tail_name"] = df[y_name_col].astype(str)
+    if x_type_col is not None:
+        out["head_type"] = df[x_type_col].astype(str)
+    if y_type_col is not None:
+        out["tail_type"] = df[y_type_col].astype(str)
+
+    # 去掉缺失
+    out = out.dropna(subset=["head", "relation", "tail"]).copy()
+
+    # 去重
+    out = out.drop_duplicates(subset=["head", "relation", "tail"]).reset_index(drop=True)
+
+    return out
+
+
+def filter_edges(df: pd.DataFrame) -> pd.DataFrame:
+    if KEEP_RELATIONS is not None:
+        df = df[df["relation"].isin(KEEP_RELATIONS)].copy()
+
+    if MAX_EDGES is not None and len(df) > MAX_EDGES:
+        df = df.sample(n=MAX_EDGES, random_state=RANDOM_SEED).reset_index(drop=True)
+
+    return df
+
+
+# =========================
+# 2. 构造 PyKEEN 三元组工厂
+# =========================
+def build_triples_factory(df: pd.DataFrame) -> TriplesFactory:
+    triples = df[["head", "relation", "tail"]].astype(str).to_numpy()
+    tf = TriplesFactory.from_labeled_triples(
+        triples,
+        create_inverse_triples=True,  # 常见做法，通常有助于性能
+    )
+    return tf
+
+
+# =========================
+# 3. 训练单个模型
+# =========================
+def get_model_kwargs(model_name: str) -> Dict:
+    # 不同模型可按需单独设参数
+    base = {}
+
+    if model_name in {"ComplEx", "DistMult", "TransE", "RotatE", "PairRE"}:
+        base["embedding_dim"] = EMBEDDING_DIM
+
+    elif model_name == "TuckER":
+        base["embedding_dim"] = EMBEDDING_DIM
+        # relation_dim 可选；不写时 PyKEEN 会用默认值
+        # base["relation_dim"] = EMBEDDING_DIM
+
+    elif model_name == "ConvE":
+        base["embedding_dim"] = EMBEDDING_DIM
+        # ConvE 的形状参数可根据需要再调
+        # 如果报形状问题，可尝试 embedding_dim=200
+        # 并设置 base["input_channels"] = 1
+
+    return base
+
+
+def train_one_model(model_name: str, tf: TriplesFactory):
+    train_tf, test_tf, valid_tf = tf.split(
+        ratios=[0.8, 0.1, 0.1],
+        random_state=RANDOM_SEED,
+    )
+
+    result = pipeline(
+        training=train_tf,
+        testing=test_tf,
+        validation=valid_tf,
+        model=model_name,
+        model_kwargs=get_model_kwargs(model_name),
+        optimizer="Adam",
+        optimizer_kwargs=dict(lr=LEARNING_RATE),
+        training_loop="sLCWA",
+        negative_sampler="basic",
+        training_kwargs=dict(
+            num_epochs=EPOCHS,
+            batch_size=BATCH_SIZE,
+        ),
+        evaluator="RankBasedEvaluator",
+        evaluator_kwargs=dict(
+            filtered=True,
+        ),
+        random_seed=RANDOM_SEED,
+        device=DEVICE,
+    )
+    return result, train_tf, valid_tf, test_tf
+
+
+# =========================
+# 4. 评估多个模型
+# =========================
+def run_all_models(tf: TriplesFactory):
+    os.makedirs(RESULT_DIR, exist_ok=True)
+    summary = []
+
+    for model_name in MODELS:
+        print(f"\n========== 开始训练: {model_name} ==========")
+        try:
+            result, train_tf, valid_tf, test_tf = train_one_model(model_name, tf)
+
+            metrics = result.metric_results.to_flat_dict()
+
+            record = {
+                "model": model_name,
+                "both.realistic.mean_reciprocal_rank": metrics.get("both.realistic.mean_reciprocal_rank"),
+                "both.realistic.hits_at_1": metrics.get("both.realistic.hits_at_1"),
+                "both.realistic.hits_at_3": metrics.get("both.realistic.hits_at_3"),
+                "both.realistic.hits_at_10": metrics.get("both.realistic.hits_at_10"),
+            }
+            summary.append(record)
+
+            model_dir = os.path.join(RESULT_DIR, model_name)
+            os.makedirs(model_dir, exist_ok=True)
+
+            # 保存模型
+            result.save_to_directory(model_dir)
+
+            # 保存指标
+            with open(os.path.join(model_dir, "metrics.json"), "w", encoding="utf-8") as f:
+                json.dump(metrics, f, ensure_ascii=False, indent=2)
+
+            print("评估结果：", record)
+
+        except Exception as e:
+            print(f"[警告] {model_name} 训练失败：{e}")
+
+    summary_df = pd.DataFrame(summary).sort_values(
+        by="both.realistic.mean_reciprocal_rank",
+        ascending=False,
+    )
+    summary_df.to_csv(os.path.join(RESULT_DIR, "model_summary.csv"), index=False)
+    print("\n===== 模型比较结果 =====")
+    print(summary_df)
+
+
+# =========================
+# 5. 演示：对某个 (head, relation, ?) 做 tail ranking
+# =========================
+def demo_predict_tail(saved_model_dir: str, head_label: str, relation_label: str):
+    from pykeen.pipeline import pipeline_result_from_directory
+
+    loaded_result = pipeline_result_from_directory(saved_model_dir)
+
+    predictions = predict_target(
+        model=loaded_result.model,
+        head=head_label,
+        relation=relation_label,
+        triples_factory=loaded_result.training,
+    )
+
+    print(predictions.df.head(20))
+
+
+# =========================
+# 主程序
+# =========================
+if __name__ == "__main__":
+    df_raw = load_primekg_csv(KG_CSV_PATH)
+    df_norm = normalize_primekg_columns(df_raw)
+    df_use = filter_edges(df_norm)
+
+    print("\n标准化后三元组示例：")
+    print(df_use[["head", "relation", "tail"]].head())
+
+    print(f"\n最终用于训练的三元组数量：{len(df_use):,}")
+    print(f"关系类型数：{df_use['relation'].nunique():,}")
+
+    tf = build_triples_factory(df_use)
+    run_all_models(tf)
+
+    # 例子：训练完后，假设你想用 ComplEx 做 tail ranking
+    # 注意：head_label 和 relation_label 必须和你的图里标签完全一致
+    #
+    # demo_predict_tail(
+    #     saved_model_dir=os.path.join(RESULT_DIR, "ComplEx"),
+    #     head_label="drug::DB00316",
+    #     relation_label="indication",
+    # )
