@@ -352,7 +352,7 @@ dev.off()
 scobj.harmony <- scobj.harmony.1000.20 %>% 
   RunUMAP(reduction = "harmony", dims = 1:20)
 # I - run2|Visualization========================================================
-pdf("run2 nf1500_h_pc30_regccmt_res1.0 umap.pdf")
+pdf("run2 nf1000_h_pc20_regccmt_res1.0 umap.pdf")
 DimPlot(scobj.harmony, group.by = "orig.ident", reduction = "umap", label = T) + NoLegend() 
 DimPlot(scobj.harmony, group.by = "RNA_snn_res.1", reduction = "umap", label = T)
 dev.off()
