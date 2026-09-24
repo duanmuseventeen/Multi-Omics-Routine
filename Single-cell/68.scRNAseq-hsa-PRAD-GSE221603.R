@@ -1,30 +1,3 @@
-GSM6890190	mHSPC_02
-GSM6890192	mHSPC_03
-GSM6890194	Pca_01_N
-GSM6890196	Pca_01_T1
-GSM6890198	Pca_01_T2
-GSM6890200	Pca_02_T
-GSM6890202	Pca_03_TA
-GSM6890204	Pca_03_TB
-GSM6890206	Pca_04_N
-GSM6890208	Pca_04_T1
-GSM6890209	Pca_06_N
-GSM6890210	Pca_06_T
-
-mHSPC_02	GSM6890190	mHSPC	   batch3	 mHSPC_02
-mHSPC_03	GSM6890192	mHSPC	   batch3	 mHSPC_03
-Pca_01_N	GSM6890194	Normal   batch1	 Pca_01
-Pca_01_T1	GSM6890196	Tumor	   batch2	 Pca_01
-Pca_01_T2	GSM6890198	Tumor	   batch2	 Pca_01
-Pca_02_T	GSM6890200	Tumor	   batch1	 Pca_02
-Pca_03_TA	GSM6890202	Tumor	   batch2	 Pca_03
-Pca_03_TB	GSM6890204	Tumor	   batch2	 Pca_03
-Pca_04_N	GSM6890206	Normal   batch1	 Pca_04
-Pca_04_T1	GSM6890208	Tumor	   batch2	 Pca_04
-Pca_06_N	GSM6890209	Normal   batch1	 Pca_06
-Pca_06_T	GSM6890210	Tumor	   batch2	 Pca_06
-
-
 setwd("GSE221603/")
 
 rm(list = ls())
@@ -49,15 +22,44 @@ library(ggplot2)
 library(ggpubr)
 library(ggalluvial)
 library(patchwork)
-library(tidyr)
 library(DESeq2)
 require(stringr)
 require(Matrix)
-# load data---------------------------------------------------------------------
-colors_list = c('#E76254','#EF8A47','#f4a494','#FFE6B7','#AADCE0','#528FAD',
-                '#a4549c','#1E466E','#C7B8BD','#8C4834','#C17E65','#645cac',
-                '#EFD061','#547857','#c49c94','#f7b6d2','#dbdb8d')
+library(copykat)
 
+myqc4seurat <- function(seurat.obj,
+                        xintercept1 = c(200,300,400,500,1000,5000,6000,7000,8000),
+                        xintercept2 = c(200,500,1000,5000,10000,15000)){
+  p1 <- VlnPlot(seurat.obj, features = c("nFeature_RNA"), group.by = "orig.ident", ncol = 1) + scale_y_continuous(breaks = c(200,500, 1000,2000,4000,6000,8000,10000))
+  p2 <- VlnPlot(seurat.obj, features = c("nCount_RNA"), group.by = "orig.ident", ncol = 1)
+  p3 <- VlnPlot(seurat.obj, features = c("percent.mt"), group.by = "orig.ident", ncol = 1) + scale_y_continuous(breaks = c(10,20))
+  p4 <- VlnPlot(seurat.obj, features = c("percent.rp"), group.by = "orig.ident",  ncol = 1) + scale_y_continuous(breaks = c(10,20))
+  p5 <- VlnPlot(seurat.obj, features = c("percent.hb"), group.by = "orig.ident", ncol = 1)
+  p6 <- FeatureScatter(seurat.obj, group.by = "orig.ident", feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+  p7 <- data.frame(
+    nFeature = seurat.obj$nFeature_RNA,
+    group = seurat.obj$orig.ident
+  ) %>%
+    ggplot(aes(x = nFeature, color = group)) +
+    geom_density() +
+    geom_vline(xintercept = xintercept1, color = "gray50", linetype = 2) +
+    theme_classic()
+  
+  p8 <-  data.frame(
+    nCount = seurat.obj$nCount_RNA,
+    group = seurat.obj$orig.ident
+  ) %>%
+    ggplot(aes(x = nCount, color = group)) +
+    geom_density() +
+    geom_vline(xintercept = xintercept2, color = "gray50", linetype = 2) +
+    theme_classic()
+  
+  list(p1, p2, p3, p4, p5, p6, p7, p8)
+}
+# load data---------------------------------------------------------------------
+set.seed(1011)
+
+setwd("rawdat/")
 hub <- dir()
 names(hub) <- hub
 
@@ -75,102 +77,141 @@ scobj
 # Active assay: RNA (36601 features, 0 variable features)
 # 1 layer present: counts
 
-scobj <- scobj[!str_detect(rownames(scobj), "^A[CFJLP][0-9]+.[0-9]+$"),]
-scobj <- scobj[!str_detect(rownames(scobj), "^B[X][0-9]+.[0-9]+$"),]
-scobj <- scobj[!str_detect(rownames(scobj), "^ENSG"),]
-
-metadata <- scobj@meta.data
-metadata <- metadata %>% 
-  mutate(
-    sample = case_when(orig.ident %in% c("GSM6890194","GSM6890196","GSM6890198") ~ "P1",
-                       orig.ident %in% c("GSM6890200") ~ "P2",
-                       orig.ident %in% c("GSM6890202","GSM6890204") ~ "P3",
-                       orig.ident %in% c("GSM6890206","GSM6890208") ~ "P4",
-                       orig.ident %in% c("GSM6890209","GSM6890210") ~ "P6",
-                       orig.ident %in% c("GSM6890190") ~ "mHSPC_02",
-                       orig.ident %in% c("GSM6890192") ~ "mHSPC_03"),
-    tissue = case_when(orig.ident %in% c("GSM6890194","GSM6890206","GSM6890209") ~ "NAT", # Normal_Adjacent_Tissue
-                       orig.ident %in% c("GSM6890190", "GSM6890192") ~ "mHSPC", # metastatic hormone sensitive prostate cancer
-                       TRUE ~ "Tumor"),
-    batch  = case_when(orig.ident %in% c("GSM6890194","GSM6890200","GSM6890206","GSM6890209") ~ "batch1",
-                       orig.ident %in% c("GSM6890196","GSM6890198","GSM6890202","GSM6890204","GSM6890208","GSM6890210") ~ "batch2",
-                       orig.ident %in% c("GSM6890190", "GSM6890192") ~ "batch3"))
-metadata -> scobj@meta.data
-
-dim(scobj@assays$RNA$counts)
-# [1] 24249 34112
+setwd("..")
+metadata   <- scobj@meta.data
+meta       <- readxl::read_excel("GSE221603_series_matrix.xlsx")
+meta_merge <- metadata %>% 
+  mutate(geo_accession = orig.ident) %>% 
+  left_join(meta, by = "geo_accession") %>% 
+  as.data.frame
+rownames(meta_merge) <- rownames(metadata)
+meta_merge -> scobj@meta.data
 
 table(scobj@meta.data$orig.ident)
 # GSM6890190 GSM6890192 GSM6890194 GSM6890196 GSM6890198 GSM6890200 GSM6890202 GSM6890204 
 # 6011       1884       1566       1895        567       3570       4646       5535 
 # GSM6890206 GSM6890208 GSM6890209 GSM6890210 
-# 1337       1998       1915       3188 
+# 1337       1998       1915       3188
 # QC----------------------------------------------------------------------------
 scobj[["percent.mt"]] <- PercentageFeatureSet(scobj, pattern = "^MT-")
 scobj[["percent.rp"]] <- PercentageFeatureSet(scobj, pattern = "^RP[SL]")
 scobj[["percent.hb"]] <- PercentageFeatureSet(scobj, pattern = "^HB[^(P)]")
 
-pdf("run1=QC.pdf")
-VlnPlot(scobj, group.by = "orig.ident", features = c("nFeature_RNA", "nCount_RNA","percent.mt","percent.rp","percent.hb"), ncol = 5)
-VlnPlot(scobj, group.by = "orig.ident", features = c("nFeature_RNA"), ncol = 1)
-VlnPlot(scobj, group.by = "orig.ident", features = c("nCount_RNA"), ncol = 1)
-VlnPlot(scobj, group.by = "orig.ident", features = c("percent.mt"), ncol = 1) + scale_y_continuous(breaks = c(10,20))
-VlnPlot(scobj, group.by = "orig.ident", features = c("percent.rp"), ncol = 1) + scale_y_continuous(breaks = c(10,20,30,40))
-VlnPlot(scobj, group.by = "orig.ident", features = c("percent.hb"), ncol = 1)
-FeatureScatter(scobj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+pdf("run1_QC前.pdf")
+myqc4seurat(seurat.obj = scobj)
 dev.off()
 
-scobj <- subset(
+scobj.qc <- subset(
   scobj, 
   subset = 
     nFeature_RNA > 200 &
     nFeature_RNA < 6000 &
     nCount_RNA > 500 &
-    nCount_RNA < 10000 &
-    percent.mt < 20 &
+    nCount_RNA < 12000 &
+    percent.mt < 10 &
     percent.rp < 25 &
-    percent.hb < 0.2)  
+    percent.hb < 1)  
 
-pdf("run1=QC2.pdf")
-VlnPlot(scobj, features = c("nFeature_RNA", "nCount_RNA","percent.mt","percent.rp","percent.hb"), ncol = 5)
-VlnPlot(scobj, features = c("nFeature_RNA"), ncol = 1)
-VlnPlot(scobj, features = c("nCount_RNA"), ncol = 1)
-VlnPlot(scobj, features = c("percent.mt"), ncol = 1) + scale_y_continuous(breaks = c(10,20))
-VlnPlot(scobj, features = c("percent.rp"), ncol = 1)
-VlnPlot(scobj, features = c("percent.hb"), ncol = 1)
-FeatureScatter(scobj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+pdf("run1_QC后.pdf")
+myqc4seurat(seurat.obj = scobj.qc)
 dev.off()
 
-table(scobj$orig.ident)
+table(scobj.qc$orig.ident)
 # GSM6890190 GSM6890192 GSM6890194 GSM6890196 GSM6890198 GSM6890200 GSM6890202 GSM6890204 
-# 2945        879        555        507        266       2308        946       1089 
+# 922        560        518        492        249       2207        705        840 
 # GSM6890206 GSM6890208 GSM6890209 GSM6890210 
-# 721       1460       1426        812 
-
-dim(scobj)
-# [1] 24249 13914
+# 717       1415       1323        771
 # blacklist---------------------------------------------------------------------
+scobj = scobj.qc
+scobj@assays$RNA$raw_count = scobj@assays$RNA$counts
+
 blacklist <- readxl::read_excel("blacklist.xlsx")
 sum(blacklist$Symbol %in% rownames(scobj))
 # [1] 239
 
 scobj <- scobj[!(rownames(scobj) %in% blacklist$Symbol),]
 dim(scobj)
-# [1] 24011 13914
+# [1] 36363 10719
+# protein coding----------------------------------------------------------------
+gtf_data <- rtracklayer::import("refdata-gex-GRCh38-2024-A_genes.gtf") %>% as.data.frame
+keep     <- gtf_data$gene_name[gtf_data$gene_type != "lncRNA"] %>% unique
+scobj    <- subset(scobj , features = keep)
 
+dim(scobj)
+# [1] 19211  10719
+# save -------------------------------------------------------------------------
 scobj[["RNA"]] <- split(scobj[["RNA"]], f = scobj$orig.ident)
 
-save(scobj, file = "run1=scobj(GSE221603).Rdata")
+save(scobj, file = "run1_scobj(GSE221603).Rdata")
 # Nomalization & harmony & cluster----------------------------------------------
-scobj.harmony <- scobj %>% 
+scobj <- scobj %>% 
   NormalizeData(normalization.method = "LogNormalize") %>% # vst.flavor = 'v2', verbose = FALSE
   FindVariableFeatures(selection.method = "vst", nfeatures = 2000) %>% 
   ScaleData %>% 
-  RunPCA(npcs = 50) %>% 
+  RunPCA(npcs = 50)
+
+# harmony tune ----
+# scobj.harmony1 <- scobj %>%
+#   RunHarmony(
+#     group.by.vars = c("batch"),
+#     reduction.use = "pca",
+#     reduction.save = "harmony") %>%
+#   JoinLayers(assay = "RNA")
+# 
+# scobj.harmony2 <- scobj %>%
+#   RunHarmony(
+#     group.by.vars = c("orig.ident", "batch"),
+#     reduction.use = "pca",
+#     reduction.save = "harmony") %>%
+#   JoinLayers(assay = "RNA")
+# 
+# scobj.harmony3 <- scobj %>%
+#   RunHarmony(
+#     group.by.vars = c("orig.ident", "sample", "batch"),
+#     reduction.use = "pca",
+#     reduction.save = "harmony") %>%
+#   JoinLayers(assay = "RNA")
+# 
+# 
+# scobj.harmony1 <- scobj.harmony1 %>%
+#   FindNeighbors(reduction = "harmony", dims = 1:20) %>%
+#   FindClusters(resolution = seq(0.1, 1, 0.1)) %>%
+#   RunUMAP(reduction = "harmony", dims = 1:20)
+# 
+# scobj.harmony2 <- scobj.harmony2 %>%
+#   FindNeighbors(reduction = "harmony", dims = 1:20) %>%
+#   FindClusters(resolution = seq(0.1, 1, 0.1)) %>%
+#   RunUMAP(reduction = "harmony", dims = 1:20)
+# 
+# scobj.harmony3 <- scobj.harmony3 %>%
+#   FindNeighbors(reduction = "harmony", dims = 1:20) %>%
+#   FindClusters(resolution = seq(0.1, 1, 0.1)) %>%
+#   RunUMAP(reduction = "harmony", dims = 1:20)
+# 
+# pdf("run1_harmonytune_orig.ident.pdf")
+# DimPlot(scobj.harmony1, group.by = "orig.ident", reduction = "umap", label = T)
+# DimPlot(scobj.harmony2, group.by = "orig.ident", reduction = "umap", label = T)
+# DimPlot(scobj.harmony3, group.by = "orig.ident", reduction = "umap", label = T)
+# dev.off()
+# 
+# pdf("run1_harmonytune_sample.pdf")
+# DimPlot(scobj.harmony1, group.by = "sample", reduction = "umap", label = T)
+# DimPlot(scobj.harmony2, group.by = "sample", reduction = "umap", label = T)
+# DimPlot(scobj.harmony3, group.by = "sample", reduction = "umap", label = T)
+# dev.off()
+# 
+# pdf("run1_harmonytune_batch.pdf")
+# DimPlot(scobj.harmony1, group.by = "batch", reduction = "umap", label = T)
+# DimPlot(scobj.harmony2, group.by = "batch", reduction = "umap", label = T)
+# DimPlot(scobj.harmony3, group.by = "batch", reduction = "umap", label = T)
+# dev.off()
+
+# harmony ----
+scobj.harmony <- scobj %>%
   RunHarmony(
-    group.by.vars = c("orig.ident", "sample", "batch"),
+    group.by.vars = c("batch"),
     reduction.use = "pca",
-    reduction.save = "harmony") %>% 
+    reduction.save = "harmony") %>%
   JoinLayers(assay = "RNA")
 
 scobj.harmony.20 <- scobj.harmony %>%
@@ -183,22 +224,23 @@ scobj.harmony.30 <- scobj.harmony %>%
   FindNeighbors(reduction = "harmony", dims = 1:30) %>%
   FindClusters(resolution = seq(0.1, 1, 0.1))
 
-pdf("run1=nf2000_h clustree 20 25 30.pdf")
+pdf("run1_nf2000_h clustree 20 25 30.pdf")
 ElbowPlot(scobj.harmony, reduction = "pca", ndims = 50)
 clustree(scobj.harmony.20, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.25, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.30, prefix = "RNA_snn_res.")
 dev.off()
 
-scobj.harmony <- scobj.harmony.30 %>% 
-  RunUMAP(reduction = "harmony", dims = 1:30)
+scobj.harmony <- scobj.harmony.20 %>% 
+  RunUMAP(reduction = "harmony", dims = 1:20)
 # Visualization-----------------------------------------------------------------
-pdf("run1=nf2000_h_pc30.pdf")
+pdf("run1_nf2000_h_pc20.pdf")
 DimPlot(scobj.harmony, group.by = "orig.ident", reduction = "umap", label = T)
 DimPlot(scobj.harmony, group.by = "sample", reduction = "umap", label = T)
+DimPlot(scobj.harmony, group.by = "disease", reduction = "umap", label = T)
 DimPlot(scobj.harmony, group.by = "tissue", reduction = "umap", label = T)
 DimPlot(scobj.harmony, group.by = "batch", reduction = "umap", label = T)
-DimPlot(scobj.harmony, group.by = "RNA_snn_res.0.7", reduction = "umap", label = T)
+DimPlot(scobj.harmony, group.by = "RNA_snn_res.0.3", reduction = "umap", label = T)
 FeaturePlot(scobj.harmony, features = "percent.mt")
 dev.off()
 # Cell Cycle--------------------------------------------------------------------
@@ -208,27 +250,26 @@ g2m.genes <- cc.genes$g2m.genes
 scobj.harmony <- CellCycleScoring(scobj.harmony, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 scobj.harmony <- RunPCA(scobj.harmony, features = c(s.genes, g2m.genes), reduction.name = "cellcycle")
 
-pdf("run1=cell cycle.pdf")
+pdf("run1_cell cycle.pdf")
 RidgePlot(scobj.harmony, features = c("PCNA", "TOP2A", "MCM6", "MKI67"), ncol = 2)
 DimPlot(scobj.harmony, reduction = "cellcycle")
 DimPlot(scobj.harmony, reduction = "umap")
 dev.off()
 # doublets----------------------------------------------------------------------
-save(scobj.harmony, file = "run1=scobj.harmony(GSE221603).Rdata")
+save(scobj.harmony, file = "run1_scobj.harmony(GSE221603).Rdata")
 
-
-require(DoubletFinder)
 scobj.harmony.split <- SplitObject(scobj.harmony, split.by = "orig.ident") # into list
 
+nPC = 20
 for (i in 1:length(scobj.harmony.split)) {
   # pK Identification (ground-truth) -------------------------------------------
-  sweep.list <- paramSweep(scobj.harmony.split[[i]], PCs = 1:30)
+  sweep.list <- paramSweep(scobj.harmony.split[[i]], PCs = 1:nPC)
   sweep.stats <- summarizeSweep(sweep.list, GT = FALSE)
   bcmvn <- find.pK(sweep.stats)
   
   pK <- as.numeric(as.vector(bcmvn$pK[which.max(bcmvn$BCmetric)])) 
   ## Homotypic Doublet Proportion Estimate -------------------------------------
-  homotypic.prop <- modelHomotypic(scobj.harmony.split[[i]]@meta.data$RNA_snn_res.0.7)  
+  homotypic.prop <- modelHomotypic(scobj.harmony.split[[i]]@meta.data$RNA_snn_res.0.3)  
   ## Assuming 7.5% doublet formation rate - tailor for your dataset
   nExp_poi <- round(0.05 * nrow(scobj.harmony.split[[i]]@meta.data))  ## Assuming 5% doublet formation rate - tailor for your dataset
   nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
@@ -238,56 +279,51 @@ for (i in 1:length(scobj.harmony.split)) {
   # https://github.com/chris-mcginnis-ucsf/DoubletFinder/issues/228
   # https://github.com/chris-mcginnis-ucsf/DoubletFinder/issues/225#issuecomment-2786505997
   scobj.harmony.split[[i]] <- doubletFinder(
-    scobj.harmony.split[[i]], PCs = 1:30, pN = 0.25, pK = pK, 
+    scobj.harmony.split[[i]], PCs = 1:nPC, pN = 0.25, pK = pK, 
     nExp = nExp_poi.adj, sct = FALSE)
 }
 
-save(scobj.harmony.split, file = "run1=scobj.harmony.split(GSE221603).Rdata")
+save(scobj.harmony.split, file = "run1_scobj.harmony.split(GSE221603).Rdata")
 
-Singlet <- c(
-  rownames(scobj.harmony.split[[1]]@meta.data) [scobj.harmony.split[[1]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[2]]@meta.data) [scobj.harmony.split[[2]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[3]]@meta.data) [scobj.harmony.split[[3]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[4]]@meta.data) [scobj.harmony.split[[4]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[5]]@meta.data) [scobj.harmony.split[[5]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[6]]@meta.data) [scobj.harmony.split[[6]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[7]]@meta.data) [scobj.harmony.split[[7]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[8]]@meta.data) [scobj.harmony.split[[8]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[9]]@meta.data) [scobj.harmony.split[[9]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[10]]@meta.data)[scobj.harmony.split[[10]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[11]]@meta.data)[scobj.harmony.split[[11]]@meta.data$DF.classifications_0.25 == "Singlet"],
-  rownames(scobj.harmony.split[[12]]@meta.data)[scobj.harmony.split[[12]]@meta.data$DF.classifications_0.25 == "Singlet"])
+Singlet <- c()
+for (i in 1:length(scobj.harmony.split)) {
+  Singlet <- c(Singlet, 
+               rownames(scobj.harmony.split[[i]]@meta.data) [scobj.harmony.split[[i]]@meta.data$DF.classifications_0.25 == "Singlet"])
+}
+finalcol <- ncol(scobj.harmony.split[[1]]@meta.data)
+for (i in 1:length(scobj.harmony.split)) {
+  all(scobj.harmony.split[[i]]@meta.data[rownames(scobj.harmony.split[[i]]@meta.data) %in% Singlet,   finalcol] == "Singlet") %>% stopifnot
+  all(scobj.harmony.split[[i]]@meta.data[!(rownames(scobj.harmony.split[[i]]@meta.data) %in% Singlet),finalcol] != "Singlet") %>% stopifnot
+}
 
 scobj.harmony@meta.data$id <- rownames(scobj.harmony@meta.data)
 
-# scobj.h.dblfinder <- subset(scobj.harmony, subset = id %in% Singlet)
-scobj.harmony@meta.data$dblfinder <- NA
-scobj.harmony@meta.data$dblfinder <- "doublet"
-scobj.harmony@meta.data$dblfinder[scobj.harmony@meta.data$id %in% Singlet] <- "singlet"
+scobj.harmony$dblfinder <- NA
+scobj.harmony$dblfinder <- "doublet"
+scobj.harmony$dblfinder[scobj.harmony@meta.data$id %in% Singlet] <- "singlet"
 
 dim(scobj.harmony)
-# [1] 24011 13914
-table(scobj.harmony@meta.data$dblfinder)
+# [1] 19211 10719
+table(scobj.harmony$dblfinder)
 # doublet singlet 
-# 596   13318
+# 436   10283
 # Re-run========================================================================
 scobj[['S.Score']] <- scobj.harmony$S.Score
 scobj[['G2M.Score']] <- scobj.harmony$G2M.Score
 scobj[['Phase']] <- scobj.harmony$Phase
 scobj[['dblfinder']] <- scobj.harmony$dblfinder
 
-save(scobj, file ="run1=scobj4run2(GSE221603).Rdata")
+save(scobj, file ="run1_scobj4run2(GSE221603).Rdata")
 
 # 1000----
 scobj.harmony.1000 <- scobj %>% 
   subset(subset = dblfinder == "singlet") %>%
   NormalizeData(normalization.method = "LogNormalize") %>% # vst.flavor = 'v2', verbose = FALSE
   FindVariableFeatures(selection.method = "vst", nfeatures = 1000) %>% 
-  ScaleData(vars.to.regress = c("percent.mt","S.Score", "G2M.Score"), 
-            features = rownames(scobj)) %>% 
+  ScaleData %>% 
   RunPCA(npcs = 50) %>% 
   RunHarmony(
-    group.by.vars = c("orig.ident", "sample", "batch"),
+    group.by.vars = c("batch"),
     reduction.use = "pca",
     reduction.save = "harmony") %>% 
   JoinLayers(assay = "RNA")
@@ -300,26 +336,27 @@ scobj.harmony.1000.25 <- scobj.harmony.1000 %>%
 scobj.harmony.1000.30 <- scobj.harmony.1000 %>%
   FindNeighbors(reduction = "harmony", dims = 1:30) %>%
   FindClusters(resolution = seq(0.1, 1, 0.1))
-pdf("run2=nf1000_h_regccmt clustree 20 25 30.pdf")
+
+pdf("run2_nf1000_h_noreg clustree 20 25 30.pdf")
 ElbowPlot(scobj.harmony.1000, reduction = "pca", ndims = 50)
 clustree(scobj.harmony.1000.20, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.1000.25, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.1000.30, prefix = "RNA_snn_res.")
 dev.off()
+
 save(scobj.harmony.1000, 
      scobj.harmony.1000.20, scobj.harmony.1000.25, scobj.harmony.1000.30,
-     file = "run2=nf1000_h_regccmt scobj.harmony.Rdata")
+     file = "run2_nf1000_h_noreg scobj.harmony.Rdata")
 
 # 1500----
 scobj.harmony.1500 <- scobj %>% 
   subset(subset = dblfinder == "singlet") %>%
   NormalizeData(normalization.method = "LogNormalize") %>% # vst.flavor = 'v2', verbose = FALSE
   FindVariableFeatures(selection.method = "vst", nfeatures = 1500) %>% 
-  ScaleData(vars.to.regress = c("percent.mt","S.Score", "G2M.Score"), 
-            features = rownames(scobj)) %>% 
+  ScaleData %>% 
   RunPCA(npcs = 50) %>% 
   RunHarmony(
-    group.by.vars = c("orig.ident", "sample", "batch"),
+    group.by.vars = c("batch"),
     reduction.use = "pca",
     reduction.save = "harmony") %>% 
   JoinLayers(assay = "RNA")
@@ -332,29 +369,31 @@ scobj.harmony.1500.25 <- scobj.harmony.1500 %>%
 scobj.harmony.1500.30 <- scobj.harmony.1500 %>%
   FindNeighbors(reduction = "harmony", dims = 1:30) %>%
   FindClusters(resolution = seq(0.1, 1, 0.1))
-pdf("run2=nf1500_h_regccmt clustree 20 25 30.pdf")
+
+pdf("run2_nf1500_h_noreg clustree 20 25 30.pdf")
 ElbowPlot(scobj.harmony.1500, reduction = "pca", ndims = 50)
 clustree(scobj.harmony.1500.20, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.1500.25, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.1500.30, prefix = "RNA_snn_res.")
 dev.off()
+
 save(scobj.harmony.1500, 
      scobj.harmony.1500.20, scobj.harmony.1500.25, scobj.harmony.1500.30,
-     file = "run2=nf1500_h_regccmt scobj.harmony.Rdata")
+     file = "run2_nf1500_h_noreg scobj.harmony.Rdata")
 
 # 2000----
 scobj.harmony.2000 <- scobj %>% 
   subset(subset = dblfinder == "singlet") %>%
   NormalizeData(normalization.method = "LogNormalize") %>% # vst.flavor = 'v2', verbose = FALSE
   FindVariableFeatures(selection.method = "vst", nfeatures = 2000) %>% 
-  ScaleData(vars.to.regress = c("percent.mt","S.Score", "G2M.Score"), 
-            features = rownames(scobj)) %>% 
+  ScaleData %>% 
   RunPCA(npcs = 50) %>% 
   RunHarmony(
-    group.by.vars = c("orig.ident", "sample", "batch"),
+    group.by.vars = c("batch"),
     reduction.use = "pca",
     reduction.save = "harmony") %>% 
   JoinLayers(assay = "RNA")
+
 scobj.harmony.2000.20 <- scobj.harmony.2000 %>%
   FindNeighbors(reduction = "harmony", dims = 1:20) %>%
   FindClusters(resolution = seq(0.1, 1, 0.1))
@@ -364,23 +403,25 @@ scobj.harmony.2000.25 <- scobj.harmony.2000 %>%
 scobj.harmony.2000.30 <- scobj.harmony.2000 %>%
   FindNeighbors(reduction = "harmony", dims = 1:30) %>%
   FindClusters(resolution = seq(0.1, 1, 0.1))
-pdf("run2=nf2000_h_regccmt clustree 20 25 30.pdf")
+
+pdf("run2_nf2000_h_noreg clustree 20 25 30.pdf")
 ElbowPlot(scobj.harmony.2000, reduction = "pca", ndims = 50)
 clustree(scobj.harmony.2000.20, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.2000.25, prefix = "RNA_snn_res.")
 clustree(scobj.harmony.2000.30, prefix = "RNA_snn_res.")
 dev.off()
+
 save(scobj.harmony.2000, 
      scobj.harmony.2000.20, scobj.harmony.2000.25, scobj.harmony.2000.30,
-     file = "run2=nf2000_h_regccmt scobj.harmony.Rdata")
+     file = "run2_nf2000_h_noreg scobj.harmony.Rdata")
 
-
-scobj.harmony <- scobj.harmony.2000.20 %>% 
-  RunUMAP(reduction = "harmony", dims = 1:20)
+# select optimal parameter ----
+scobj.harmony <- scobj.harmony.1000.25 %>% 
+  RunUMAP(reduction = "harmony", dims = 1:25)
 # Annotation====================================================================
 scobj.harmony <- RegroupIdents(scobj.harmony, metadata = "RNA_snn_res.1")
 
-epithelial <- c("EPCAM", "SFN", "KRT5", "KRT14","KLK3") #, "SPRR3"
+epithelial <- c("EPCAM", "SFN", "KRT5", "KRT8", "KRT14","KLK3") # "SPRR3" 
 endothelial <- c("VWF", "PECAM1", "ENG", "CDH5") #, "CCL14"
 fibroblast <- c("FN1", "DCN", "COL1A1", "COL1A2") #, "COL3A1", "COL6A1"
 SMC <- c("TAGLN", "CNN1", "PRKG1", "FOXP2")
@@ -388,19 +429,20 @@ pericyte <- c("RGS5", "MCAM", "ACTA2", "MYH11")
 T_cell <- c("CD2", "CD3D", "CD3E", "CD3G") # 0 4 10 14 
 B_cell <-	c("CD19", "CD79A", "MS4A1", "CD79B") # 12
 plasma <-	c("JCHAIN", "MZB1", "IGHG1", "SDC1") # 8 16 , "CD79A"
-# monocyte and macrophage
 myeloid <- c("CD68", "CD163", "LYZ", "CD14","FCGR3A","C1QA","C1QB","CST3") # , "IL3RA", "LAMP3", "CLEC4C", "GCA"
 Neutrophil <- c("CSF3R","CXCL8","G0S2","IFITM2") # "FCGR3B","FPR1","BASP1","CXCR1","CXCR2","S100A11"
 DC <- c('CCR7',	'CLEC9A', 'CD1C',	'IRF7',	'LILRA4')
 Mast <-	c('TPSAB1','CPA3','HPGDS','KIT')# 'VWA5A','SLC18A2','HDC','CAPG','RGS13','IL1RL1','FOSB','GATA2'
 Neural <- c("PLP1","NRNX1","NRNX2","NRNX3")
-Proliferation <- c("TOP2A","BIRC5","MKI67","DLGAP5")
+Proliferation <- c("TOP2A","BIRC5","MKI67","PCNA")
 
+VlnPlot(scobj.harmony, features = c("nFeature_RNA"), group.by = "RNA_snn_res.1", ncol = 1) 
+VlnPlot(scobj.harmony, features = c("nCount_RNA"), group.by = "RNA_snn_res.1", ncol = 1)
+VlnPlot(scobj.harmony, features = c("percent.mt"), group.by = "RNA_snn_res.1", ncol = 1) 
 
 p <- DotPlot(scobj.harmony, features = c(
   epithelial, endothelial, fibroblast, SMC, pericyte,
-  T_cell, B_cell,plasma, myeloid, Neutrophil, Mast, DC, Neural,
-  Proliferation
+  T_cell, B_cell,plasma, myeloid, Neutrophil, Mast, DC, Neural
 ) %>% unique, 
 group.by = "RNA_snn_res.1") + 
   scale_color_viridis() +
@@ -409,71 +451,163 @@ group.by = "RNA_snn_res.1") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggsave(p, filename = "Dotplot marker (GSE221603).pdf", width=9, height=8, units="in")
 
-C17 <- FindMarkers(scobj.harmony, group.by = "RNA_snn_res.1", ident.1 = 17)
+C1 <- FindMarkers(scobj.harmony, group.by = "RNA_snn_res.1", ident.1 = 1)
+C3 <- FindMarkers(scobj.harmony, group.by = "RNA_snn_res.1", ident.1 = 3)
+C8 <- FindMarkers(scobj.harmony, group.by = "RNA_snn_res.1", ident.1 = 8)
+C19<- FindMarkers(scobj.harmony, group.by = "RNA_snn_res.1", ident.1 = 19)
 
 scobj.harmony$cell_type <- "Unknown"
 scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(0)] <- "T cell"
 scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(1)] <- "Epithelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(2)] <- "Epithelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(3)] <- "Myeloid"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(2)] <- "T cell"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(3)] <- "Epithelial"
 scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(4)] <- "T cell"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(5)] <- "Endothelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(6)] <- "T cell"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(7)] <- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(5)] <- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(6)] <- "Myeloid"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(7)] <- "Endothelial"
 scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(8)] <- "T cell"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(9)] <- "Mysenchyme"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(10)]<- "Epithelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(11)]<- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(9)] <- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(10)]<- "Endothelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(11)]<- "Mysenchymal"
 scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(12)]<- "Epithelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(13)]<- "Endothelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(14)]<- "Myeloid"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(15)]<- "Mast"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(16)]<- "Mysenchyme"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(17)]<- "Epithelial"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(18)]<- "B cell"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(19)]<- "Myeloid"
-scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(20)]<- "Proliferation"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(13)]<- "Myeloid"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(14)]<- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(15)]<- "Epithelial"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(16)]<- "Mysenchymal"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(17)]<- "Myeloid"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(18)]<- "Mast"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(19)]<- "Unknown"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(20)]<- "T cell"
+scobj.harmony$cell_type[scobj.harmony$RNA_snn_res.1 %in% c(21)]<- "B cell"
 
-# save(scobj.harmony, file = "scobj.harmony(singlet_nf2000_h_regccmt_pc20_res1)anno.Rdata")
-load("scobj.harmony(singlet_nf2000_h_regccmt_pc20_res1)anno.Rdata")
+save(scobj.harmony, file = "scobj.harmony(singlet_nf1000_h_noreg_pc25_res1)anno.Rdata")
+# load("scobj.harmony(singlet_nf1000_h_noreg_pc25_res1)anno.Rdata")
 
 table(scobj.harmony$RNA_snn_res.1)
-# 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17 
-# 2414 1870 1087  884  878  877  653  623  593  561  487  486  387  386  218  201  198  179 
-# 18   19   20 
-# 150   95   91 
+# 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18 
+# 1212  850  810  748  742  666  595  565  547  499  488  437  325  280  275  261  186  185  177 
+# 19   20   21 
+# 173  131  131 
 table(scobj.harmony$cell_type)
-# B cell   Endothelial    Epithelial          Mast       Myeloid    Mysenchyme 
-# 150          1263          5119           201          1197           759 
-# Proliferation        T cell 
-# 91          4538 
+# B cell Endothelial  Epithelial     Mast     Myeloid Mysenchymal      T cell     Unknown 
+# 131        1053        3624         177        1060         623        3442         173
+
+# CNV --------------------------------------------------------------------------
+setwd("copykat/")
+
+test_sample = scobj.harmony$orig.ident[scobj.harmony$group == "Tumor"] %>% unique
+copykat_list = lapply(test_sample, function(gsm){
+  
+  tmp  <- subset(
+    scobj.harmony, 
+    subset = orig.ident %in% gsm &
+             cell_type  %in% c("Epithelial", "T cell", "B cell", "Myeloid")
+    )
+  exp.rawdata <- as.matrix(tmp@assays$RNA$raw_count)
+  
+  meta <- tmp@meta.data
+  ref  <- rownames(meta)[meta$cell_type != "Epithelial"]
+  
+  copykat.test <- copykat(
+    rawmat    = exp.rawdata, 
+    id.type   = "S", 
+    ngene.chr = 3, 
+    win.size  = 25, 
+    KS.cut    = 0.1, 
+    sam.name  = gsm, 
+    distance  = "euclidean", 
+    norm.cell.names = ref,
+    output.seg= FALSE, 
+    plot.genes= TRUE, 
+    genome    = "hg20",
+    n.cores  = 1)
+  
+  meta$cell.names = rownames(meta)
+  res = meta %>% 
+    left_join(copykat.test$prediction, by = "cell.names")
+})
+
+save(copykat_list, file = "copykat_list.Rdata")
+
+copykat_res  = copykat_list %>% bind_rows
+
+meta.data <- scobj.harmony@meta.data
+meta.data$cell.names <- rownames(meta.data) 
+meta.data <- meta.data %>% 
+  left_join(
+    copykat_res %>% 
+      dplyr::select(cell.names, copykat.pred), 
+    by = "cell.names") %>% 
+  as.data.frame
+rownames(meta.data) <- meta.data$cell.names
+scobj.harmony@meta.data <- meta.data
+
+setwd("..")
+save(scobj.harmony, file = "scobj.harmony_anno_copykat.Rdata")
 # Figure2=======================================================================
-require(patchwork)
-p1 <- DimPlot(scobj.harmony, reduction = "umap", 
-              group.by = "cell_type", 
-              label = TRUE)
-p2 <- DimPlot(scobj.harmony, reduction = "umap", 
-              group.by = "RNA_snn_res.1", 
-              label = TRUE)
-p_out1 <- p1 + p2
-ggsave(p_out1, filename = "UMAP(GSE221603).pdf", width=10, height=5, units="in")
+fig = subset(scobj.harmony, subset = cell_type != "Unknown")
+fig$copykat.pred[fig$cell_type != "Epithelial"] = NA
+fig$cell_type2 = fig$cell_type
+fig$cell_type2[fig$copykat.pred == "aneuploid"] = "Malignant"
 
-p_fea <- lapply(c(gene_symbols), 
-                function(x){FeaturePlot(scobj.harmony, features = x) + 
-                    scale_colour_gradientn(
-                      colours = colorRampPalette(
-                        c('gray90','#FFCA62','#FFB336','#FF9700','#FF5A00','#F24410',
-                          '#E52C22','#DD1D23','#C20030','#930039','#8C003A',
-                          '#6F003D','#56033F'))(1000))}) %>% 
-  patchwork::wrap_plots(ncol = 2, nrow = 2)
-p_vln <- VlnPlot(scobj.harmony, features = c(gene_symbols), 
-                 group.by = "cell_type")
+colors_list = c('#E76254','#EF8A47','#f4a494','#FFE6B7','#AADCE0','#528FAD',
+                '#a4549c','#1E466E','#C7B8BD','#8C4834','#C17E65','#645cac',
+                '#EFD061','#547857','#c49c94','#f7b6d2','#dbdb8d')
 
-ggsave(p_fea, filename = "FeaturePlot(GSE221603).pdf", width=8, height=8, units="in")
-ggsave(p_vln, filename = "VlnPlot(GSE221603).pdf", width=8, height=8, units="in")
+pdf("run2_UMAP.pdf")
+DimPlot(fig, reduction = "umap", group.by = "cell_type", label = TRUE, cols = colors_list)
+DimPlot(fig, reduction = "umap", group.by = "cell_type2", label = TRUE, cols = colors_list)
+DimPlot(fig, reduction = "umap", group.by = "orig.ident", label = TRUE)
+DimPlot(fig, reduction = "umap", group.by = "sample", label = TRUE)
+DimPlot(fig, reduction = "umap", group.by = "group", label = TRUE)
+DimPlot(fig, reduction = "umap", group.by = "disease", label = TRUE)
+DimPlot(fig, reduction = "umap", group.by = "copykat.pred", label = TRUE)
+dev.off()
 
-Epi_markers <- FindMarkers(scobj.harmony, group.by = "cell_type", ident.1 = "Epithelial")
+p_vln <- VlnPlot(fig, features = c("ACTB"), ncol = 4,
+                 group.by = "cell_type2", cols = colors_list) + guides(col = "none")
+ggsave(p_vln, filename = "VlnPlot.pdf", width=3, height=4, units="in")
+# Pseudo bulk ==================================================================
+Epi <- subset(fig, subset = cell_type == "Epithelial")
+count_mat <- GetAssayData(Epi, assay = "RNA", layer = "counts")
+
+meta <- Epi@meta.data
+
+meta %>% 
+  group_by(orig.ident) %>% 
+  mutate(sum = n()) %>% 
+  distinct(sum)
+
+sample_info <- meta %>%
+  select(orig.ident, group, disease, batch, sample) %>%
+  distinct(., .keep_all = TRUE)
+
+pb_counts <- lapply(unique(Epi$orig.ident), function(orig.ident){
+  barcodes = meta$cell.names[meta$orig.ident == orig.ident]
+  pb_count = data.frame(
+    V1 = rowSums(as.matrix(count_mat)[,barcodes]),
+    row.names = rownames(count_mat)
+  )
+  colnames(pb_count) = orig.ident
+  
+  return(pb_count)
+}) %>% bind_cols()
 
 
+count <- pb_counts[,sample_info$orig.ident]
 
+stopifnot(all(colnames(count) == sample_info$orig.ident))
+
+condition = factor(sample_info$group, levels = c("Normal","Tumor"))
+coldata   = data.frame(row.names = colnames(count), condition)
+dds       = DESeqDataSetFromMatrix(countData = count,
+                              colData = coldata,
+                              design = ~condition)
+dds$condition<- relevel(dds$condition, ref = "Normal") # 指定哪一组作为对照组
+dds <- DESeq(dds)  
+DEG <- results(dds, name="condition_Tumor_vs_Normal", independentFiltering = FALSE) %>%
+  as.data.frame %>% 
+  na.omit
+
+save(DEG, file = "DEG.Rdata")
 
