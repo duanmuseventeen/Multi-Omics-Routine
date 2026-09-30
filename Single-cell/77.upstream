@@ -1,6 +1,10 @@
 Ref:
 https://www.10xgenomics.com/support/software/cell-ranger/latest/tutorials/
+https://mgi-tech-bioinformatics.github.io/DNBelab_C_Series_HT_scRNA-analysis-software/Document/site/index.html
 
+# -----------------------------------------------------
+# 1. cellranger for 10X
+# -----------------------------------------------------
 # 相关命令，防止命令中断
 screen -S meta
 screen -ls
@@ -64,3 +68,21 @@ do
   echo "----------------------------------------"
 
 done < samples.txt
+
+# -----------------------------------------------------
+# 2. dnbc4tools for MGI/BGI
+# -----------------------------------------------------
+$dnbc4tools tools mkgtf --ingtf gencode.vM23.primary_assembly.annotation.gtf --output genes.filtered.gtf
+$dnbc4tools rna mkref --ingtf genes.filtered.gtf --fasta GRCm38.primary_assembly.genome.fa --threads 10 --species Mus_musculus
+
+
+
+
+
+
+
+
+
+
+
+
