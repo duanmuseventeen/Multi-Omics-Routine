@@ -82,7 +82,17 @@ vim run_dnbc.sh
 
 for sample in CCL4_1 CCL4_2 CCL4_3 Neu1_Hep_CKO_CCl4_1 Neu1_Hep_CKO_CCl4_2 Neu1_Hep_CKO_CCl4_3; do
 
+  echo "========================================"
+  echo "开始分析样本: ${sample}"
+  echo "开始时间: $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "========================================"
+
    ~/soft/dnbc4tools3.1/dnbc4tools rna run --name "$sample" --fastqs "$sample" --genomeDir ~/genomeref/dnbc4tools/mmu/GRCm39/Mus_musculus --threads 12
+
+  echo "----------------------------------------"
+  echo "样本 ${sample} 分析完成"
+  echo "结束时间: $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "----------------------------------------"
 
 done
 
