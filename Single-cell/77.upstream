@@ -75,8 +75,18 @@ done < samples.txt
 $dnbc4tools tools mkgtf --ingtf gencode.vM23.primary_assembly.annotation.gtf --output genes.filtered.gtf
 $dnbc4tools rna mkref --ingtf genes.filtered.gtf --fasta GRCm38.primary_assembly.genome.fa --threads 10 --species Mus_musculus
 
+touch run_dnbc.sh
+vim run_dnbc.sh
 
+#!/bin/bash
 
+for sample in CCL4_1 CCL4_2 CCL4_3 Neu1_Hep_CKO_CCl4_1 Neu1_Hep_CKO_CCl4_2 Neu1_Hep_CKO_CCl4_3; do
+
+   ~/soft/dnbc4tools3.1/dnbc4tools rna run --name "$sample" --fastqs "$sample" --genomeDir ~/genomeref/dnbc4tools/mmu/GRCm39/Mus_musculus --threads 12
+
+done
+
+nohup ./run_dnbc.sh > dnbc.log 2>&1 &
 
 
 
